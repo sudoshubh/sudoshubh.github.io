@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shubham Sharma | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-weight/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen selection:bg-sky-500 selection:text-white">
+
+    <header class="fixed top-0 left-0 w-full z-50 glass-card transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold tracking-tight text-white hover:opacity-80">
+                sudo<span class="gradient-text">shubh</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+                <a href="#about" class="hover:text-sky-400 transition-colors">About</a>
+                <a href="#experience" class="hover:text-sky-400 transition-colors">Experience</a>
+                <a href="#skills" class="hover:text-sky-400 transition-colors">Skills</a>
+                <a href="#education" class="hover:text-sky-400 transition-colors">Education</a>
+            </nav>
+            <a href="mailto:shubhamsharma989896@gmail.com" class="text-sm bg-sky-500 hover:bg-sky-600 text-white font-medium px-4 py-2 rounded-lg transition-colors shadow-lg shadow-sky-500/20">
+                Contact Me
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 pt-32 pb-16 space-y-32">
+
+        <section id="about" class="grid md:grid-cols-3 gap-12 items-center pt-8">
+            <div class="md:col-span-2 space-y-6">
+                <div class="space-y-2">
+                    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+                        Shubham Sharma
+                    </h1>
+                    <h2 class="text-xl md:text-2xl font-medium text-slate-400">
+                        Senior Software Engineer & AI Researcher
+                    </h2>
+                </div>
+                <p class="text-slate-300 leading-relaxed text-base max-w-2xl">
+                    Results-driven Software Engineer with 8 years of experience architecting and deploying scalable, distributed systems at scale. Expert in Java, Spring Boot, Apache Kafka, and AWS cloud infrastructure with a proven track record of building high-throughput, low-latency microservices serving millions of users. Strong foundation in system design, data structures, algorithms, and software engineering best practices.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <a href="https://linkedin.com/in/sudoshubh" target="_blank" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm text-slate-200 transition-colors border border-slate-700">
+                        <i class="fab fa-linkedin text-sky-400"></i> LinkedIn
+                    </a>
+                    <a href="mailto:shubhamsharma989896@gmail.com" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm text-slate-200 transition-colors border border-slate-700">
+                        <i class="fas fa-envelope text-rose-400"></i> Email
+                    </a>
+                    <span class="flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-lg text-sm text-slate-400 border border-slate-800">
+                        <i class="fas fa-map-marker-alt text-emerald-400"></i> Bengaluru, KA, India
+                    </span>
+                </div>
+            </div>
+            <div class="glass-card p-6 rounded-2xl space-y-4 shadow-xl shadow-black/20">
+                <div class="text-center pb-2 border-b border-slate-800">
+                    <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Current Focus</span>
+                    <p class="text-sm font-medium text-sky-400 mt-1">M.Tech AI @ IIT Jodhpur</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="p-3 bg-slate-800/40 rounded-xl">
+                        <span class="block text-2xl font-bold text-white">8+</span>
+                        <span class="text-xs text-slate-400">Years Exp.</span>
+                    </div>
+                    <div class="p-3 bg-slate-800/40 rounded-xl">
+                        <span class="block text-2xl font-bold text-white">50+</span>
+                        <span class="text-xs text-slate-400">Microservices</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <h2 class="text-2xl font-bold tracking-tight text-white">Professional Experience</h2>
+                <div class="h-px bg-slate-800 flex-grow"></div>
+            </div>
+
+            <div class="space-y-8 border-l-2 border-slate-800 pl-6 ml-2">
+                <div class="relative space-y-2">
+                    <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-sky-500 border-4 border-slate-900"></div>
+                    <div class="flex flex-wrap justify-between items-start gap-2">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Software Engineer</h3>
+                            <p class="text-sm text-sky-400">Samsung Research Institute, Bengaluru</p>
+                            <p class="text-xs text-slate-500 italic">Samsung My Galaxy App & CMS Big Data Processing, Reporting & Analytics Platform</p>
+                        </div>
+                        <span class="text-xs font-medium bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">June 2025 - Present</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm text-slate-400 space-y-1.5 pt-2">
+                        <li>Optimized PySpark data pipelines and integrated AWS Lambda triggers to automate bulk report generation, reducing resource usage by 40%.</li>
+                        <li>Engineered containerized Java Spring Batch jobs on AWS Batch for scalable daily data aggregation processing 1M+ records with 99.9% reliability.</li>
+                        <li>Built robust data ingestion systems using AWS SDK for Java to handle 500GB+ daily data volume into a centralized data warehouse.</li>
+                        <li>Reduced MongoDB query latency by 30%+ through multi-stage DB aggregation pipelines and index optimization.</li>
+                        <li>Designed efficient data extraction using MongoDB projections and server-side joins, minimizing network payload by 60%.</li>
+                    </ul>
+                </div>
+
+                <div class="relative space-y-2">
+                    <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-slate-700 border-4 border-slate-900"></div>
+                    <div class="flex flex-wrap justify-between items-start gap-2">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Sr. Specialist Engineer</h3>
+                            <p class="text-sm text-sky-400">Standard Chartered Research & Tech (via Solv), Noida</p>
+                            <p class="text-xs text-slate-500 italic">Commerce Platform & Product Catalog E-commerce Microservices Ecosystem</p>
+                        </div>
+                        <span class="text-xs font-medium bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Nov 2023 - June 2025</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm text-slate-400 space-y-1.5 pt-2">
+                        <li>Architected and developed 50+ scalable microservices using Java Spring Boot, serving 100K+ daily active users with 99.95% uptime.</li>
+                        <li>Implemented low-latency event-driven architecture using Apache Kafka, processing 500K+ events daily with sub-100ms latency.</li>
+                        <li>Enhanced search functionality with AWS Elasticsearch Query DSL, improving response times by 45%.</li>
+                        <li>Designed comprehensive HLD and LLD documentation addressing rate-limiting, scalability, and consistency trade-offs.</li>
+                    </ul>
+                </div>
+
+                <div class="relative space-y-2">
+                    <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-slate-700 border-4 border-slate-900"></div>
+                    <div class="flex flex-wrap justify-between items-start gap-2">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Senior Software Engineer</h3>
+                            <p class="text-sm text-sky-400">Wissda Consulting Pvt Ltd, Mumbai</p>
+                            <p class="text-xs text-slate-500 italic">Master Data Management Enterprise Data Integration Platform</p>
+                        </div>
+                        <span class="text-xs font-medium bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Oct 2022 - Oct 2023</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm text-slate-400 space-y-1.5 pt-2">
+                        <li>Developed RESTful microservices with event-driven architecture using Apache Kafka pub-sub pattern for asynchronous communication.</li>
+                        <li>Configured Kafka consumer-producer endpoints handling 200K+ messages daily with exactly-once delivery semantics.</li>
+                        <li>Leveraged Java 8 Stream API, multithreading, and advanced DSA for optimized transformations.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <h2 class="text-2xl font-bold tracking-tight text-white">Technical Expertise</h2>
+                <div class="h-px bg-slate-800 flex-grow"></div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div class="glass-card p-5 rounded-xl space-y-3">
+                    <h3 class="text-sm font-semibold tracking-wider text-sky-400 uppercase">Languages & Core</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Java 8/17</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Python</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">SQL</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">PySpark</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Data Structures</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Algorithms</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 rounded-xl space-y-3">
+                    <h3 class="text-sm font-semibold tracking-wider text-sky-400 uppercase">Frameworks & Arch</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Spring Boot</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Microservices</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Apache Kafka</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Spring Batch</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Hibernate / JPA</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Event-Driven Architecture</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 rounded-xl space-y-3">
+                    <h3 class="text-sm font-semibold tracking-wider text-sky-400 uppercase">Cloud & Infrastructure</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">AWS (Lambda, ECS, S3)</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Kubernetes</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">Docker</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">AWS Elasticsearch</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-md text-slate-300">CI/CD Pipelines</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="space-y-8">
+            <div class="flex items-center gap-4">
+                <h2 class="text-2xl font-bold tracking-tight text-white">Education & Credentials</h2>
+                <div class="h-px bg-slate-800 flex-grow"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-sky-400 to-indigo-500"></div>
+                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">Master of Technology</span>
+                    <h3 class="text-lg font-bold text-white mt-1">Artificial Intelligence</h3>
+                    <p class="text-sm text-slate-400">Indian Institute of Technology (IIT), Jodhpur</p>
+                    <p class="text-xs text-slate-500 mt-2"><i class="far fa-calendar-alt mr-1"></i> Jan 2025 - Present</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-slate-700 to-slate-600"></div>
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bachelor of Technology</span>
+                    <h3 class="text-lg font-bold text-white mt-1">Computer Science Engineering</h3>
+                    <p class="text-sm text-slate-400">Moradabad Institute of Technology, AKTU</p>
+                    <p class="text-xs text-slate-500 mt-2"><i class="far fa-calendar-alt mr-1"></i> Jul 2016 - June 2020 | CGPA: 7.7/10</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-900 bg-slate-950/60 py-8 text-center text-xs text-slate-600">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 Shubham Sharma. Built with elegant minimalist design.</p>
+            <div class="flex space-x-4">
+                <a href="https://linkedin.com/in/sudoshubh" target="_blank" class="hover:text-slate-400 transition-colors">LinkedIn</a>
+                <a href="mailto:shubhamsharma989896@gmail.com" class="hover:text-slate-400 transition-colors">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
