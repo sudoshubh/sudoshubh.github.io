@@ -5,6 +5,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shubham Sharma | Senior Data Scientist & AI Engineer</title>
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('theme');
+                var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+                if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            } catch (e) { }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -32,6 +41,43 @@
             --mono: 'JetBrains Mono', monospace;
             --display: 'Syne', sans-serif;
             --body: 'Manrope', sans-serif;
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f6f8fb;
+            --bg2: #ffffff;
+            --bg3: #eef2f7;
+            --panel: rgba(255, 255, 255, 0.85);
+            --border: rgba(15, 23, 42, 0.08);
+            --border-bright: rgba(15, 23, 42, 0.16);
+            --cyan: #0284c7;
+            --cyan-dim: rgba(2, 132, 199, 0.08);
+            --green: #059669;
+            --green-dim: rgba(5, 150, 105, 0.08);
+            --violet: #7c3aed;
+            --violet-dim: rgba(124, 58, 237, 0.08);
+            --amber: #b45309;
+            --amber-dim: rgba(180, 83, 9, 0.08);
+            --text: #0f172a;
+            --text-dim: #334155;
+            --text-muted: #64748b;
+        }
+
+        body,
+        nav,
+        .terminal,
+        .term-bar,
+        footer,
+        .skill-card,
+        .tl-body,
+        .edu-card,
+        .research-card,
+        .contact-card,
+        .metric,
+        .chip,
+        .skill-bar-track,
+        .cert-item {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
         *,
@@ -123,10 +169,57 @@
             border-bottom: 1px solid var(--border);
         }
 
+        :root[data-theme="light"] nav {
+            background: rgba(246, 248, 251, 0.82);
+        }
+
         nav .inner {
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid var(--border-bright);
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            color: var(--cyan);
+            border-color: var(--cyan);
+            background: var(--cyan-dim);
+        }
+
+        .theme-toggle svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .theme-toggle .icon-sun {
+            display: none;
+        }
+
+        :root[data-theme="light"] .theme-toggle .icon-moon {
+            display: none;
+        }
+
+        :root[data-theme="light"] .theme-toggle .icon-sun {
+            display: block;
         }
 
         .logo {
@@ -211,22 +304,26 @@
             background: var(--green);
         }
 
-        h1 {
+        .hero-name {
             font-family: var(--display);
-            font-size: clamp(2.8rem, 6.5vw, 4.8rem);
+            font-size: clamp(2.6rem, 6vw, 4.2rem);
             font-weight: 800;
-            line-height: 1.1;
+            line-height: 1.08;
             letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-        }
-
-        .h1-dim {
-            color: var(--text-muted);
-            font-weight: 700;
-        }
-
-        .h1-bright {
             color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+
+        .hero-role {
+            font-family: var(--body);
+            font-size: clamp(1.1rem, 2.3vw, 1.5rem);
+            font-weight: 700;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-role span {
+            color: var(--cyan);
         }
 
         .hero-subtitle {
@@ -400,6 +497,11 @@
             margin: 2rem 0 6rem;
         }
 
+        :root[data-theme="light"] .terminal {
+            background: #ffffff;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+        }
+
         .term-bar {
             background: #090e18;
             padding: 0.8rem 1.2rem;
@@ -407,6 +509,10 @@
             align-items: center;
             gap: 0.5rem;
             border-bottom: 1px solid var(--border);
+        }
+
+        :root[data-theme="light"] .term-bar {
+            background: #eef2f7;
         }
 
         .term-dot {
@@ -706,6 +812,10 @@
             overflow: hidden;
         }
 
+        :root[data-theme="light"] .skill-bar-track {
+            background: rgba(15, 23, 42, 0.07);
+        }
+
         .skill-bar-fill {
             height: 100%;
             transform: scaleX(0);
@@ -747,6 +857,11 @@
             background: rgba(255, 255, 255, 0.02);
             color: var(--text-dim);
             border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        :root[data-theme="light"] .chip {
+            background: rgba(15, 23, 42, 0.03);
+            border-color: rgba(15, 23, 42, 0.08);
         }
 
         /* Core Metrics Overview Grid */
@@ -911,6 +1026,10 @@
             border-top: 1px solid rgba(255, 255, 255, 0.04);
         }
 
+        :root[data-theme="light"] .edu-focus {
+            border-top-color: rgba(15, 23, 42, 0.07);
+        }
+
         .cert-row {
             display: flex;
             flex-wrap: wrap;
@@ -979,6 +1098,10 @@
             border-top: 1px solid var(--border);
             padding: 2.5rem 0;
             background: #04060b;
+        }
+
+        :root[data-theme="light"] footer {
+            background: #ffffff;
         }
 
         .footer-inner {
@@ -1066,18 +1189,30 @@
                 <li><a href="#education">Education</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            <a href="mailto:shubhamsharmavks@gmail.com" class="nav-cta">Hire Me</a>
+            <div class="nav-right">
+                <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path
+                            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41">
+                        </path>
+                    </svg>
+                </button>
+                <a href="mailto:shubhamsharmavks@gmail.com" class="nav-cta">Hire Me</a>
+            </div>
         </div>
     </nav>
 
     <section id="hero" style="border: none;">
         <div class="wrap">
             <div class="hero-tag">Available for Senior Roles</div>
-            <h1>
-                <span class="h1-dim">Senior</span><br>
-                <span class="h1-bright">Data Scientist</span><br>
-                <span class="h1-dim">&amp; AI Engineer</span>
-            </h1>
+            <h1 class="hero-name">Shubham Sharma</h1>
+            <div class="hero-role">Senior Data Scientist <span>&amp;</span> AI Engineer</div>
             <div class="hero-subtitle">
                 <span id="typewriter"></span><span class="caret"></span>
             </div>
@@ -1525,6 +1660,21 @@
     </footer>
 
     <script>
+        // theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                if (isLight) {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
+
         // typewriter logic
         const phrases = [
             'Fine-tuning LLMs for Indian languages...',
