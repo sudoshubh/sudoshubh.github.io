@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kafka, drawn — a visual memory aid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12171f;
+  --ink-2:#3d4a5c;
+  --dim:#8b98a9;
+  --paper:#eaeef1;
+  --panel:#ffffff;
+  --rule:#c9d2db;
+  --signal:#1f5fd0;
+  --signal-soft:#dce8fb;
+  --sync:#0e7c6b;
+  --sync-soft:#d5ece7;
+  --alert:#b8410c;
+  --alert-soft:#f8e2d6;
+  --idle:#b9c3ce;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--paper);
+  background-image:linear-gradient(var(--rule) .5px,transparent .5px),linear-gradient(90deg,var(--rule) .5px,transparent .5px);
+  background-size:32px 32px;
+  background-position:-1px -1px;
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1020px;margin:0 auto;padding:0 20px 100px}
+.prose{max-width:68ch}
+
+/* ---------- hero ---------- */
+.hero{padding:64px 0 40px}
+.hero h1{
+  font-family:"IBM Plex Sans Condensed",sans-serif;
+  font-weight:700;font-size:clamp(38px,7vw,76px);
+  line-height:.98;letter-spacing:-.02em;margin:0 0 18px;
+}
+.hero p{max-width:56ch;color:var(--ink-2);font-size:18px;margin:0 0 28px}
+.hero .strip{background:var(--panel);border:1px solid var(--rule);padding:18px 16px 12px;border-radius:3px}
+
+/* ---------- nav ---------- */
+nav.toc{
+  background:var(--panel);border:1px solid var(--rule);border-radius:3px;
+  padding:18px 20px;margin:0 0 56px;
+}
+nav.toc h2{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:13px;letter-spacing:.06em;
+  color:var(--dim);margin:0 0 12px;font-weight:600}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px 24px;counter-reset:t}
+nav.toc li{counter-increment:t;font-size:14.5px;border-bottom:1px dotted var(--rule);padding:5px 0}
+nav.toc li::before{content:counter(t,decimal-leading-zero);font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;color:var(--signal);margin-right:9px}
+nav.toc a{color:var(--ink);text-decoration:none}
+nav.toc a:hover{color:var(--signal)}
+
+/* ---------- sections ---------- */
+section{margin:0 0 72px;scroll-margin-top:20px}
+.snum{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--signal);display:block;margin-bottom:6px}
+h2.sh{font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;
+  font-size:clamp(26px,3.6vw,36px);line-height:1.1;letter-spacing:-.015em;margin:0 0 10px}
+.lede{color:var(--ink-2);font-size:17px;max-width:66ch;margin:0 0 26px}
+p{margin:0 0 16px}
+figure{margin:0 0 26px;background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:22px 20px 16px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:14px;padding-top:12px;border-top:1px solid var(--rule);max-width:74ch}
+figcaption b{color:var(--ink);font-weight:600}
+
+/* ---------- memory hook ---------- */
+.hook{
+  border-left:3px solid var(--signal);background:var(--signal-soft);
+  padding:14px 18px;margin:0 0 26px;border-radius:0 3px 3px 0;
+}
+.hook span{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--signal);
+  display:block;margin-bottom:4px;font-weight:600}
+.hook p{margin:0;font-size:16px}
+.hook.warn{border-left-color:var(--alert);background:var(--alert-soft)}
+.hook.warn span{color:var(--alert)}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin:0 0 26px;background:var(--panel)}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:600;font-size:13px;
+  color:var(--ink-2);border-bottom:1.5px solid var(--ink-2)}
+td code,p code,li code,figcaption code{font-family:"IBM Plex Mono",monospace;font-size:.88em;
+  background:var(--paper);padding:1px 5px;border-radius:2px}
+tr:last-child td{border-bottom:none}
+
+ul.tight{margin:0 0 22px;padding-left:20px}
+ul.tight li{margin-bottom:7px}
+
+.footer{border-top:1.5px solid var(--ink-2);padding-top:22px;color:var(--ink-2);font-size:14.5px;max-width:68ch}
+@media(prefers-reduced-motion:no-preference){a{transition:color .12s}}
+a:focus-visible,nav.toc a:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Kafka, drawn</h1>
+  <p>Sixteen pictures that carry most of what an interviewer will ask you. Each one is a
+     shape to recall, not a paragraph to recite.</p>
+  <div class="strip">
+  <svg viewBox="0 0 960 108" role="img" aria-label="An append-only log: numbered cells filling left to right, with new writes at the end">
+    <defs>
+      <marker id="ah" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+        <path d="M0,1 L8,4.5 L0,8 z" fill="#12171f"/></marker>
+    </defs>
+    <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="11" fill="#8b98a9">one partition = one append-only log</text>
+    <g>
+      <rect x="0"   y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="54"  y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="108" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="162" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="216" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="270" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="324" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="378" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="432" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="486" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="540" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="594" y="28" width="52" height="40" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1"/>
+      <rect x="648" y="28" width="52" height="40" fill="#fff" stroke="#c9d2db" stroke-width="1" stroke-dasharray="3 3"/>
+      <rect x="702" y="28" width="52" height="40" fill="#fff" stroke="#c9d2db" stroke-width="1" stroke-dasharray="3 3"/>
+      <rect x="756" y="28" width="52" height="40" fill="#fff" stroke="#c9d2db" stroke-width="1" stroke-dasharray="3 3"/>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#3d4a5c" text-anchor="middle">
+      <text x="26" y="82">0</text><text x="80" y="82">1</text><text x="134" y="82">2</text>
+      <text x="188" y="82">3</text><text x="242" y="82">4</text><text x="296" y="82">5</text>
+      <text x="350" y="82">6</text><text x="404" y="82">7</text><text x="458" y="82">8</text>
+      <text x="512" y="82">9</text><text x="566" y="82">10</text><text x="620" y="82">11</text>
+    </g>
+    <line x1="648" y1="96" x2="820" y2="96" stroke="#12171f" stroke-width="1.4" marker-end="url(#ah)"/>
+    <text x="836" y="100" font-family="IBM Plex Mono, monospace" font-size="11" fill="#12171f">writes</text>
+  </svg>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>The sixteen pictures</h2>
+  <ol>
+    <li><a href="#d1">The whole system</a></li>
+    <li><a href="#d2">Anatomy of a partition</a></li>
+    <li><a href="#d3">How a record picks a partition</a></li>
+    <li><a href="#d4">The consumer ceiling</a></li>
+    <li><a href="#d5">Why Range skews</a></li>
+    <li><a href="#d6">Eager vs cooperative</a></li>
+    <li><a href="#d7">Inside poll()</a></li>
+    <li><a href="#d8">The three timeouts</a></li>
+    <li><a href="#d9">The rebalance storm</a></li>
+    <li><a href="#d10">The producer send path</a></li>
+    <li><a href="#d11">What acks really means</a></li>
+    <li><a href="#d12">ISR, high watermark, LEO</a></li>
+    <li><a href="#d13">How idempotence works</a></li>
+    <li><a href="#d14">Where duplicates come from</a></li>
+    <li><a href="#d15">Delete vs compact</a></li>
+    <li><a href="#d16">Sizing on a napkin</a></li>
+  </ol>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section id="d1">
+  <span class="snum">01</span>
+  <h2 class="sh">The whole system, in one frame</h2>
+  <p class="lede">Producers write to partitions. Partitions live on brokers. Consumer groups read
+  independently — and that independence is the whole reason Kafka isn't a queue.</p>
+  <figure>
+  <svg viewBox="0 0 960 430" role="img" aria-label="Producers writing into a four-partition topic, read independently by two consumer groups">
+    <defs>
+      <marker id="a1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,1 L8,4.5 L0,8 z" fill="#1f5fd0"/></marker>
+      <marker id="a2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,1 L8,4.5 L0,8 z" fill="#0e7c6b"/></marker>
+    </defs>
+
+    <!-- producers -->
+    <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="11" fill="#8b98a9">producers</text>
+    <rect x="0" y="120" width="118" height="46" rx="2" fill="#fff" stroke="#1f5fd0" stroke-width="1.4"/>
+    <text x="59" y="148" text-anchor="middle" font-size="13.5" font-family="IBM Plex Sans, sans-serif" fill="#12171f">order-api</text>
+    <rect x="0" y="200" width="118" height="46" rx="2" fill="#fff" stroke="#1f5fd0" stroke-width="1.4"/>
+    <text x="59" y="228" text-anchor="middle" font-size="13.5" font-family="IBM Plex Sans, sans-serif" fill="#12171f">batch-job</text>
+    <line x1="122" y1="143" x2="196" y2="143" stroke="#1f5fd0" stroke-width="1.4" marker-end="url(#a1)"/>
+    <line x1="122" y1="223" x2="196" y2="223" stroke="#1f5fd0" stroke-width="1.4" marker-end="url(#a1)"/>
+
+    <!-- topic -->
+    <rect x="204" y="26" width="440" height="380" rx="2" fill="#f7f9fa" stroke="#3d4a5c" stroke-width="1.2"/>
+    <text x="220" y="50" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#12171f">topic: orders &#183; 4 partitions</text>
+    <text x="220" y="68" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#8b98a9">spread across brokers 1&#8211;3</text>
+
+    <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a5c">
+      <text x="220" y="103">P0</text><text x="220" y="181">P1</text>
+      <text x="220" y="259">P2</text><text x="220" y="337">P3</text>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#8b98a9">
+      <text x="220" y="118">b1</text><text x="220" y="196">b2</text>
+      <text x="220" y="274">b3</text><text x="220" y="352">b1</text>
+    </g>
+
+    <!-- partition cell rows -->
+    <g fill="#dce8fb" stroke="#1f5fd0" stroke-width="1">
+      <rect x="252" y="88" width="46" height="30"/><rect x="302" y="88" width="46" height="30"/><rect x="352" y="88" width="46" height="30"/><rect x="402" y="88" width="46" height="30"/><rect x="452" y="88" width="46" height="30"/><rect x="502" y="88" width="46" height="30"/><rect x="552" y="88" width="46" height="30"/>
+      <rect x="252" y="166" width="46" height="30"/><rect x="302" y="166" width="46" height="30"/><rect x="352" y="166" width="46" height="30"/><rect x="402" y="166" width="46" height="30"/><rect x="452" y="166" width="46" height="30"/>
+      <rect x="252" y="244" width="46" height="30"/><rect x="302" y="244" width="46" height="30"/><rect x="352" y="244" width="46" height="30"/><rect x="402" y="244" width="46" height="30"/><rect x="452" y="244" width="46" height="30"/><rect x="502" y="244" width="46" height="30"/>
+      <rect x="252" y="322" width="46" height="30"/><rect x="302" y="322" width="46" height="30"/><rect x="352" y="322" width="46" height="30"/><rect x="402" y="322" width="46" height="30"/>
+    </g>
+    <g fill="#fff" stroke="#c9d2db" stroke-width="1" stroke-dasharray="3 3">
+      <rect x="602" y="88" width="30" height="30"/>
+      <rect x="502" y="166" width="46" height="30"/><rect x="552" y="166" width="46" height="30"/><rect x="602" y="166" width="30" height="30"/>
+      <rect x="552" y="244" width="46" height="30"/><rect x="602" y="244" width="30" height="30"/>
+      <rect x="452" y="322" width="46" height="30"/><rect x="502" y="322" width="46" height="30"/><rect x="552" y="322" width="46" height="30"/><rect x="602" y="322" width="30" height="30"/>
+    </g>
+
+    <!-- consumer groups -->
+    <text x="700" y="14" font-family="IBM Plex Mono, monospace" font-size="11" fill="#8b98a9">consumer groups</text>
+    <line x1="650" y1="120" x2="694" y2="98" stroke="#0e7c6b" stroke-width="1.4" marker-end="url(#a2)"/>
+    <line x1="650" y1="300" x2="694" y2="322" stroke="#0e7c6b" stroke-width="1.4" marker-end="url(#a2)"/>
+
+    <rect x="700" y="52" width="258" height="150" rx="2" fill="#fff" stroke="#0e7c6b" stroke-width="1.4"/>
+    <text x="716" y="76" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14.5" fill="#0e7c6b">group: fulfilment</text>
+    <rect x="716" y="90" width="226" height="42" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width=".9"/>
+    <text x="728" y="107" font-size="12.5" fill="#12171f" font-family="IBM Plex Sans, sans-serif">consumer&#8209;1</text>
+    <text x="728" y="123" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#0e7c6b">owns P0, P1</text>
+    <rect x="716" y="140" width="226" height="42" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width=".9"/>
+    <text x="728" y="157" font-size="12.5" fill="#12171f" font-family="IBM Plex Sans, sans-serif">consumer&#8209;2</text>
+    <text x="728" y="173" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#0e7c6b">owns P2, P3</text>
+
+    <rect x="700" y="230" width="258" height="118" rx="2" fill="#fff" stroke="#0e7c6b" stroke-width="1.4"/>
+    <text x="716" y="254" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14.5" fill="#0e7c6b">group: analytics</text>
+    <rect x="716" y="268" width="226" height="42" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width=".9"/>
+    <text x="728" y="285" font-size="12.5" fill="#12171f" font-family="IBM Plex Sans, sans-serif">consumer&#8209;1</text>
+    <text x="728" y="301" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#0e7c6b">owns P0, P1, P2, P3</text>
+    <text x="716" y="332" font-size="12" fill="#3d4a5c" font-family="IBM Plex Sans, sans-serif">its own offsets &#183; reads every record too</text>
+
+    <text x="700" y="382" font-size="12.5" fill="#b8410c" font-family="IBM Plex Sans, sans-serif">Reading does not delete.</text>
+    <text x="700" y="400" font-size="12.5" fill="#b8410c" font-family="IBM Plex Sans, sans-serif">Retention does.</text>
+  </svg>
+  <figcaption><b>Fan-out vs scale-out.</b> Adding a consumer to an <i>existing</i> group splits the
+  partitions — that's scale-out. Adding a <i>new</i> group gives you a second full copy of the
+  stream — that's fan-out. Interviewers ask this as "what happens if I add a consumer?" The answer
+  depends entirely on whether the <code>group.id</code> matches.</figcaption>
+  </figure>
+  <div class="hook"><span>remember</span><p>Kafka is a log with bookmarks. The broker stores the log;
+  each group stores only its bookmark.</p></div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="d2">
+  <span class="snum">02</span>
+  <h2 class="sh">Anatomy of a partition</h2>
+  <p class="lede">Four positions live on every partition, and interviewers ask about all four.
+  Learn them as regions on one strip.</p>
+  <figure>
+  <svg viewBox="0 0 960 300" role="img" aria-label="A partition strip showing committed offset, high watermark and log end offset">
+    <defs>
+      <marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#3d4a5c"/></marker>
+    </defs>
+    <!-- cells -->
+    <g stroke-width="1">
+      <rect x="0"   y="70" width="60" height="46" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="62"  y="70" width="60" height="46" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="124" y="70" width="60" height="46" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="186" y="70" width="60" height="46" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="248" y="70" width="60" height="46" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="310" y="70" width="60" height="46" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="372" y="70" width="60" height="46" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="434" y="70" width="60" height="46" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="496" y="70" width="60" height="46" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="558" y="70" width="60" height="46" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="620" y="70" width="60" height="46" fill="#f8e2d6" stroke="#b8410c"/>
+      <rect x="682" y="70" width="60" height="46" fill="#f8e2d6" stroke="#b8410c"/>
+      <rect x="744" y="70" width="60" height="46" fill="#fff" stroke="#c9d2db" stroke-dasharray="3 3"/>
+      <rect x="806" y="70" width="60" height="46" fill="#fff" stroke="#c9d2db" stroke-dasharray="3 3"/>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a5c" text-anchor="middle">
+      <text x="30" y="132">0</text><text x="92" y="132">1</text><text x="154" y="132">2</text>
+      <text x="216" y="132">3</text><text x="278" y="132">4</text><text x="340" y="132">5</text>
+      <text x="402" y="132">6</text><text x="464" y="132">7</text><text x="526" y="132">8</text>
+      <text x="588" y="132">9</text><text x="650" y="132">10</text><text x="712" y="132">11</text>
+    </g>
+
+    <!-- brackets -->
+    <path d="M0,52 L0,44 L308,44 L308,52" fill="none" stroke="#0e7c6b" stroke-width="1.2"/>
+    <text x="154" y="34" text-anchor="middle" font-size="12.5" fill="#0e7c6b" font-family="IBM Plex Sans, sans-serif">already processed by this group</text>
+    <path d="M310,52 L310,44 L618,44 L618,52" fill="none" stroke="#1f5fd0" stroke-width="1.2"/>
+    <text x="464" y="34" text-anchor="middle" font-size="12.5" fill="#1f5fd0" font-family="IBM Plex Sans, sans-serif">readable, not yet consumed = LAG</text>
+    <path d="M620,52 L620,44 L742,44 L742,52" fill="none" stroke="#b8410c" stroke-width="1.2"/>
+    <text x="681" y="34" text-anchor="middle" font-size="12.5" fill="#b8410c" font-family="IBM Plex Sans, sans-serif">not yet in all ISR</text>
+
+    <!-- markers -->
+    <line x1="310" y1="140" x2="310" y2="176" stroke="#0e7c6b" stroke-width="1.5"/>
+    <circle cx="310" cy="140" r="3.5" fill="#0e7c6b"/>
+    <text x="310" y="194" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#0e7c6b">committed offset = 5</text>
+    <text x="310" y="210" text-anchor="middle" font-size="12" fill="#3d4a5c" font-family="IBM Plex Sans, sans-serif">stored in __consumer_offsets</text>
+
+    <line x1="620" y1="140" x2="620" y2="220" stroke="#1f5fd0" stroke-width="1.5"/>
+    <circle cx="620" cy="140" r="3.5" fill="#1f5fd0"/>
+    <text x="620" y="238" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#1f5fd0">high watermark = 10</text>
+    <text x="620" y="254" text-anchor="middle" font-size="12" fill="#3d4a5c" font-family="IBM Plex Sans, sans-serif">consumers cannot read past this</text>
+
+    <line x1="744" y1="140" x2="744" y2="176" stroke="#b8410c" stroke-width="1.5"/>
+    <circle cx="744" cy="140" r="3.5" fill="#b8410c"/>
+    <text x="800" y="194" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#b8410c">LEO = 12</text>
+    <text x="800" y="210" text-anchor="middle" font-size="12" fill="#3d4a5c" font-family="IBM Plex Sans, sans-serif">leader has written it</text>
+
+    <line x1="744" y1="278" x2="900" y2="278" stroke="#3d4a5c" stroke-width="1.3" marker-end="url(#a3)"/>
+    <text x="906" y="282" font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a5c">append</text>
+  </svg>
+  <figcaption><b>Lag is a subtraction on this strip:</b>
+  <code>lag = LEO&#8209;ish end &#8722; committed offset</code>. The orange region is why <code>acks=all</code>
+  matters — those records exist on the leader but a consumer can't see them yet, because if the
+  leader died right now they might vanish.</figcaption>
+  </figure>
+  <div class="hook"><span>remember</span><p>Green is done, blue is your lag, orange is not yet safe.
+  Consumers never see orange.</p></div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="d3">
+  <span class="snum">03</span>
+  <h2 class="sh">How a record picks its partition</h2>
+  <p class="lede">Four branches, checked in order. Most people only know the middle one.</p>
+  <figure>
+  <svg viewBox="0 0 960 330" role="img" aria-label="Decision tree for partition selection">
+    <defs>
+      <marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#3d4a5c"/></marker>
+    </defs>
+    <rect x="330" y="0" width="300" height="40" rx="2" fill="#12171f"/>
+    <text x="480" y="26" text-anchor="middle" font-size="14" fill="#fff" font-family="IBM Plex Mono, monospace">producer.send(record)</text>
+    <line x1="480" y1="42" x2="480" y2="64" stroke="#3d4a5c" stroke-width="1.3" marker-end="url(#a4)"/>
+
+    <g font-family="IBM Plex Sans, sans-serif">
+      <!-- q1 -->
+      <rect x="330" y="70" width="300" height="38" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.2"/>
+      <text x="480" y="94" text-anchor="middle" font-size="13.5" fill="#12171f">partition set explicitly?</text>
+      <line x1="632" y1="89" x2="716" y2="89" stroke="#0e7c6b" stroke-width="1.3" marker-end="url(#a4)"/>
+      <text x="672" y="82" text-anchor="middle" font-size="11" fill="#0e7c6b" font-family="IBM Plex Mono, monospace">yes</text>
+      <rect x="720" y="70" width="240" height="38" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.2"/>
+      <text x="840" y="94" text-anchor="middle" font-size="13" fill="#12171f">use it, skip everything</text>
+
+      <line x1="480" y1="110" x2="480" y2="130" stroke="#3d4a5c" stroke-width="1.3" marker-end="url(#a4)"/>
+      <!-- q2 -->
+      <rect x="330" y="136" width="300" height="38" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.2"/>
+      <text x="480" y="160" text-anchor="middle" font-size="13.5" fill="#12171f">custom partitioner configured?</text>
+      <line x1="632" y1="155" x2="716" y2="155" stroke="#0e7c6b" stroke-width="1.3" marker-end="url(#a4)"/>
+      <text x="672" y="148" text-anchor="middle" font-size="11" fill="#0e7c6b" font-family="IBM Plex Mono, monospace">yes</text>
+      <rect x="720" y="136" width="240" height="38" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.2"/>
+      <text x="840" y="160" text-anchor="middle" font-size="13" fill="#12171f">your logic wins</text>
+
+      <line x1="480" y1="176" x2="480" y2="196" stroke="#3d4a5c" stroke-width="1.3" marker-end="url(#a4)"/>
+      <!-- q3 -->
+      <rect x="330" y="202" width="300" height="38" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.2"/>
+      <text x="480" y="226" text-anchor="middle" font-size="13.5" fill="#12171f">key is non-null?</text>
+      <line x1="632" y1="221" x2="716" y2="221" stroke="#1f5fd0" stroke-width="1.3" marker-end="url(#a4)"/>
+      <text x="672" y="214" text-anchor="middle" font-size="11" fill="#1f5fd0" font-family="IBM Plex Mono, monospace">yes</text>
+      <rect x="720" y="196" width="240" height="52" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.4"/>
+      <text x="840" y="216" text-anchor="middle" font-size="12.5" font-family="IBM Plex Mono, monospace" fill="#1f5fd0">murmur2(key) % numPartitions</text>
+      <text x="840" y="235" text-anchor="middle" font-size="12" fill="#12171f">same key &#8594; same partition</text>
+
+      <line x1="480" y1="242" x2="480" y2="262" stroke="#3d4a5c" stroke-width="1.3" marker-end="url(#a4)"/>
+      <!-- fallback -->
+      <rect x="330" y="268" width="300" height="52" rx="2" fill="#f7f9fa" stroke="#3d4a5c" stroke-width="1.2"/>
+      <text x="480" y="288" text-anchor="middle" font-size="13.5" fill="#12171f">sticky partitioner</text>
+      <text x="480" y="307" text-anchor="middle" font-size="12" fill="#3d4a5c">fill one batch, then switch &#8212; not per-record round robin</text>
+    </g>
+  </svg>
+  <figcaption><b>Two details that score points.</b> It's <code>murmur2</code>, not Java's
+  <code>hashCode()</code>, so Go and Python clients partition identically. And since Kafka 2.4 the
+  null-key path is <i>sticky</i>, not round-robin — it fills a batch before moving on, which is why
+  null-key throughput improved so much.</figcaption>
+  </figure>
+  <div class="hook warn"><span>the trap</span><p>The modulo is over the <i>current</i> partition
+  count. Grow 6 &#8594; 12 and <code>user&#8209;42</code> lands somewhere new while its old records stay put.
+  Per-key ordering is broken from that moment on, permanently.</p></div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="d4">
+  <span class="snum">04</span>
+  <h2 class="sh">The consumer ceiling</h2>
+  <p class="lede">This is the single most-asked scaling question. One picture answers all four
+  versions of it.</p>
+  <figure>
+  <svg viewBox="0 0 960 560" role="img" aria-label="Four scenarios showing six partitions assigned to two, three, six and eight consumers">
+    <g font-family="IBM Plex Sans, sans-serif">
+
+    <!-- ============ A: 2 consumers ============ -->
+    <text x="0" y="12" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#12171f">2 consumers &#183; 6 partitions</text>
+    <g fill="#dce8fb" stroke="#1f5fd0" stroke-width="1">
+      <rect x="0" y="26" width="64" height="34"/><rect x="70" y="26" width="64" height="34"/><rect x="140" y="26" width="64" height="34"/>
+      <rect x="210" y="26" width="64" height="34"/><rect x="280" y="26" width="64" height="34"/><rect x="350" y="26" width="64" height="34"/>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f5fd0" text-anchor="middle">
+      <text x="32" y="48">P0</text><text x="102" y="48">P1</text><text x="172" y="48">P2</text>
+      <text x="242" y="48">P3</text><text x="312" y="48">P4</text><text x="382" y="48">P5</text>
+    </g>
+    <g stroke="#8b98a9" stroke-width="1">
+      <line x1="32" y1="60" x2="32" y2="88"/><line x1="102" y1="60" x2="102" y2="88"/><line x1="172" y1="60" x2="172" y2="88"/>
+      <line x1="242" y1="60" x2="242" y2="88"/><line x1="312" y1="60" x2="312" y2="88"/><line x1="382" y1="60" x2="382" y2="88"/>
+    </g>
+    <rect x="0" y="88" width="204" height="36" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="102" y="111" text-anchor="middle" font-size="12.5" fill="#12171f">consumer&#8209;1 &#183; 3 partitions</text>
+    <rect x="210" y="88" width="204" height="36" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="312" y="111" text-anchor="middle" font-size="12.5" fill="#12171f">consumer&#8209;2 &#183; 3 partitions</text>
+
+    <!-- ============ B: 3 consumers ============ -->
+    <text x="500" y="12" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#12171f">3 consumers &#183; evenly divides</text>
+    <g fill="#dce8fb" stroke="#1f5fd0" stroke-width="1">
+      <rect x="500" y="26" width="64" height="34"/><rect x="570" y="26" width="64" height="34"/><rect x="640" y="26" width="64" height="34"/>
+      <rect x="710" y="26" width="64" height="34"/><rect x="780" y="26" width="64" height="34"/><rect x="850" y="26" width="64" height="34"/>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f5fd0" text-anchor="middle">
+      <text x="532" y="48">P0</text><text x="602" y="48">P1</text><text x="672" y="48">P2</text>
+      <text x="742" y="48">P3</text><text x="812" y="48">P4</text><text x="882" y="48">P5</text>
+    </g>
+    <g stroke="#8b98a9" stroke-width="1">
+      <line x1="532" y1="60" x2="532" y2="88"/><line x1="602" y1="60" x2="602" y2="88"/><line x1="672" y1="60" x2="672" y2="88"/>
+      <line x1="742" y1="60" x2="742" y2="88"/><line x1="812" y1="60" x2="812" y2="88"/><line x1="882" y1="60" x2="882" y2="88"/>
+    </g>
+    <rect x="500" y="88" width="134" height="36" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="567" y="111" text-anchor="middle" font-size="12.5" fill="#12171f">c&#8209;1 &#183; 2</text>
+    <rect x="640" y="88" width="134" height="36" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="707" y="111" text-anchor="middle" font-size="12.5" fill="#12171f">c&#8209;2 &#183; 2</text>
+    <rect x="780" y="88" width="134" height="36" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="847" y="111" text-anchor="middle" font-size="12.5" fill="#12171f">c&#8209;3 &#183; 2</text>
+
+    <!-- ============ C: 6 consumers ============ -->
+    <text x="0" y="192" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#12171f">6 consumers &#183; maximum useful parallelism</text>
+    <g fill="#dce8fb" stroke="#1f5fd0" stroke-width="1">
+      <rect x="0" y="206" width="64" height="34"/><rect x="70" y="206" width="64" height="34"/><rect x="140" y="206" width="64" height="34"/>
+      <rect x="210" y="206" width="64" height="34"/><rect x="280" y="206" width="64" height="34"/><rect x="350" y="206" width="64" height="34"/>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f5fd0" text-anchor="middle">
+      <text x="32" y="228">P0</text><text x="102" y="228">P1</text><text x="172" y="228">P2</text>
+      <text x="242" y="228">P3</text><text x="312" y="228">P4</text><text x="382" y="228">P5</text>
+    </g>
+    <g stroke="#8b98a9" stroke-width="1">
+      <line x1="32" y1="240" x2="32" y2="268"/><line x1="102" y1="240" x2="102" y2="268"/><line x1="172" y1="240" x2="172" y2="268"/>
+      <line x1="242" y1="240" x2="242" y2="268"/><line x1="312" y1="240" x2="312" y2="268"/><line x1="382" y1="240" x2="382" y2="268"/>
+    </g>
+    <g fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3">
+      <rect x="0" y="268" width="64" height="36" rx="2"/><rect x="70" y="268" width="64" height="36" rx="2"/><rect x="140" y="268" width="64" height="36" rx="2"/>
+      <rect x="210" y="268" width="64" height="36" rx="2"/><rect x="280" y="268" width="64" height="36" rx="2"/><rect x="350" y="268" width="64" height="36" rx="2"/>
+    </g>
+    <g font-size="11.5" fill="#12171f" text-anchor="middle" font-family="IBM Plex Mono, monospace">
+      <text x="32" y="291">c1</text><text x="102" y="291">c2</text><text x="172" y="291">c3</text>
+      <text x="242" y="291">c4</text><text x="312" y="291">c5</text><text x="382" y="291">c6</text>
+    </g>
+
+    <!-- ============ D: 8 consumers ============ -->
+    <text x="500" y="192" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#b8410c">8 consumers &#183; two are wasted money</text>
+    <g fill="#dce8fb" stroke="#1f5fd0" stroke-width="1">
+      <rect x="500" y="206" width="64" height="34"/><rect x="570" y="206" width="64" height="34"/><rect x="640" y="206" width="64" height="34"/>
+      <rect x="710" y="206" width="64" height="34"/><rect x="780" y="206" width="64" height="34"/><rect x="850" y="206" width="64" height="34"/>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f5fd0" text-anchor="middle">
+      <text x="532" y="228">P0</text><text x="602" y="228">P1</text><text x="672" y="228">P2</text>
+      <text x="742" y="228">P3</text><text x="812" y="228">P4</text><text x="882" y="228">P5</text>
+    </g>
+    <g stroke="#8b98a9" stroke-width="1">
+      <line x1="532" y1="240" x2="532" y2="268"/><line x1="602" y1="240" x2="602" y2="268"/><line x1="672" y1="240" x2="672" y2="268"/>
+      <line x1="742" y1="240" x2="742" y2="268"/><line x1="812" y1="240" x2="812" y2="268"/><line x1="882" y1="240" x2="882" y2="268"/>
+    </g>
+    <g fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3">
+      <rect x="500" y="268" width="64" height="36" rx="2"/><rect x="570" y="268" width="64" height="36" rx="2"/><rect x="640" y="268" width="64" height="36" rx="2"/>
+      <rect x="710" y="268" width="64" height="36" rx="2"/><rect x="780" y="268" width="64" height="36" rx="2"/><rect x="850" y="268" width="64" height="36" rx="2"/>
+    </g>
+    <g font-size="11.5" fill="#12171f" text-anchor="middle" font-family="IBM Plex Mono, monospace">
+      <text x="532" y="291">c1</text><text x="602" y="291">c2</text><text x="672" y="291">c3</text>
+      <text x="742" y="291">c4</text><text x="812" y="291">c5</text><text x="882" y="291">c6</text>
+    </g>
+    <g fill="#f2f4f6" stroke="#b9c3ce" stroke-width="1.3" stroke-dasharray="4 3">
+      <rect x="500" y="316" width="64" height="36" rx="2"/><rect x="570" y="316" width="64" height="36" rx="2"/>
+    </g>
+    <g font-size="11.5" fill="#8b98a9" text-anchor="middle" font-family="IBM Plex Mono, monospace">
+      <text x="532" y="339">c7</text><text x="602" y="339">c8</text>
+    </g>
+    <text x="648" y="339" font-size="12.5" fill="#b8410c">assigned nothing &#183; idle forever</text>
+
+    <!-- rule -->
+    <rect x="0" y="410" width="960" height="72" rx="2" fill="#12171f"/>
+    <text x="480" y="443" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" fill="#fff">useful consumers  &#8804;  partitions</text>
+    <text x="480" y="466" text-anchor="middle" font-size="13" fill="#b9c3ce">partition count is chosen once, and it is your permanent scaling ceiling</text>
+
+    <text x="0" y="518" font-size="13.5" fill="#3d4a5c">Pick a partition count with many divisors &#8212; 12, 24, 36, 60 &#8212; so consumer counts land evenly.</text>
+    <text x="0" y="540" font-size="13.5" fill="#b8410c">With 6 partitions and 4 consumers you get 2/2/1/1: two consumers carry double the load and become your lag hotspot.</text>
+    </g>
+  </svg>
+  <figcaption><b>The follow-up question is always "so how do I go faster once I'm at the ceiling?"</b>
+  In order: batch the downstream write, offload processing to a thread pool with
+  <code>pause()</code>/<code>resume()</code>, then — reluctantly — add partitions and accept the
+  key-affinity break.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="d5">
+  <span class="snum">05</span>
+  <h2 class="sh">Why the default assignor skews</h2>
+  <p class="lede">Range assigns <em>per topic</em>. Subscribe to two topics and the imbalance compounds.</p>
+  <figure>
+  <svg viewBox="0 0 960 300" role="img" aria-label="Range assignor gives consumer one four partitions and consumer two only two, round robin splits evenly">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <text x="0" y="14" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#b8410c">RangeAssignor &#8212; sorts and slices each topic separately</text>
+
+    <text x="0" y="46" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#8b98a9">topic-A</text>
+    <rect x="80" y="30" width="72" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="116" y="50" text-anchor="middle" font-size="11.5" font-family="IBM Plex Mono, monospace">A-P0</text>
+    <rect x="158" y="30" width="72" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="194" y="50" text-anchor="middle" font-size="11.5" font-family="IBM Plex Mono, monospace">A-P1</text>
+    <rect x="236" y="30" width="72" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="272" y="50" text-anchor="middle" font-size="11.5" font-family="IBM Plex Mono, monospace">A-P2</text>
+
+    <text x="0" y="86" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#8b98a9">topic-B</text>
+    <rect x="80" y="70" width="72" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="116" y="90" text-anchor="middle" font-size="11.5" font-family="IBM Plex Mono, monospace">B-P0</text>
+    <rect x="158" y="70" width="72" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="194" y="90" text-anchor="middle" font-size="11.5" font-family="IBM Plex Mono, monospace">B-P1</text>
+    <rect x="236" y="70" width="72" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="272" y="90" text-anchor="middle" font-size="11.5" font-family="IBM Plex Mono, monospace">B-P2</text>
+
+    <rect x="360" y="26" width="230" height="34" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="475" y="48" text-anchor="middle" font-size="13" fill="#12171f">consumer&#8209;1 gets 4 partitions</text>
+    <rect x="360" y="66" width="115" height="34" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.3"/>
+    <text x="417" y="88" text-anchor="middle" font-size="13" fill="#12171f">c&#8209;2 gets 2</text>
+    <text x="620" y="60" font-size="13.5" fill="#b8410c">double the load on one consumer,</text>
+    <text x="620" y="79" font-size="13.5" fill="#b8410c">and it gets worse with more topics</text>
+
+    <line x1="0" y1="128" x2="960" y2="128" stroke="#c9d2db" stroke-width="1"/>
+
+    <text x="0" y="164" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#0e7c6b">RoundRobin / Sticky &#8212; treats all partitions as one pool</text>
+    <g font-family="IBM Plex Mono, monospace" font-size="11.5" text-anchor="middle">
+      <rect x="80" y="182" width="72" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="116" y="202">A-P0</text>
+      <rect x="158" y="182" width="72" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="194" y="202">A-P1</text>
+      <rect x="236" y="182" width="72" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="272" y="202">A-P2</text>
+      <rect x="314" y="182" width="72" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="350" y="202">B-P0</text>
+      <rect x="392" y="182" width="72" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="428" y="202">B-P1</text>
+      <rect x="470" y="182" width="72" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="506" y="202">B-P2</text>
+    </g>
+    <rect x="600" y="176" width="160" height="20" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.2"/>
+    <text x="680" y="191" text-anchor="middle" font-size="12" fill="#12171f">consumer&#8209;1 &#183; 3</text>
+    <rect x="600" y="200" width="160" height="20" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.2"/>
+    <text x="680" y="215" text-anchor="middle" font-size="12" fill="#12171f">consumer&#8209;2 &#183; 3</text>
+
+    <rect x="0" y="250" width="960" height="44" rx="2" fill="#f7f9fa" stroke="#3d4a5c" stroke-width="1.1"/>
+    <text x="16" y="278" font-size="13.5" fill="#12171f">Today the answer is <tspan font-family="IBM Plex Mono, monospace" fill="#1f5fd0">CooperativeStickyAssignor</tspan>: even like round robin, but it also keeps your existing partitions across a rebalance.</text>
+    </g>
+  </svg>
+  <figcaption>Range still has one legitimate use: it puts the same partition number of two topics on
+  the same consumer, which is what co-partitioned joins need. Outside that, it's a legacy default.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="d6">
+  <span class="snum">06</span>
+  <h2 class="sh">Eager vs cooperative rebalancing</h2>
+  <p class="lede">Same event, two very different blast radii. This is the picture to draw on a whiteboard.</p>
+  <figure>
+  <svg viewBox="0 0 960 380" role="img" aria-label="Timeline comparison: eager rebalance pauses all consumers, cooperative pauses only the moving partition">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <text x="0" y="14" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#b8410c">Eager &#8212; everyone drops everything</text>
+
+    <line x1="410" y1="26" x2="410" y2="150" stroke="#12171f" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="416" y="36" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="#12171f">consumer-4 joins</text>
+
+    <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#3d4a5c">
+      <text x="0" y="62">c-1</text><text x="0" y="96">c-2</text><text x="0" y="130">c-3</text>
+    </g>
+    <g>
+      <rect x="44" y="46" width="366" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="410" y="46" width="230" height="22" fill="#f8e2d6" stroke="#b8410c"/>
+      <rect x="640" y="46" width="280" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="44" y="80" width="366" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="410" y="80" width="230" height="22" fill="#f8e2d6" stroke="#b8410c"/>
+      <rect x="640" y="80" width="280" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="44" y="114" width="366" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="410" y="114" width="230" height="22" fill="#f8e2d6" stroke="#b8410c"/>
+      <rect x="640" y="114" width="280" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+    </g>
+    <path d="M410,158 L410,166 L640,166 L640,158" fill="none" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="525" y="182" text-anchor="middle" font-size="13" fill="#b8410c">entire group stops consuming &#183; lag spikes on every partition</text>
+
+    <line x1="0" y1="204" x2="960" y2="204" stroke="#c9d2db" stroke-width="1"/>
+
+    <text x="0" y="238" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#0e7c6b">Cooperative &#8212; only what actually moves stops</text>
+    <line x1="410" y1="250" x2="410" y2="344" stroke="#12171f" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="416" y="260" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="#12171f">consumer-4 joins</text>
+
+    <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#3d4a5c">
+      <text x="0" y="286">c-1</text><text x="0" y="320">c-2</text><text x="0" y="354">c-3</text>
+    </g>
+    <g>
+      <rect x="44" y="270" width="876" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="44" y="304" width="876" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="44" y="338" width="366" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+      <rect x="410" y="338" width="72" height="22" fill="#f8e2d6" stroke="#b8410c"/>
+      <rect x="482" y="338" width="438" height="22" fill="#d5ece7" stroke="#0e7c6b"/>
+    </g>
+    <text x="640" y="292" font-size="12" fill="#0e7c6b">never paused</text>
+    <text x="640" y="326" font-size="12" fill="#0e7c6b">never paused</text>
+    <text x="500" y="378" font-size="12.5" fill="#b8410c">only the one partition handed to consumer-4 pauses</text>
+    </g>
+  </svg>
+  <figcaption><b>Migration matters too.</b> You can't flip straight from eager to cooperative. Roll
+  once with <code>partition.assignment.strategy</code> listing both, then roll again with only the
+  cooperative one. Mentioning the two-step upgrade is what makes this answer sound lived-in.</figcaption>
+  </figure>
+  <div class="hook"><span>remember</span><p>Eager is a fire drill: everyone leaves the building.
+  Cooperative is a desk move: only the person changing desks stands up.</p></div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="d7">
+  <span class="snum">07</span>
+  <h2 class="sh">What actually happens inside poll()</h2>
+  <p class="lede">Most candidates say "it fetches records." The two things that separate a strong
+  answer are on the right of this diagram.</p>
+  <figure>
+  <svg viewBox="0 0 960 400" role="img" aria-label="The six internal steps of a poll call with annotations">
+    <defs>
+      <marker id="a7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#3d4a5c"/></marker>
+    </defs>
+    <g font-family="IBM Plex Sans, sans-serif">
+    <rect x="0" y="0" width="470" height="34" rx="2" fill="#12171f"/>
+    <text x="235" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13.5" fill="#fff">consumer.poll(Duration.ofMillis(500))</text>
+
+    <g stroke="#3d4a5c" stroke-width="1.2" marker-end="url(#a7)">
+      <line x1="235" y1="36" x2="235" y2="52"/><line x1="235" y1="94" x2="235" y2="110"/>
+      <line x1="235" y1="152" x2="235" y2="168"/><line x1="235" y1="210" x2="235" y2="226"/>
+      <line x1="235" y1="268" x2="235" y2="284"/><line x1="235" y1="326" x2="235" y2="342"/>
+    </g>
+
+    <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f5fd0">
+      <text x="10" y="76">1</text><text x="10" y="134">2</text><text x="10" y="192">3</text>
+      <text x="10" y="250">4</text><text x="10" y="308">5</text><text x="10" y="366">6</text>
+    </g>
+
+    <rect x="30" y="56" width="440" height="38" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.1"/>
+    <text x="46" y="80" font-size="13.5" fill="#12171f">find the group coordinator if we don't know it</text>
+
+    <rect x="30" y="114" width="440" height="38" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.4"/>
+    <text x="46" y="138" font-size="13.5" fill="#12171f">join the group if needed &#8212; <tspan font-weight="600">rebalance happens here</tspan></text>
+
+    <rect x="30" y="172" width="440" height="38" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.1"/>
+    <text x="46" y="196" font-size="13.5" fill="#12171f">auto-commit the <tspan font-style="italic">previous</tspan> batch, if it's due</text>
+
+    <rect x="30" y="230" width="440" height="38" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.4"/>
+    <text x="46" y="254" font-size="13.5" fill="#12171f">buffer already has records? return them <tspan font-weight="600">immediately</tspan></text>
+
+    <rect x="30" y="288" width="440" height="38" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.1"/>
+    <text x="46" y="312" font-size="13.5" fill="#12171f">otherwise send fetches, wait up to the timeout</text>
+
+    <rect x="30" y="346" width="440" height="38" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.4"/>
+    <text x="46" y="370" font-size="13.5" fill="#12171f">pipeline the <tspan font-weight="600">next</tspan> fetch before returning</text>
+
+    <!-- annotations -->
+    <path d="M480,133 L520,133 L520,80 L556,80" fill="none" stroke="#b8410c" stroke-width="1.3" marker-end="url(#a7)"/>
+    <rect x="560" y="46" width="400" height="72" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="576" y="70" font-size="13.5" font-weight="600" fill="#b8410c">Group management only runs inside poll()</text>
+    <text x="576" y="90" font-size="13" fill="#12171f">Stay in your processing loop too long and the</text>
+    <text x="576" y="108" font-size="13" fill="#12171f">coordinator evicts you. That's the whole bug in &#167;09.</text>
+
+    <path d="M480,249 L510,249 L510,300 L556,300" fill="none" stroke="#1f5fd0" stroke-width="1.3" marker-end="url(#a7)"/>
+    <path d="M480,365 L520,365 L520,320 L556,320" fill="none" stroke="#1f5fd0" stroke-width="1.3" marker-end="url(#a7)"/>
+    <rect x="560" y="252" width="400" height="90" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.3"/>
+    <text x="576" y="276" font-size="13.5" font-weight="600" fill="#1f5fd0">poll() is not one request per call</text>
+    <text x="576" y="296" font-size="13" fill="#12171f">It prefetches. The first call waits on the network;</text>
+    <text x="576" y="314" font-size="13" fill="#12171f">the ones after it usually return from memory in</text>
+    <text x="576" y="332" font-size="13" fill="#12171f">microseconds. Very few candidates mention this.</text>
+    </g>
+  </svg>
+  <figcaption><b>Also worth knowing:</b> <code>max.partition.fetch.bytes</code> controls what crosses
+  the network into the buffer at step 5; <code>max.poll.records</code> only controls how many the
+  buffer hands your code at step 4. Independent knobs, commonly confused.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="d8">
+  <span class="snum">08</span>
+  <h2 class="sh">The three timeouts, on one clock</h2>
+  <p class="lede">Two threads, two failure modes. Once you see the lanes, the configs stop being
+  interchangeable names.</p>
+  <figure>
+  <svg viewBox="0 0 960 330" role="img" aria-label="Two lanes showing the heartbeat thread and the poll thread with their respective timeouts">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <!-- lane 1 -->
+    <text x="0" y="16" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#0e7c6b">background heartbeat thread</text>
+    <line x1="0" y1="52" x2="920" y2="52" stroke="#0e7c6b" stroke-width="1.4"/>
+    <g fill="#0e7c6b">
+      <circle cx="40" cy="52" r="4.5"/><circle cx="140" cy="52" r="4.5"/><circle cx="240" cy="52" r="4.5"/>
+      <circle cx="340" cy="52" r="4.5"/><circle cx="440" cy="52" r="4.5"/><circle cx="540" cy="52" r="4.5"/>
+      <circle cx="640" cy="52" r="4.5"/><circle cx="740" cy="52" r="4.5"/><circle cx="840" cy="52" r="4.5"/>
+    </g>
+    <path d="M40,66 L40,74 L140,74 L140,66" fill="none" stroke="#0e7c6b" stroke-width="1.1"/>
+    <text x="90" y="90" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#0e7c6b">heartbeat.interval.ms = 3s</text>
+    <path d="M40,100 L40,110 L840,110 L840,100" fill="none" stroke="#0e7c6b" stroke-width="1.1"/>
+    <text x="440" y="126" text-anchor="middle" font-size="13" fill="#0e7c6b">
+      <tspan font-family="IBM Plex Mono, monospace">session.timeout.ms = 45s</tspan>
+      <tspan dx="10">&#8594; miss these and the broker calls you dead</tspan>
+    </text>
+    <text x="0" y="150" font-size="12.5" fill="#3d4a5c">Detects: JVM crashed, pod killed, network gone. Keeps beating even while you're busy.</text>
+
+    <line x1="0" y1="172" x2="960" y2="172" stroke="#c9d2db" stroke-width="1"/>
+
+    <!-- lane 2 -->
+    <text x="0" y="200" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#1f5fd0">your application thread</text>
+    <line x1="0" y1="236" x2="920" y2="236" stroke="#1f5fd0" stroke-width="1.4"/>
+    <g>
+      <rect x="30" y="222" width="26" height="28" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="300" y="222" width="26" height="28" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="570" y="222" width="26" height="28" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="840" y="222" width="26" height="28" fill="#dce8fb" stroke="#1f5fd0"/>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#1f5fd0" text-anchor="middle">
+      <text x="43" y="216">poll</text><text x="313" y="216">poll</text><text x="583" y="216">poll</text><text x="853" y="216">poll</text>
+    </g>
+    <g fill="#f2f4f6" stroke="#8b98a9" stroke-dasharray="3 3">
+      <rect x="58" y="226" width="240" height="20"/><rect x="328" y="226" width="240" height="20"/><rect x="598" y="226" width="240" height="20"/>
+    </g>
+    <text x="178" y="241" text-anchor="middle" font-size="11.5" fill="#3d4a5c">your processing</text>
+    <text x="448" y="241" text-anchor="middle" font-size="11.5" fill="#3d4a5c">your processing</text>
+    <text x="718" y="241" text-anchor="middle" font-size="11.5" fill="#3d4a5c">your processing</text>
+
+    <path d="M30,262 L30,272 L326,272 L326,262" fill="none" stroke="#1f5fd0" stroke-width="1.1"/>
+    <text x="178" y="290" text-anchor="middle" font-size="13" fill="#1f5fd0">
+      <tspan font-family="IBM Plex Mono, monospace">max.poll.interval.ms = 5min</tspan>
+    </text>
+    <text x="360" y="290" font-size="13" fill="#1f5fd0">&#8594; the gap between two polls. Only a poll resets it.</text>
+    <text x="0" y="316" font-size="12.5" fill="#3d4a5c">Detects: alive but stuck. Slow DB, a retry sleep, a batch of 500 records that each take a second.</text>
+    </g>
+  </svg>
+  <figcaption>The split landed in Kafka 0.10.1 and it's the reason both configs exist. Before that,
+  one timeout had to mean both "are you alive" and "are you making progress", and you couldn't tune
+  them apart. Rule of thumb: <code>heartbeat.interval.ms &#8776; session.timeout.ms / 3</code>.</figcaption>
+  </figure>
+  <div class="hook"><span>remember</span><p><b>Session</b> = is there a pulse. <b>Poll interval</b> =
+  is there progress. A consumer can have a perfect pulse and still get evicted for making none.</p></div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="d9">
+  <span class="snum">09</span>
+  <h2 class="sh">The rebalance storm</h2>
+  <p class="lede">The most common Kafka incident in production, and a favourite "walk me through
+  debugging this" question. It's a loop that feeds itself.</p>
+  <figure>
+  <svg viewBox="0 0 960 320" role="img" aria-label="A five-step loop showing how slow processing causes a self-sustaining rebalance cycle">
+    <defs>
+      <marker id="a9" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,1 L8,4.5 L0,8 z" fill="#b8410c"/></marker>
+    </defs>
+    <g font-family="IBM Plex Sans, sans-serif">
+    <rect x="20" y="20" width="180" height="60" rx="2" fill="#fff" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="110" y="45" text-anchor="middle" font-size="13" fill="#12171f">500 records fetched,</text>
+    <text x="110" y="63" text-anchor="middle" font-size="13" fill="#12171f">each takes 800ms</text>
+
+    <line x1="204" y1="50" x2="256" y2="50" stroke="#b8410c" stroke-width="1.4" marker-end="url(#a9)"/>
+
+    <rect x="260" y="20" width="180" height="60" rx="2" fill="#fff" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="350" y="45" text-anchor="middle" font-size="13" fill="#12171f">no poll() for 400s &#62;</text>
+    <text x="350" y="63" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="#b8410c">max.poll.interval.ms</text>
+
+    <line x1="444" y1="50" x2="496" y2="50" stroke="#b8410c" stroke-width="1.4" marker-end="url(#a9)"/>
+
+    <rect x="500" y="20" width="180" height="60" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="590" y="45" text-anchor="middle" font-size="13" fill="#12171f">coordinator evicts it,</text>
+    <text x="590" y="63" text-anchor="middle" font-size="13" fill="#12171f">group rebalances</text>
+
+    <line x1="684" y1="50" x2="736" y2="50" stroke="#b8410c" stroke-width="1.4" marker-end="url(#a9)"/>
+
+    <rect x="740" y="20" width="200" height="60" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="840" y="45" text-anchor="middle" font-size="13" fill="#12171f">offsets were never</text>
+    <text x="840" y="63" text-anchor="middle" font-size="13" fill="#12171f">committed</text>
+
+    <path d="M840,84 L840,120 L500,120" fill="none" stroke="#b8410c" stroke-width="1.4" marker-end="url(#a9)"/>
+    <rect x="300" y="98" width="196" height="44" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="398" y="126" text-anchor="middle" font-size="13" fill="#12171f">new owner replays the same batch</text>
+    <path d="M300,120 L160,120 L160,84" fill="none" stroke="#b8410c" stroke-width="1.4" marker-end="url(#a9)"/>
+    <text x="230" y="112" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#b8410c">forever</text>
+
+    <!-- fixes -->
+    <text x="0" y="184" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#0e7c6b">How to break the loop, best first</text>
+    <g>
+      <rect x="0" y="198" width="228" height="56" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+      <text x="16" y="220" font-family="IBM Plex Mono, monospace" font-size="12" fill="#0e7c6b">max.poll.records: 500 &#8594; 50</text>
+      <text x="16" y="240" font-size="12.5" fill="#12171f">bounds the work per poll</text>
+
+      <rect x="244" y="198" width="228" height="56" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+      <text x="260" y="220" font-size="13" font-weight="600" fill="#0e7c6b">batch the downstream write</text>
+      <text x="260" y="240" font-size="12.5" fill="#12171f">500 inserts &#8594; one bulk upsert</text>
+
+      <rect x="488" y="198" width="228" height="56" rx="2" fill="#fff" stroke="#8b98a9" stroke-width="1.3"/>
+      <text x="504" y="220" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a5c">raise max.poll.interval.ms</text>
+      <text x="504" y="240" font-size="12.5" fill="#3d4a5c">band-aid; slows real failure detection</text>
+
+      <rect x="732" y="198" width="228" height="56" rx="2" fill="#fff" stroke="#8b98a9" stroke-width="1.3"/>
+      <text x="748" y="220" font-size="13" fill="#3d4a5c">thread pool + pause()/resume()</text>
+      <text x="748" y="240" font-size="12.5" fill="#3d4a5c">fastest, but you own offsets now</text>
+    </g>
+
+    <rect x="0" y="274" width="960" height="42" rx="2" fill="#12171f"/>
+    <text x="16" y="301" font-size="13.5" fill="#fff">The log line to recognise: <tspan font-family="IBM Plex Mono, monospace" fill="#f8e2d6">"This member will leave the group because consumer poll timeout has expired"</tspan></text>
+    </g>
+  </svg>
+  <figcaption>Note what makes it a <i>storm</i> rather than a one-off: the replay is just as slow as
+  the original, so the new owner times out too, and the group never converges. Lag climbs while CPU
+  looks fine — which is why people misdiagnose it as a broker problem.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="d10">
+  <span class="snum">10</span>
+  <h2 class="sh">The producer send path</h2>
+  <p class="lede"><code>send()</code> does not send. It appends to a buffer and returns. A background
+  thread does the sending — which is why batching configs matter so much.</p>
+  <figure>
+  <svg viewBox="0 0 960 340" role="img" aria-label="Producer pipeline from send through serializer, partitioner, accumulator and sender thread">
+    <defs>
+      <marker id="a10" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#1f5fd0"/></marker>
+    </defs>
+    <g font-family="IBM Plex Sans, sans-serif">
+    <rect x="0" y="60" width="104" height="44" rx="2" fill="#12171f"/>
+    <text x="52" y="87" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#fff">send()</text>
+    <line x1="108" y1="82" x2="140" y2="82" stroke="#1f5fd0" stroke-width="1.4" marker-end="url(#a10)"/>
+
+    <rect x="144" y="60" width="104" height="44" rx="2" fill="#fff" stroke="#1f5fd0" stroke-width="1.2"/>
+    <text x="196" y="87" text-anchor="middle" font-size="13" fill="#12171f">serializer</text>
+    <line x1="252" y1="82" x2="284" y2="82" stroke="#1f5fd0" stroke-width="1.4" marker-end="url(#a10)"/>
+
+    <rect x="288" y="60" width="104" height="44" rx="2" fill="#fff" stroke="#1f5fd0" stroke-width="1.2"/>
+    <text x="340" y="87" text-anchor="middle" font-size="13" fill="#12171f">partitioner</text>
+    <line x1="396" y1="82" x2="428" y2="82" stroke="#1f5fd0" stroke-width="1.4" marker-end="url(#a10)"/>
+
+    <!-- accumulator -->
+    <rect x="432" y="20" width="256" height="180" rx="2" fill="#f7f9fa" stroke="#1f5fd0" stroke-width="1.4"/>
+    <text x="448" y="42" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#1f5fd0">RecordAccumulator</text>
+    <text x="448" y="59" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#8b98a9">buffer.memory = 32MB</text>
+    <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#3d4a5c">
+      <text x="448" y="86">P0</text><text x="448" y="116">P1</text><text x="448" y="146">P2</text><text x="448" y="176">P3</text>
+    </g>
+    <g>
+      <rect x="476" y="72" width="150" height="18" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="476" y="102" width="196" height="18" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="476" y="132" width="86" height="18" fill="#dce8fb" stroke="#1f5fd0"/>
+      <rect x="476" y="162" width="122" height="18" fill="#dce8fb" stroke="#1f5fd0"/>
+    </g>
+    <text x="678" y="115" font-family="IBM Plex Mono, monospace" font-size="10" fill="#b8410c" text-anchor="end">full &#8594; send</text>
+
+    <!-- return arrow -->
+    <path d="M52,110 L52,150 L20,150" fill="none" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="0" y="176" font-size="12.5" fill="#0e7c6b">returns a Future</text>
+    <text x="0" y="194" font-size="12.5" fill="#0e7c6b">immediately</text>
+    <text x="0" y="220" font-size="12" fill="#3d4a5c">blocks only if the buffer</text>
+    <text x="0" y="236" font-size="12" fill="#3d4a5c">is full, up to max.block.ms</text>
+
+    <!-- sender -->
+    <line x1="692" y1="110" x2="724" y2="110" stroke="#1f5fd0" stroke-width="1.4" marker-end="url(#a10)"/>
+    <rect x="728" y="60" width="232" height="100" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.4"/>
+    <text x="744" y="84" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#1f5fd0">Sender thread</text>
+    <text x="744" y="104" font-size="12.5" fill="#12171f">groups batches per broker</text>
+    <text x="744" y="122" font-size="12.5" fill="#12171f">compresses, retries, acks</text>
+    <text x="744" y="140" font-size="12.5" fill="#12171f">completes your callbacks</text>
+
+    <!-- trigger bar -->
+    <rect x="432" y="216" width="528" height="46" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.1"/>
+    <text x="448" y="238" font-size="13" fill="#12171f">A batch ships when it hits <tspan font-family="IBM Plex Mono, monospace" fill="#1f5fd0">batch.size</tspan> (16KB) <tspan font-weight="600">or</tspan> when <tspan font-family="IBM Plex Mono, monospace" fill="#1f5fd0">linger.ms</tspan> expires (default 0).</text>
+    <text x="448" y="255" font-size="12.5" fill="#3d4a5c">Whichever comes first. Both are per partition.</text>
+
+    <rect x="0" y="288" width="960" height="46" rx="2" fill="#12171f"/>
+    <text x="16" y="310" font-size="13.5" fill="#fff">The counterintuitive tuning result: raising <tspan font-family="IBM Plex Mono, monospace" fill="#dce8fb">linger.ms</tspan> from 0 to 10&#8211;20ms often <tspan font-style="italic">lowers</tspan> p99 latency under load.</text>
+    <text x="16" y="328" font-size="12.5" fill="#b9c3ce">Bigger batches compress far better, so there are fewer requests and less broker CPU and queueing.</text>
+    </g>
+  </svg>
+  <figcaption><b>And the sizing answer that follows from this picture:</b> the producer is
+  thread-safe, so share <i>one</i> instance across all your threads. More producer instances means
+  more accumulators, smaller batches, worse compression — you scale producers by adding threads, not
+  objects.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 11 ============ -->
+<section id="d11">
+  <span class="snum">11</span>
+  <h2 class="sh">What acks actually waits for</h2>
+  <p class="lede">Three settings, three points at which the producer's future completes.</p>
+  <figure>
+  <svg viewBox="0 0 960 250" role="img" aria-label="Comparison of acks 0, acks 1 and acks all">
+    <defs>
+      <marker id="a11" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#0e7c6b"/></marker>
+      <marker id="a11b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#8b98a9"/></marker>
+    </defs>
+    <g font-family="IBM Plex Sans, sans-serif">
+
+    <!-- acks=0 -->
+    <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="14" fill="#b8410c">acks=0</text>
+    <rect x="0" y="26" width="80" height="34" rx="2" fill="#12171f"/><text x="40" y="48" text-anchor="middle" font-size="12" fill="#fff">producer</text>
+    <rect x="120" y="26" width="80" height="34" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.2"/><text x="160" y="48" text-anchor="middle" font-size="12" fill="#12171f">leader</text>
+    <rect x="220" y="26" width="34" height="34" rx="2" fill="#f2f4f6" stroke="#b9c3ce"/><rect x="258" y="26" width="34" height="34" rx="2" fill="#f2f4f6" stroke="#b9c3ce"/>
+    <path d="M40,66 L40,80 L20,80" fill="none" stroke="#b8410c" stroke-width="1.4"/>
+    <text x="0" y="100" font-size="12.5" fill="#b8410c">done before it leaves</text>
+    <text x="0" y="118" font-size="12" fill="#3d4a5c">Fastest. Loses data on any hiccup.</text>
+
+    <!-- acks=1 -->
+    <text x="340" y="14" font-family="IBM Plex Mono, monospace" font-size="14" fill="#3d4a5c">acks=1</text>
+    <rect x="340" y="26" width="80" height="34" rx="2" fill="#12171f"/><text x="380" y="48" text-anchor="middle" font-size="12" fill="#fff">producer</text>
+    <rect x="460" y="26" width="80" height="34" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.4"/><text x="500" y="48" text-anchor="middle" font-size="12" fill="#12171f">leader</text>
+    <rect x="560" y="26" width="34" height="34" rx="2" fill="#f2f4f6" stroke="#b9c3ce"/><rect x="598" y="26" width="34" height="34" rx="2" fill="#f2f4f6" stroke="#b9c3ce"/>
+    <path d="M500,66 L500,80 L360,80" fill="none" stroke="#3d4a5c" stroke-width="1.4" marker-end="url(#a11b)"/>
+    <text x="340" y="100" font-size="12.5" fill="#3d4a5c">done when the leader writes</text>
+    <text x="340" y="118" font-size="12" fill="#b8410c">Leader dies before replicating &#8594; gone.</text>
+
+    <!-- acks=all -->
+    <text x="680" y="14" font-family="IBM Plex Mono, monospace" font-size="14" fill="#0e7c6b">acks=all</text>
+    <rect x="680" y="26" width="80" height="34" rx="2" fill="#12171f"/><text x="720" y="48" text-anchor="middle" font-size="12" fill="#fff">producer</text>
+    <rect x="800" y="26" width="80" height="34" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.4"/><text x="840" y="48" text-anchor="middle" font-size="12" fill="#12171f">leader</text>
+    <rect x="890" y="26" width="34" height="34" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.4"/>
+    <rect x="928" y="26" width="32" height="34" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.4"/>
+    <path d="M920,66 L920,80 L700,80" fill="none" stroke="#0e7c6b" stroke-width="1.4" marker-end="url(#a11)"/>
+    <text x="680" y="100" font-size="12.5" fill="#0e7c6b">done when all in-sync replicas have it</text>
+    <text x="680" y="118" font-size="12" fill="#3d4a5c">The only setting that survives a broker loss.</text>
+
+    <!-- the gotcha -->
+    <rect x="0" y="142" width="960" height="100" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.4"/>
+    <text x="18" y="168" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#b8410c">acks=all means all IN-SYNC replicas, not all replicas</text>
+    <text x="18" y="192" font-size="13.5" fill="#12171f">If two of three replicas fall behind, the ISR shrinks to one &#8212; and <tspan font-family="IBM Plex Mono, monospace">acks=all</tspan> now means "one copy". You have</text>
+    <text x="18" y="212" font-size="13.5" fill="#12171f">silently lost your durability guarantee. <tspan font-family="IBM Plex Mono, monospace" font-weight="600">min.insync.replicas</tspan> is what puts a floor under it: below that, writes fail loudly</text>
+    <text x="18" y="232" font-size="13.5" fill="#12171f">instead of succeeding weakly.</text>
+    </g>
+  </svg>
+  <figcaption><b>The durability triangle to recite:</b>
+  <code>acks=all</code> + <code>replication.factor=3</code> + <code>min.insync.replicas=2</code>.
+  Why 2 and not 3? <code>RF &#8722; min.ISR</code> is how many brokers you can lose and still accept
+  writes. At 3 you'd lose write availability on any single failure.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 12 ============ -->
+<section id="d12">
+  <span class="snum">12</span>
+  <h2 class="sh">ISR, high watermark, LEO</h2>
+  <p class="lede">Three replicas at three different positions. The high watermark is simply the
+  slowest in-sync one.</p>
+  <figure>
+  <svg viewBox="0 0 960 290" role="img" aria-label="Leader and two followers at different log positions, with the high watermark at the slowest in-sync replica">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#8b98a9" text-anchor="middle">
+      <text x="130" y="14">0</text><text x="190" y="14">2</text><text x="250" y="14">4</text>
+      <text x="310" y="14">6</text><text x="370" y="14">8</text><text x="430" y="14">10</text><text x="490" y="14">12</text>
+    </g>
+
+    <text x="0" y="46" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f5fd0">leader</text>
+    <rect x="130" y="30" width="360" height="26" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.3"/>
+    <text x="502" y="48" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f5fd0">LEO 12</text>
+
+    <text x="0" y="86" font-family="IBM Plex Mono, monospace" font-size="12" fill="#0e7c6b">follower-1</text>
+    <rect x="130" y="70" width="360" height="26" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <text x="502" y="88" font-family="IBM Plex Mono, monospace" font-size="11" fill="#0e7c6b">LEO 12 &#183; in ISR</text>
+
+    <text x="0" y="126" font-family="IBM Plex Mono, monospace" font-size="12" fill="#0e7c6b">follower-2</text>
+    <rect x="130" y="110" width="300" height="26" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.3"/>
+    <rect x="430" y="110" width="60" height="26" fill="#fff" stroke="#c9d2db" stroke-dasharray="3 3"/>
+    <text x="502" y="128" font-family="IBM Plex Mono, monospace" font-size="11" fill="#0e7c6b">LEO 10 &#183; in ISR, lagging</text>
+
+    <text x="0" y="166" font-family="IBM Plex Mono, monospace" font-size="12" fill="#b8410c">follower-3</text>
+    <rect x="130" y="150" width="120" height="26" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.3"/>
+    <rect x="250" y="150" width="240" height="26" fill="#fff" stroke="#c9d2db" stroke-dasharray="3 3"/>
+    <text x="502" y="168" font-family="IBM Plex Mono, monospace" font-size="11" fill="#b8410c">LEO 4 &#183; kicked out of ISR</text>
+
+    <line x1="430" y1="24" x2="430" y2="196" stroke="#12171f" stroke-width="1.6"/>
+    <text x="430" y="214" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#12171f">high watermark = 10</text>
+    <text x="430" y="232" text-anchor="middle" font-size="12.5" fill="#3d4a5c">= the minimum LEO across the ISR</text>
+
+    <rect x="600" y="26" width="360" height="150" rx="2" fill="#f7f9fa" stroke="#3d4a5c" stroke-width="1.1"/>
+    <text x="618" y="50" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="14" fill="#12171f">Read this off the picture</text>
+    <text x="618" y="74" font-size="13" fill="#12171f">&#183; Consumers can read up to 10, not 12.</text>
+    <text x="618" y="94" font-size="13" fill="#12171f">&#183; follower-3 fell behind <tspan font-family="IBM Plex Mono, monospace" font-size="12">replica.lag.time.max.ms</tspan></text>
+    <text x="618" y="112" font-size="13" fill="#12171f">&#160;&#160;(30s) and left the ISR. It rejoins on catch-up.</text>
+    <text x="618" y="136" font-size="13" fill="#12171f">&#183; A new leader is elected only from the ISR &#8212;</text>
+    <text x="618" y="154" font-size="13" fill="#12171f">&#160;&#160;unless you enable unclean election and accept loss.</text>
+
+    <rect x="0" y="252" width="960" height="38" rx="2" fill="#12171f"/>
+    <text x="16" y="276" font-size="13.5" fill="#fff">Why the HW exists: if consumers could read offset 11 and the leader then died, that record would vanish from history. Kafka won't show you what it can't promise.</text>
+    </g>
+  </svg>
+  <figcaption>Follower-3 is why <code>UnderReplicatedPartitions</code> is the broker metric you alert
+  on. It should be zero. Non-zero means a replica is out of the ISR, which means your effective
+  durability is lower than your config claims.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 13 ============ -->
+<section id="d13">
+  <span class="snum">13</span>
+  <h2 class="sh">How the idempotent producer works</h2>
+  <p class="lede">A producer ID plus a per-partition sequence number. Three cases, and each one kills
+  a different bug.</p>
+  <figure>
+  <svg viewBox="0 0 960 300" role="img" aria-label="Three cases of sequence number handling by the broker">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <rect x="0" y="0" width="960" height="40" rx="2" fill="#f7f9fa" stroke="#3d4a5c" stroke-width="1.1"/>
+    <text x="16" y="25" font-size="13.5" fill="#12171f">Broker remembers, per <tspan font-family="IBM Plex Mono, monospace" fill="#1f5fd0">(producer id, partition)</tspan>: the last 5 sequence numbers it accepted. Here it is expecting <tspan font-family="IBM Plex Mono, monospace" font-weight="600">seq 5</tspan>.</text>
+
+    <!-- case 1 -->
+    <rect x="0" y="64" width="304" height="130" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.4"/>
+    <text x="20" y="90" font-family="IBM Plex Mono, monospace" font-size="14" fill="#0e7c6b">seq = 5</text>
+    <text x="20" y="112" font-size="13.5" font-weight="600" fill="#12171f">exactly what was expected</text>
+    <text x="20" y="136" font-size="13" fill="#12171f">Append it. Bump expected to 6.</text>
+    <text x="20" y="170" font-size="12.5" fill="#0e7c6b">the normal path</text>
+
+    <!-- case 2 -->
+    <rect x="328" y="64" width="304" height="130" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.4"/>
+    <text x="348" y="90" font-family="IBM Plex Mono, monospace" font-size="14" fill="#1f5fd0">seq = 4</text>
+    <text x="348" y="112" font-size="13.5" font-weight="600" fill="#12171f">lower &#8212; we've seen this</text>
+    <text x="348" y="136" font-size="13" fill="#12171f">Ack it, but do <tspan font-style="italic">not</tspan> append.</text>
+    <text x="348" y="170" font-size="12.5" fill="#1f5fd0">this is what kills retry duplicates</text>
+
+    <!-- case 3 -->
+    <rect x="656" y="64" width="304" height="130" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.4"/>
+    <text x="676" y="90" font-family="IBM Plex Mono, monospace" font-size="14" fill="#b8410c">seq = 7</text>
+    <text x="676" y="112" font-size="13.5" font-weight="600" fill="#12171f">higher &#8212; something is missing</text>
+    <text x="676" y="136" font-size="13" fill="#12171f">Reject: OutOfOrderSequenceException.</text>
+    <text x="676" y="170" font-size="12.5" fill="#b8410c">this is what preserves ordering</text>
+
+    <rect x="0" y="216" width="960" height="84" rx="2" fill="#12171f"/>
+    <text x="18" y="244" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#fff">The outdated answer to retire</text>
+    <text x="18" y="268" font-size="13.5" fill="#b9c3ce">"Set <tspan font-family="IBM Plex Mono, monospace" fill="#fff">max.in.flight.requests.per.connection=1</tspan> to preserve ordering." That was true before idempotence.</text>
+    <text x="18" y="288" font-size="13.5" fill="#b9c3ce">With <tspan font-family="IBM Plex Mono, monospace" fill="#fff">enable.idempotence=true</tspan> (the default since 3.0), up to 5 in flight is safe &#8212; and about five times faster.</text>
+    </g>
+  </svg>
+  <figcaption><b>Scope caveat worth volunteering:</b> this is per producer session, per partition. A
+  producer restart gets a new producer ID, so idempotence alone is not end-to-end exactly-once. That's
+  what <code>transactional.id</code> and fencing are for.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 14 ============ -->
+<section id="d14">
+  <span class="snum">14</span>
+  <h2 class="sh">Where duplicates and losses come from</h2>
+  <p class="lede">Two orderings of the same two operations. There is no third option without an
+  external transaction — so the real question is which failure you'd rather design around.</p>
+  <figure>
+  <svg viewBox="0 0 960 280" role="img" aria-label="Timeline comparison of committing before and after processing, with a crash in each">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <text x="0" y="14" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#b8410c">commit &#8594; then process = at-most-once</text>
+    <rect x="0" y="30" width="150" height="38" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.2"/>
+    <text x="75" y="54" text-anchor="middle" font-size="13" fill="#12171f">poll 100 records</text>
+    <rect x="164" y="30" width="150" height="38" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.2"/>
+    <text x="239" y="54" text-anchor="middle" font-size="13" fill="#12171f">commit offset</text>
+    <rect x="328" y="30" width="150" height="38" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.6"/>
+    <text x="403" y="54" text-anchor="middle" font-size="13" font-weight="600" fill="#b8410c">crash</text>
+    <text x="500" y="46" font-size="13.5" fill="#b8410c">On restart the group resumes past those 100 records.</text>
+    <text x="500" y="65" font-size="13.5" fill="#12171f">They were never processed. <tspan font-weight="600">Silent data loss.</tspan></text>
+
+    <line x1="0" y1="96" x2="960" y2="96" stroke="#c9d2db" stroke-width="1"/>
+
+    <text x="0" y="128" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#0e7c6b">process &#8594; then commit = at-least-once</text>
+    <rect x="0" y="144" width="150" height="38" rx="2" fill="#dce8fb" stroke="#1f5fd0" stroke-width="1.2"/>
+    <text x="75" y="168" text-anchor="middle" font-size="13" fill="#12171f">poll 100 records</text>
+    <rect x="164" y="144" width="150" height="38" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.2"/>
+    <text x="239" y="168" text-anchor="middle" font-size="13" fill="#12171f">process all 100</text>
+    <rect x="328" y="144" width="150" height="38" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.6"/>
+    <text x="403" y="168" text-anchor="middle" font-size="13" font-weight="600" fill="#b8410c">crash</text>
+    <rect x="492" y="144" width="150" height="38" rx="2" fill="#f2f4f6" stroke="#b9c3ce" stroke-dasharray="4 3"/>
+    <text x="567" y="168" text-anchor="middle" font-size="13" fill="#8b98a9">commit never ran</text>
+    <text x="664" y="160" font-size="13.5" fill="#0e7c6b">Restart replays those 100.</text>
+    <text x="664" y="179" font-size="13.5" fill="#12171f"><tspan font-weight="600">Duplicates</tspan>, no loss.</text>
+
+    <rect x="0" y="210" width="960" height="70" rx="2" fill="#12171f"/>
+    <text x="18" y="238" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#fff">Pick at-least-once and make the consumer idempotent</text>
+    <text x="18" y="262" font-size="13.5" fill="#b9c3ce">A unique key and an upsert costs you one database constraint. Exactly-once costs you transactions, a throughput hit, and it still stops at the edge of Kafka.</text>
+    </g>
+  </svg>
+  <figcaption><b>The off-by-one that bites everyone:</b> you commit <code>lastProcessedOffset + 1</code>
+  — the next offset to read, not the last one you handled. Get it wrong and you reprocess exactly one
+  record per partition on every restart, which is just subtle enough to survive code review.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 15 ============ -->
+<section id="d15">
+  <span class="snum">15</span>
+  <h2 class="sh">Delete vs compact</h2>
+  <p class="lede">Two cleanup policies. One is a stream with an expiry date, the other is a table.</p>
+  <figure>
+  <svg viewBox="0 0 960 320" role="img" aria-label="Retention deleting whole old segments versus compaction keeping the latest value per key">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <text x="0" y="14" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#12171f">cleanup.policy = delete &#8212; drops whole closed segments</text>
+    <g>
+      <rect x="0" y="30" width="180" height="40" fill="#f2f4f6" stroke="#b9c3ce" stroke-dasharray="4 3"/>
+      <text x="90" y="55" text-anchor="middle" font-size="12" fill="#8b98a9">segment 0 &#183; expired</text>
+      <rect x="188" y="30" width="180" height="40" fill="#f2f4f6" stroke="#b9c3ce" stroke-dasharray="4 3"/>
+      <text x="278" y="55" text-anchor="middle" font-size="12" fill="#8b98a9">segment 1 &#183; expired</text>
+      <rect x="376" y="30" width="180" height="40" fill="#dce8fb" stroke="#1f5fd0"/>
+      <text x="466" y="55" text-anchor="middle" font-size="12" fill="#12171f">segment 2 &#183; kept</text>
+      <rect x="564" y="30" width="180" height="40" fill="#dce8fb" stroke="#1f5fd0"/>
+      <text x="654" y="55" text-anchor="middle" font-size="12" fill="#12171f">segment 3 &#183; kept</text>
+      <rect x="752" y="30" width="180" height="40" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.4"/>
+      <text x="842" y="49" text-anchor="middle" font-size="12" fill="#12171f">segment 4 &#183; ACTIVE</text>
+      <text x="842" y="64" text-anchor="middle" font-size="11" fill="#b8410c">never deleted</text>
+    </g>
+    <text x="0" y="94" font-size="13" fill="#b8410c">This is why a topic with <tspan font-family="IBM Plex Mono, monospace">retention.ms=60000</tspan> can still hold days of data: on a low-traffic topic, the active segment never rolls.</text>
+
+    <line x1="0" y1="118" x2="960" y2="118" stroke="#c9d2db" stroke-width="1"/>
+
+    <text x="0" y="150" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#12171f">cleanup.policy = compact &#8212; keeps the latest value per key, forever</text>
+
+    <text x="0" y="186" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#8b98a9">before</text>
+    <g font-family="IBM Plex Mono, monospace" font-size="11.5" text-anchor="middle">
+      <rect x="70" y="170" width="86" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="113" y="190">a=1</text>
+      <rect x="162" y="170" width="86" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="205" y="190">b=1</text>
+      <rect x="254" y="170" width="86" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="297" y="190">a=2</text>
+      <rect x="346" y="170" width="86" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="389" y="190">c=1</text>
+      <rect x="438" y="170" width="86" height="30" fill="#dce8fb" stroke="#1f5fd0"/><text x="481" y="190">a=3</text>
+      <rect x="530" y="170" width="86" height="30" fill="#f8e2d6" stroke="#b8410c"/><text x="573" y="190">b=null</text>
+    </g>
+    <text x="628" y="190" font-size="12.5" fill="#b8410c">&#8592; a tombstone: deletes the key</text>
+
+    <text x="0" y="246" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#8b98a9">after</text>
+    <g font-family="IBM Plex Mono, monospace" font-size="11.5" text-anchor="middle">
+      <rect x="70" y="230" width="86" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="113" y="250">c=1</text>
+      <rect x="162" y="230" width="86" height="30" fill="#d5ece7" stroke="#0e7c6b"/><text x="205" y="250">a=3</text>
+    </g>
+    <text x="270" y="250" font-size="13" fill="#12171f">b is gone. a and c keep only their newest value. Offsets are preserved, not renumbered.</text>
+
+    <rect x="0" y="278" width="960" height="42" rx="2" fill="#12171f"/>
+    <text x="16" y="304" font-size="13.5" fill="#fff">Compaction is how you model a table in Kafka: Streams KTables, Debezium snapshots, config topics, and <tspan font-family="IBM Plex Mono, monospace" fill="#dce8fb">__consumer_offsets</tspan> itself.</text>
+    </g>
+  </svg>
+  <figcaption><b>Precision point:</b> compaction guarantees the latest value per key <i>survives</i>.
+  It does not guarantee only one value per key exists at any given moment — the cleaner runs on its
+  own schedule. Consumers of a compacted topic still have to be idempotent.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 16 ============ -->
+<section id="d16">
+  <span class="snum">16</span>
+  <h2 class="sh">Sizing, on a napkin</h2>
+  <p class="lede">When they ask "how many partitions for 60k messages a second?", they want to see
+  you reason, not recall a number.</p>
+  <figure>
+  <svg viewBox="0 0 960 330" role="img" aria-label="Worked partition and consumer sizing example">
+    <g font-family="IBM Plex Sans, sans-serif">
+    <rect x="0" y="0" width="960" height="58" rx="2" fill="#12171f"/>
+    <text x="480" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="20" fill="#fff">P = max( T / t_producer , T / t_consumer )</text>
+
+    <text x="0" y="90" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#12171f">Worked example</text>
+
+    <g font-size="13.5">
+      <rect x="0" y="104" width="300" height="130" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.1"/>
+      <text x="18" y="128" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8b98a9">step 1 &#183; measure</text>
+      <text x="18" y="154" fill="#12171f">peak load, with headroom</text>
+      <text x="18" y="176" font-family="IBM Plex Mono, monospace" font-size="15" fill="#1f5fd0">T = 60,000 msg/s</text>
+      <text x="18" y="204" fill="#12171f">one consumer instance handles</text>
+      <text x="18" y="226" font-family="IBM Plex Mono, monospace" font-size="15" fill="#1f5fd0">2,000 msg/s</text>
+
+      <rect x="330" y="104" width="300" height="130" rx="2" fill="#fff" stroke="#3d4a5c" stroke-width="1.1"/>
+      <text x="348" y="128" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8b98a9">step 2 &#183; divide</text>
+      <text x="348" y="158" font-family="IBM Plex Mono, monospace" font-size="15" fill="#12171f">60,000 / 2,000 = 30</text>
+      <text x="348" y="186" fill="#12171f">that's the floor, not the answer</text>
+      <text x="348" y="212" fill="#3d4a5c">the consumer side almost always</text>
+      <text x="348" y="230" fill="#3d4a5c">dominates &#8212; business logic is slower</text>
+
+      <rect x="660" y="104" width="300" height="130" rx="2" fill="#d5ece7" stroke="#0e7c6b" stroke-width="1.4"/>
+      <text x="678" y="128" font-family="IBM Plex Mono, monospace" font-size="12" fill="#0e7c6b">step 3 &#183; round up wisely</text>
+      <text x="678" y="162" font-family="IBM Plex Mono, monospace" font-size="22" fill="#0e7c6b">36 partitions</text>
+      <text x="678" y="192" fill="#12171f">divisible by 2, 3, 4, 6, 9, 12, 18</text>
+      <text x="678" y="214" fill="#12171f">so almost any consumer count</text>
+      <text x="678" y="232" fill="#12171f">lands evenly</text>
+    </g>
+
+    <rect x="0" y="252" width="960" height="78" rx="2" fill="#f8e2d6" stroke="#b8410c" stroke-width="1.3"/>
+    <text x="18" y="278" font-family="IBM Plex Sans Condensed, sans-serif" font-weight="600" font-size="15" fill="#b8410c">Then say the sentence that wins the question</text>
+    <text x="18" y="302" font-size="13.5" fill="#12171f">"I'd deliberately over-provision, because growing partitions later breaks key-to-partition affinity permanently.</text>
+    <text x="18" y="322" font-size="13.5" fill="#12171f">A few idle partitions cost me almost nothing; a broken ordering guarantee costs me a migration."</text>
+    </g>
+  </svg>
+  <figcaption>Then bound it from the other side: partitions per broker, producer buffer memory
+  (<code>batch.size &#215; partitions</code>), open file handles, and how long leader election takes when
+  a broker dies. A candidate who only gives the formula sounds theoretical; one who gives the formula
+  <i>and</i> the ceilings sounds like they've run this.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ recall ============ -->
+<section id="recall">
+  <span class="snum">&#8212;</span>
+  <h2 class="sh">The night-before sheet</h2>
+  <p class="lede">If you only reread one thing, make it this. These are the answers that sound right
+  and are wrong.</p>
+
+  <table>
+    <thead><tr><th style="width:38%">They ask</th><th style="width:28%">The tempting answer</th><th>What to say instead</th></tr></thead>
+    <tbody>
+      <tr><td>Does Kafka guarantee ordering?</td><td>Yes</td><td>Per partition only — and only while the partition count is stable and the producer is idempotent</td></tr>
+      <tr><td>Can I add consumers to go faster?</td><td>Yes, scale the deployment</td><td>Only up to the partition count. Past that they're assigned nothing</td></tr>
+      <tr><td>How do I preserve ordering with retries?</td><td><code>max.in.flight=1</code></td><td>Outdated. With idempotence on, 5 in flight is safe and much faster</td></tr>
+      <tr><td>How do I fix a hot partition?</td><td>Add partitions</td><td>Doesn't help — one hot key still hashes to one partition. Use a composite key</td></tr>
+      <tr><td>What does <code>acks=all</code> wait for?</td><td>All replicas</td><td>All <i>in-sync</i> replicas. With a shrunken ISR that can mean one</td></tr>
+      <tr><td>Does exactly-once fix duplicates?</td><td>Yes</td><td>Only Kafka-to-Kafka. External sinks need their own idempotency</td></tr>
+      <tr><td>Why isn't retention deleting my data?</td><td>It should be</td><td>The active segment is never deleted; retention works on closed segments</td></tr>
+      <tr><td>Does <code>max.poll.records</code> limit the fetch?</td><td>Yes</td><td>No — that's <code>max.partition.fetch.bytes</code>. One is network, one is buffer handoff</td></tr>
+      <tr><td>How do I retry a failed record?</td><td>Sleep and retry</td><td>Sleeping blocks the poll loop into a rebalance. Use retry topics</td></tr>
+      <tr><td>Where do consumer offsets live?</td><td>On the consumer</td><td>In <code>__consumer_offsets</code> on the brokers</td></tr>
+      <tr><td>Should I give the broker a big heap?</td><td>Yes</td><td>No — Kafka leans on the OS page cache. 6–8 GB heap, lots of RAM</td></tr>
+      <tr><td>Does a new group read from the start?</td><td>Yes</td><td>Only with <code>auto.offset.reset=earliest</code>. The default is <code>latest</code>, so it skips everything</td></tr>
+    </tbody>
+  </table>
+
+  <div class="hook"><span>closing line 1</span><p>Partitions are the unit of parallelism, so consumer
+  scale-out is capped at partition count — and partition count is capped by what your brokers and
+  rebalance times can absorb.</p></div>
+
+  <div class="hook"><span>closing line 2</span><p>The poll loop is single-threaded for group
+  management, so anything that blocks processing longer than <code>max.poll.interval.ms</code> gets
+  the consumer evicted. That's the root cause of most rebalance storms.</p></div>
+
+  <div class="hook"><span>closing line 3</span><p>I default to at-least-once with idempotent
+  consumers. Duplicates are cheaper to design around than the throughput and complexity cost of
+  transactions — and exactly-once doesn't extend past Kafka anyway.</p></div>
+
+  <p class="prose" style="margin-top:34px">The written guide with configs, code, the full question
+  bank and the four-week plan sits alongside this file. Use that for depth; use this for the
+  twenty minutes before you walk in.</p>
+</section>
+
+<div class="footer">
+  Sixteen diagrams &#183; companion to <span style="font-family:'IBM Plex Mono',monospace">kafka-interview-guide.md</span>
+</div>
+
+</div>
+</body>
+</html>
