@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>60 LPA DSA Interview Roadmap</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-dark: #111827;
+            --ink: #162033;
+            --muted: #667085;
+            --line: #e4e7ec;
+            --blue: #2563eb;
+            --blue-soft: #eff6ff;
+            --green: #059669;
+            --green-soft: #ecfdf3;
+            --orange: #ea580c;
+            --orange-soft: #fff7ed;
+            --red: #dc2626;
+            --red-soft: #fef2f2;
+            --purple: #7c3aed;
+            --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: radial-gradient(circle at 10% 0%, rgba(37, 99, 235, 0.12), transparent 28rem), radial-gradient(circle at 100% 12%, rgba(124, 58, 237, 0.1), transparent 25rem), var(--bg);
+            font-family: Georgia, "Times New Roman", serif;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        button,
+        .eyebrow,
+        .tag,
+        .nav,
+        .metric-label,
+        .problem-meta,
+        .filter-btn,
+        .phase-label,
+        .company-name {
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            padding: 14px 5vw;
+            background: rgba(245, 247, 251, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(228, 231, 236, 0.8);
+        }
+
+        .topbar-inner {
+            max-width: 1180px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            font-family: "Trebuchet MS", sans-serif;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            color: white;
+            background: var(--surface-dark);
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 18px;
+            color: var(--muted);
+            font-size: 0.84rem;
+            font-weight: 700;
+        }
+
+        .nav a:hover {
+            color: var(--blue);
+        }
+
+        .hero {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 92px 5vw 62px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 52px;
+            align-items: center;
+        }
+
+        .eyebrow {
+            color: var(--blue);
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.17em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 16px 0 20px;
+            max-width: 730px;
+            font-size: clamp(2.7rem, 6vw, 5.4rem);
+            line-height: 0.98;
+            letter-spacing: -0.075em;
+        }
+
+        h1 span {
+            color: var(--blue);
+        }
+
+        .hero-copy {
+            max-width: 620px;
+            color: var(--muted);
+            font-size: 1.14rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 0 19px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--ink);
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.9rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .button.primary {
+            color: white;
+            border-color: var(--surface-dark);
+            background: var(--surface-dark);
+        }
+
+        .hero-card {
+            position: relative;
+            padding: 28px;
+            color: white;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent), var(--surface-dark);
+            border-radius: 24px;
+            box-shadow: 0 28px 70px rgba(15, 23, 42, 0.2);
+            overflow: hidden;
+        }
+
+        .hero-card::after {
+            content: "";
+            position: absolute;
+            right: -80px;
+            bottom: -80px;
+            width: 220px;
+            height: 220px;
+            border: 42px solid rgba(96, 165, 250, 0.2);
+            border-radius: 50%;
+        }
+
+        .hero-card h3 {
+            position: relative;
+            z-index: 1;
+            margin-top: 0;
+            font-size: 1.45rem;
+        }
+
+        .progress-ring {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            width: 168px;
+            height: 168px;
+            margin: 25px auto;
+            border: 13px solid rgba(255, 255, 255, 0.12);
+            border-top-color: #60a5fa;
+            border-right-color: #a78bfa;
+            border-radius: 50%;
+            transform: rotate(30deg);
+        }
+
+        .progress-ring strong {
+            transform: rotate(-30deg);
+            font-size: 2.6rem;
+            font-family: "Trebuchet MS", sans-serif;
+        }
+
+        .hero-card p {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0;
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        .section {
+            max-width: 1180px;
+            margin: auto;
+            padding: 48px 5vw;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            align-items: end;
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            line-height: 1;
+            letter-spacing: -0.055em;
+        }
+
+        .section-heading p {
+            max-width: 530px;
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .metric {
+            padding: 22px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .metric strong {
+            display: block;
+            font: 900 2rem "Trebuchet MS", sans-serif;
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-size: 0.77rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .metric.blue strong {
+            color: var(--blue);
+        }
+
+        .metric.green strong {
+            color: var(--green);
+        }
+
+        .metric.orange strong {
+            color: var(--orange);
+        }
+
+        .metric.purple strong {
+            color: var(--purple);
+        }
+
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .company {
+            min-height: 172px;
+            padding: 22px;
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+        }
+
+        .company:nth-child(1) {
+            background: #0f766e;
+        }
+
+        .company:nth-child(2) {
+            background: #1d4ed8;
+        }
+
+        .company:nth-child(3) {
+            background: #be123c;
+        }
+
+        .company:nth-child(4) {
+            background: #6d28d9;
+        }
+
+        .company-name {
+            font-weight: 900;
+            font-size: 1.35rem;
+        }
+
+        .company small {
+            color: rgba(255, 255, 255, 0.78);
+        }
+
+        .tag {
+            display: inline-flex;
+            width: fit-content;
+            padding: 4px 8px;
+            border-radius: 999px;
+            color: #0f172a;
+            background: #fff;
+            font-size: 0.68rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .roadmap {
+            display: grid;
+            gap: 14px;
+        }
+
+        .phase {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 22px;
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+        }
+
+        .phase-label {
+            color: var(--blue);
+            font-size: 0.78rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .phase h3 {
+            margin: 0 0 6px;
+            font-size: 1.35rem;
+        }
+
+        .phase p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .phase ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .phase li {
+            margin: 5px 0;
+        }
+
+        .pattern-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .filter-btn {
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--muted);
+            background: var(--surface);
+            font-size: 0.78rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            color: white;
+            border-color: var(--blue);
+            background: var(--blue);
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .pattern {
+            display: flex;
+            flex-direction: column;
+            min-height: 290px;
+            padding: 22px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            transition: 0.2s ease;
+        }
+
+        .pattern:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .pattern-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .pattern h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .pattern-number {
+            color: var(--blue);
+            font: 900 0.85rem "Trebuchet MS", sans-serif;
+        }
+
+        .pattern p {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .pattern ul {
+            padding-left: 18px;
+            margin: 8px 0 18px;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .problem-list {
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .problem {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+
+        .problem a {
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .problem a:hover {
+            text-decoration: underline;
+        }
+
+        .problem-meta {
+            color: var(--muted);
+            white-space: nowrap;
+            font-size: 0.69rem;
+            font-weight: 800;
+        }
+
+        .schedule {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+        }
+
+        table {
+            width: 100%;
+            min-width: 780px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            color: white;
+            background: var(--surface-dark);
+            font: 800 0.78rem "Trebuchet MS", sans-serif;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        td:first-child {
+            width: 120px;
+            color: var(--blue);
+            font-family: "Trebuchet MS", sans-serif;
+            font-weight: 900;
+        }
+
+        .checklist {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .check-card {
+            padding: 22px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+        }
+
+        .check-card h3 {
+            margin-top: 0;
+        }
+
+        .check-card label {
+            display: block;
+            margin: 11px 0;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .check-card input {
+            accent-color: var(--blue);
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 42px 5vw;
+            color: #cbd5e1;
+            background: var(--surface-dark);
+        }
+
+        .footer-inner {
+            max-width: 1180px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer strong {
+            color: white;
+            font-family: "Trebuchet MS", sans-serif;
+        }
+
+        .footer p {
+            max-width: 650px;
+            margin: 6px 0 0;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding-top: 58px;
+            }
+
+            .metrics,
+            .company-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pattern-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 620px) {
+            .nav {
+                display: none;
+            }
+
+            .section,
+            .hero {
+                padding-right: 20px;
+                padding-left: 20px;
+            }
+
+            .metrics,
+            .company-grid,
+            .pattern-grid,
+            .checklist {
+                grid-template-columns: 1fr;
+            }
+
+            .phase {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .section-heading,
+            .footer-inner {
+                display: block;
+            }
+
+            .section-heading p {
+                margin-top: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="topbar-inner"> <a class="brand" href="#top"> <span class="brand-mark">&lt;/&gt;</span> 60 LPA DSA
+                Track </a>
+            <nav class="nav">
+                <a href="#strategy">Strategy</a>
+                <a href="#patterns">Patterns</a>
+                <a href="#schedule">Schedule</a>
+                <a href="#checklist">Checklist</a>
+            </nav>
+        </div>
+    </header>
+    <main id="top">
+        <section class="hero">
+            <div>
+                <div class="eyebrow">LeetCode 150 + Interview Patterns</div>
+                <h1>Build the skill, not just the <span>solution count.</span></h1>
+                <p class="hero-copy"> A focused DSA preparation system for product companies, high-growth startups, and
+                    interviews targeting approximately 60 LPA roles. Learn the pattern, solve representative problems,
+                    then prove retention through timed revision. </p>
+                <div class="hero-actions">
+                    <a class="button primary" href="#patterns">Explore patterns</a>
+                    <a class="button" href="#schedule">View 16-week plan</a>
+                </div>
+            </div>
+
+            <aside class="hero-card">
+                <h3>Target operating model</h3>
+                <div class="progress-ring">
+                    <strong>150</strong>
+                </div>
+                <p>
+                    Core LeetCode problems converted into 15 reusable patterns,
+                    supported by company-style mock interviews.
+                </p>
+            </aside>
+        </section>
+
+        <section class="section">
+            <div class="metrics">
+                <div class="metric blue">
+                    <strong>16</strong>
+                    <span class="metric-label">Weeks</span>
+                </div>
+                <div class="metric green">
+                    <strong>150</strong>
+                    <span class="metric-label">Core Problems</span>
+                </div>
+                <div class="metric orange">
+                    <strong>3</strong>
+                    <span class="metric-label">Difficulty Passes</span>
+                </div>
+                <div class="metric purple">
+                    <strong>12</strong>
+                    <span class="metric-label">Mock Interviews</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="strategy">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">The target is a system</div>
+                    <h2>What 60 LPA interviews usually demand</h2>
+                </div>
+                <p>
+                    DSA is only one part of the hiring bar. Use this roadmap to make coding
+                    predictable, then pair it with CS fundamentals, system design, and communication.
+                </p>
+            </div>
+
+            <div class="company-grid">
+                <article class="company">
+                    <span class="tag">Product + scale</span>
+                    <span class="company-name">Amazon</span>
+                    <small>Prioritize arrays, graphs, trees, heaps, DP, and behavioral storytelling.</small>
+                </article>
+
+                <article class="company">
+                    <span class="tag">Infrastructure</span>
+                    <span class="company-name">Cisco</span>
+                    <small>Strengthen graphs, networking-adjacent problem solving, trees, and clean
+                        implementation.</small>
+                </article>
+
+                <article class="company">
+                    <span class="tag">Storage systems</span>
+                    <span class="company-name">NetApp</span>
+                    <small>Focus on data structures, concurrency-aware thinking, graphs, intervals, and
+                        complexity.</small>
+                </article>
+
+                <article class="company">
+                    <span class="tag">High ownership</span>
+                    <span class="company-name">Razorpay + Startups</span>
+                    <small>Expect fast problem decomposition, edge cases, APIs, optimization, and practical
+                        judgment.</small>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">The 16-week route</div>
+                    <h2>Four phases, one feedback loop</h2>
+                </div>
+                <p>
+                    Do not solve randomly. Each phase has a purpose: build recognition,
+                    increase difficulty, simulate interviews, and close gaps.
+                </p>
+            </div>
+
+            <div class="roadmap">
+                <article class="phase">
+                    <div class="phase-label">Weeks 1–4<br />Foundation</div>
+                    <div>
+                        <h3>Learn the templates</h3>
+                        <p>Target 35–40 easy and medium problems.</p>
+                        <ul>
+                            <li>Arrays, hashing, strings, sliding window, two pointers</li>
+                            <li>Prefix sums, binary search, linked lists, stack basics</li>
+                            <li>Write a reusable template and complexity note for every pattern</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="phase">
+                    <div class="phase-label">Weeks 5–8<br />Core DSA</div>
+                    <div>
+                        <h3>Move from recognition to execution</h3>
+                        <p>Target 40–45 medium problems.</p>
+                        <ul>
+                            <li>Trees, BST, DFS, BFS, heaps, intervals, backtracking</li>
+                            <li>For every problem: brute force, optimized idea, proof, complexity</li>
+                            <li>One 45-minute timed set every week</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="phase">
+                    <div class="phase-label">Weeks 9–12<br />Advanced</div>
+                    <div>
+                        <h3>Handle ambiguity and hard variants</h3>
+                        <p>Target 35–40 medium and selected hard problems.</p>
+                        <ul>
+                            <li>Dynamic programming, graph algorithms, topological sort</li>
+                            <li>Monotonic stack, union-find, shortest path, advanced binary search</li>
+                            <li>Two mock interviews every week with a peer or interviewer platform</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="phase">
+                    <div class="phase-label">Weeks 13–16<br />Interview mode</div>
+                    <div>
+                        <h3>Convert preparation into offers</h3>
+                        <p>Revise; do not keep expanding the list indefinitely.</p>
+                        <ul>
+                            <li>Repeat missed problems after 1, 3, 7, and 14 days</li>
+                            <li>Complete 8–12 timed mocks across arrays, graphs, trees, and DP</li>
+                            <li>Prepare project deep dives, system design, OS, DBMS, and networking</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" id="patterns">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">Pattern library</div>
+                    <h2>15 patterns that cover the interview surface</h2>
+                </div>
+                <p>
+                    The list follows the referenced LeetCode discussion and expands it into
+                    a study order suitable for product-company interviews.
+                </p>
+            </div>
+
+            <div class="pattern-controls">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="arrays">Arrays</button>
+                <button class="filter-btn" data-filter="linked-list">Linked List</button>
+                <button class="filter-btn" data-filter="trees">Trees</button>
+                <button class="filter-btn" data-filter="graphs">Graphs</button>
+                <button class="filter-btn" data-filter="advanced">Advanced</button>
+            </div>
+
+            <div class="pattern-grid">
+                <article class="pattern" data-category="arrays">
+                    <div class="pattern-top">
+                        <h3>Sliding Window</h3>
+                        <span class="pattern-number">01</span>
+                    </div>
+                    <p>Use for contiguous subarrays or substrings with a fixed or variable constraint.</p>
+                    <ul>
+                        <li>Expand right, shrink left</li>
+                        <li>Track counts, sums, or distinct values</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a
+                                href="https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+                                target="_blank">Longest Substring Without Repeating</a><span
+                                class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/minimum-window-substring/"
+                                target="_blank">Minimum Window Substring</a><span class="problem-meta">H</span></div>
+                        <div class="problem"><a
+                                href="https://leetcode.com/problems/longest-repeating-character-replacement/"
+                                target="_blank">Character Replacement</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="arrays">
+                    <div class="pattern-top">
+                        <h3>Prefix Sum</h3>
+                        <span class="pattern-number">02</span>
+                    </div>
+                    <p>Convert repeated range calculations into constant-time lookups.</p>
+                    <ul>
+                        <li>Combine with a hash map</li>
+                        <li>Recognize cumulative state</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/subarray-sum-equals-k/"
+                                target="_blank">Subarray Sum Equals K</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/product-of-array-except-self/"
+                                target="_blank">Product Except Self</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/subarray-sums-divisible-by-k/"
+                                target="_blank">Subarray Sums Divisible by K</a><span class="problem-meta">M</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="arrays">
+                    <div class="pattern-top">
+                        <h3>Two Pointers</h3>
+                        <span class="pattern-number">03</span>
+                    </div>
+                    <p>Reduce pair and partition problems from quadratic to linear time.</p>
+                    <ul>
+                        <li>Opposite-direction pointers</li>
+                        <li>Same-direction fast and slow indices</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/3sum/" target="_blank">3Sum</a><span
+                                class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/container-with-most-water/"
+                                target="_blank">Container With Most Water</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/trapping-rain-water/"
+                                target="_blank">Trapping Rain Water</a><span class="problem-meta">H</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="linked-list">
+                    <div class="pattern-top">
+                        <h3>Fast & Slow Pointers</h3>
+                        <span class="pattern-number">04</span>
+                    </div>
+                    <p>Detect cycles, locate middles, and reason about linked-list positions.</p>
+                    <ul>
+                        <li>Tortoise and hare</li>
+                        <li>Reset one pointer after collision</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/linked-list-cycle-ii/"
+                                target="_blank">Linked List Cycle II</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/palindrome-linked-list/"
+                                target="_blank">Palindrome Linked List</a><span class="problem-meta">E</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/reorder-list/"
+                                target="_blank">Reorder List</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="linked-list">
+                    <div class="pattern-top">
+                        <h3>Linked List Reversal</h3>
+                        <span class="pattern-number">05</span>
+                    </div>
+                    <p>Master pointer ownership before attempting complex list transformations.</p>
+                    <ul>
+                        <li>Reverse in-place</li>
+                        <li>Use dummy nodes for boundary safety</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/reverse-linked-list/"
+                                target="_blank">Reverse Linked List</a><span class="problem-meta">E</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/reverse-linked-list-ii/"
+                                target="_blank">Reverse Linked List II</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/reverse-nodes-in-k-group/"
+                                target="_blank">Reverse Nodes in K-Group</a><span class="problem-meta">H</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="advanced">
+                    <div class="pattern-top">
+                        <h3>Monotonic Stack</h3>
+                        <span class="pattern-number">06</span>
+                    </div>
+                    <p>Find the next or previous greater/smaller element in linear time.</p>
+                    <ul>
+                        <li>Store indices when distance matters</li>
+                        <li>Pop while the invariant breaks</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/daily-temperatures/"
+                                target="_blank">Daily Temperatures</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/largest-rectangle-in-histogram/"
+                                target="_blank">Largest Rectangle</a><span class="problem-meta">H</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/sum-of-subarray-minimums/"
+                                target="_blank">Subarray Minimums</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="advanced">
+                    <div class="pattern-top">
+                        <h3>Heaps / Top K</h3>
+                        <span class="pattern-number">07</span>
+                    </div>
+                    <p>Use a heap when you repeatedly need the best current candidate.</p>
+                    <ul>
+                        <li>Min heap for K largest</li>
+                        <li>Max heap for K smallest</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/"
+                                target="_blank">Kth Largest Element</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/top-k-frequent-elements/"
+                                target="_blank">Top K Frequent</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/find-median-from-data-stream/"
+                                target="_blank">Median Data Stream</a><span class="problem-meta">H</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="advanced">
+                    <div class="pattern-top">
+                        <h3>Intervals</h3>
+                        <span class="pattern-number">08</span>
+                    </div>
+                    <p>Sort by start time, then process overlaps with a clear invariant.</p>
+                    <ul>
+                        <li>Merge, insert, count, or schedule</li>
+                        <li>Pair with a heap for active meetings</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/merge-intervals/"
+                                target="_blank">Merge Intervals</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/meeting-rooms-ii/"
+                                target="_blank">Meeting Rooms II</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/non-overlapping-intervals/"
+                                target="_blank">Non-overlapping Intervals</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="arrays">
+                    <div class="pattern-top">
+                        <h3>Binary Search</h3>
+                        <span class="pattern-number">09</span>
+                    </div>
+                    <p>Search sorted data or binary-search the smallest feasible answer.</p>
+                    <ul>
+                        <li>Define the monotonic predicate</li>
+                        <li>Be precise about inclusive boundaries</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/search-in-rotated-sorted-array/"
+                                target="_blank">Rotated Sorted Array</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/koko-eating-bananas/"
+                                target="_blank">Koko Eating Bananas</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a
+                                href="https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/"
+                                target="_blank">Ship Packages</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="trees">
+                    <div class="pattern-top">
+                        <h3>Tree Traversal + BST</h3>
+                        <span class="pattern-number">10</span>
+                    </div>
+                    <p>Choose traversal based on when the current node's value becomes useful.</p>
+                    <ul>
+                        <li>Inorder gives sorted BST values</li>
+                        <li>Use bounds to validate a BST</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/binary-tree-level-order-traversal/"
+                                target="_blank">Level Order Traversal</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/validate-binary-search-tree/"
+                                target="_blank">Validate BST</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a
+                                href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/"
+                                target="_blank">LCA of BST</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="graphs">
+                    <div class="pattern-top">
+                        <h3>DFS</h3>
+                        <span class="pattern-number">11</span>
+                    </div>
+                    <p>Explore connected structures, detect cycles, and build recursive state.</p>
+                    <ul>
+                        <li>Mark visited before recursion</li>
+                        <li>Use backtracking when state must be undone</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/number-of-islands/"
+                                target="_blank">Number of Islands</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/course-schedule/"
+                                target="_blank">Course Schedule</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/clone-graph/" target="_blank">Clone
+                                Graph</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="graphs">
+                    <div class="pattern-top">
+                        <h3>BFS</h3>
+                        <span class="pattern-number">12</span>
+                    </div>
+                    <p>Use a queue for minimum steps and shortest paths in unweighted graphs.</p>
+                    <ul>
+                        <li>Process level by level</li>
+                        <li>Support multi-source BFS</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/rotting-oranges/"
+                                target="_blank">Rotting Oranges</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/01-matrix/" target="_blank">01
+                                Matrix</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/word-ladder/" target="_blank">Word
+                                Ladder</a><span class="problem-meta">H</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="graphs">
+                    <div class="pattern-top">
+                        <h3>Matrix Traversal</h3>
+                        <span class="pattern-number">13</span>
+                    </div>
+                    <p>Treat each grid cell as a graph node with four or eight neighbors.</p>
+                    <ul>
+                        <li>Guard boundaries carefully</li>
+                        <li>Mutate or maintain a visited set</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/max-area-of-island/"
+                                target="_blank">Max Area of Island</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/surrounded-regions/"
+                                target="_blank">Surrounded Regions</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/word-search/" target="_blank">Word
+                                Search</a><span class="problem-meta">M</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="advanced">
+                    <div class="pattern-top">
+                        <h3>Backtracking</h3>
+                        <span class="pattern-number">14</span>
+                    </div>
+                    <p>Make a choice, recurse, undo the choice, and continue with the next choice.</p>
+                    <ul>
+                        <li>Use pruning aggressively</li>
+                        <li>Track used values and current path</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/subsets/"
+                                target="_blank">Subsets</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/combination-sum/"
+                                target="_blank">Combination Sum</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/n-queens/"
+                                target="_blank">N-Queens</a><span class="problem-meta">H</span></div>
+                    </div>
+                </article>
+
+                <article class="pattern" data-category="advanced">
+                    <div class="pattern-top">
+                        <h3>Dynamic Programming</h3>
+                        <span class="pattern-number">15</span>
+                    </div>
+                    <p>Define state, transition, base cases, and computation order before coding.</p>
+                    <ul>
+                        <li>Start with recursion plus memoization</li>
+                        <li>Compress space only after correctness</li>
+                    </ul>
+                    <div class="problem-list">
+                        <div class="problem"><a href="https://leetcode.com/problems/house-robber/" target="_blank">House
+                                Robber</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/coin-change/" target="_blank">Coin
+                                Change</a><span class="problem-meta">M</span></div>
+                        <div class="problem"><a href="https://leetcode.com/problems/edit-distance/" target="_blank">Edit
+                                Distance</a><span class="problem-meta">H</span></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" id="schedule">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">Weekly execution</div>
+                    <h2>Use the same rhythm every week</h2>
+                </div>
+                <p>
+                    Consistency beats occasional 12-hour sessions. The goal is reliable recall
+                    under pressure, not a large unsolved backlog.
+                </p>
+            </div>
+
+            <div class="schedule">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Primary Work</th>
+                            <th>Output</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Monday</td>
+                            <td>Learn one pattern and solve one easy problem.</td>
+                            <td>Template + invariant + complexity notes</td>
+                            <td>90 min</td>
+                        </tr>
+                        <tr>
+                            <td>Tuesday</td>
+                            <td>Solve two medium problems from the same pattern.</td>
+                            <td>Independent solutions before editorial review</td>
+                            <td>2 hours</td>
+                        </tr>
+                        <tr>
+                            <td>Wednesday</td>
+                            <td>Re-solve Monday's problem without notes.</td>
+                            <td>Spaced-repetition checkpoint</td>
+                            <td>75 min</td>
+                        </tr>
+                        <tr>
+                            <td>Thursday</td>
+                            <td>Mixed-pattern practice.</td>
+                            <td>Identify pattern within five minutes</td>
+                            <td>2 hours</td>
+                        </tr>
+                        <tr>
+                            <td>Friday</td>
+                            <td>Timed interview set.</td>
+                            <td>Two problems in 60–75 minutes</td>
+                            <td>90 min</td>
+                        </tr>
+                        <tr>
+                            <td>Saturday</td>
+                            <td>Mock interview and CS fundamentals.</td>
+                            <td>Communication feedback + one system-design topic</td>
+                            <td>3 hours</td>
+                        </tr>
+                        <tr>
+                            <td>Sunday</td>
+                            <td>Revision and error-log cleanup.</td>
+                            <td>Re-solve misses from the week</td>
+                            <td>2 hours</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section" id="checklist">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">Offer readiness</div>
+                    <h2>Do not stop at LeetCode</h2>
+                </div>
+                <p>
+                    A 60 LPA target requires a complete interview profile. DSA gets you into
+                    the conversation; engineering depth and communication help close it.
+                </p>
+            </div>
+
+            <div class="checklist">
+                <div class="check-card">
+                    <h3>DSA readiness</h3>
+                    <label><input type="checkbox" /> I can identify the pattern within five minutes.</label>
+                    <label><input type="checkbox" /> I can explain brute force before optimization.</label>
+                    <label><input type="checkbox" /> I can state time and space complexity accurately.</label>
+                    <label><input type="checkbox" /> I have re-solved missed problems without notes.</label>
+                    <label><input type="checkbox" /> I can code common templates from memory.</label>
+                </div>
+
+                <div class="check-card">
+                    <h3>Interview readiness</h3>
+                    <label><input type="checkbox" /> I have two project deep dives prepared.</label>
+                    <label><input type="checkbox" /> I can discuss database indexing and transactions.</label>
+                    <label><input type="checkbox" /> I understand OS, networking, and concurrency basics.</label>
+                    <label><input type="checkbox" /> I can design a small service end to end.</label>
+                    <label><input type="checkbox" /> I have completed at least eight realistic mocks.</label>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="footer-inner">
+            <div> <strong>Preparation principle</strong>
+                <p> Solve fewer problems deeply, revisit them deliberately, and communicate your reasoning as if the
+                    interviewer is a teammate reviewing production code. </p>
+            </div>
+            <div> <strong>Source pattern reference</strong>
+                <p> Based on the 15-pattern LeetCode discussion linked in the request. </p>
+            </div>
+        </div>
+    </footer>
+    <script> const filterButtons = document.querySelectorAll(".filter-btn"); const patternCards = document.querySelectorAll(".pattern"); filterButtons.forEach((button) => { button.addEventListener("click", () => { const filter = button.dataset.filter; filterButtons.forEach((item) => item.classList.remove("active")); button.classList.add("active"); patternCards.forEach((card) => { const visible = filter === "all" || card.dataset.category === filter; card.style.display = visible ? "flex" : "none"; }); }); }); </script>
+</body>
+
+</html>
