@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foundation of Computer Vision - Quiz Guidebook</title>
+
+    <style>
+        :root {
+            --ink: #14213d;
+            --muted: #5f6b7a;
+            --paper: #f7f9fc;
+            --card: #ffffff;
+            --teal: #087f78;
+            --teal-soft: #dff5f1;
+            --orange: #ee7d22;
+            --orange-soft: #fff0dc;
+            --blue: #2f70d9;
+            --blue-soft: #e4efff;
+            --purple: #7138d4;
+            --purple-soft: #eee7ff;
+            --red: #d94b4b;
+            --red-soft: #ffe6e6;
+            --green: #15803d;
+            --green-soft: #e4f7e9;
+            --yellow-soft: #fff7cf;
+            --border: #dbe3ed;
+            --shadow: 0 16px 45px rgba(20, 33, 61, 0.09);
+            --radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 10% 0%, rgba(8, 127, 120, 0.12), transparent 28rem),
+                radial-gradient(circle at 95% 10%, rgba(238, 125, 34, 0.12), transparent 30rem),
+                var(--paper);
+            font-family: Georgia, "Times New Roman", serif;
+            line-height: 1.65;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        nav,
+        button,
+        .label,
+        .eyebrow,
+        .badge,
+        .metric,
+        th {
+            font-family: "Trebuchet MS", Arial, sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            max-width: 820px;
+            margin-bottom: 18px;
+            font-size: clamp(2.6rem, 7vw, 6.2rem);
+            line-height: 0.98;
+            letter-spacing: -0.06em;
+        }
+
+        h2 {
+            margin-bottom: 14px;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+            font-size: 1.35rem;
+        }
+
+        p,
+        li {
+            font-size: 1.05rem;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        code,
+        .formula {
+            font-family: "Courier New", monospace;
+        }
+
+        code {
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: #edf1f6;
+            color: #25334d;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            min-height: 650px;
+            padding: 72px 7vw 80px;
+            color: #fff;
+            background:
+                linear-gradient(135deg, rgba(8, 127, 120, 0.96), rgba(20, 33, 61, 0.98)),
+                repeating-linear-gradient(135deg, transparent 0 28px, rgba(255, 255, 255, 0.04) 29px 30px);
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 460px;
+            height: 460px;
+            right: -130px;
+            bottom: -220px;
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            border-radius: 50%;
+            box-shadow:
+                0 0 0 38px rgba(255, 255, 255, 0.04),
+                0 0 0 78px rgba(255, 255, 255, 0.04),
+                0 0 0 118px rgba(255, 255, 255, 0.04);
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 1180px;
+            margin: auto;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 22px;
+            padding: 8px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            border-radius: 999px;
+            color: #d9fffa;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            max-width: 720px;
+            color: #d7e9e8;
+            font-size: 1.25rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 34px;
+        }
+
+        .badge {
+            padding: 9px 13px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 275px minmax(0, 1fr);
+            gap: 32px;
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 40px 28px 100px;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.88);
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 12px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 8px 0;
+            color: var(--muted);
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-size: 0.93rem;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            color: var(--teal);
+        }
+
+        main {
+            min-width: 0;
+        }
+
+        section {
+            scroll-margin-top: 24px;
+            margin-bottom: 72px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-head p {
+            max-width: 650px;
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        .kicker {
+            margin-bottom: 8px;
+            color: var(--teal);
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .grid.three {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .card {
+            padding: 25px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            box-shadow: 0 8px 25px rgba(20, 33, 61, 0.05);
+        }
+
+        .card h3 {
+            color: var(--teal);
+        }
+
+        .card p:last-child,
+        .card ul:last-child,
+        .card ol:last-child {
+            margin-bottom: 0;
+        }
+
+        .callout {
+            margin: 22px 0;
+            padding: 22px 25px;
+            border-left: 7px solid var(--orange);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            background: var(--orange-soft);
+        }
+
+        .callout strong {
+            font-family: "Trebuchet MS", Arial, sans-serif;
+        }
+
+        .callout.teal {
+            border-left-color: var(--teal);
+            background: var(--teal-soft);
+        }
+
+        .callout.blue {
+            border-left-color: var(--blue);
+            background: var(--blue-soft);
+        }
+
+        .callout.red {
+            border-left-color: var(--red);
+            background: var(--red-soft);
+        }
+
+        .callout.purple {
+            border-left-color: var(--purple);
+            background: var(--purple-soft);
+        }
+
+        .callout.yellow {
+            border-left-color: #d2a800;
+            background: var(--yellow-soft);
+        }
+
+        .formula {
+            display: block;
+            margin: 16px 0;
+            padding: 18px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #f1f4f8;
+            color: #1a3152;
+            font-size: 1.12rem;
+            text-align: center;
+        }
+
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .flow-item {
+            min-width: 145px;
+            padding: 18px 15px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: #fff;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            color: var(--teal);
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 25px 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px 17px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            color: #fff;
+            background: var(--ink);
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .term {
+            color: var(--teal);
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-weight: 700;
+        }
+
+        .flashcards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .flashcard {
+            min-height: 150px;
+            perspective: 900px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 150px;
+            transition: transform 0.55s ease;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard:hover .flashcard-inner,
+        .flashcard:focus .flashcard-inner,
+        .flashcard.is-flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .face {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            backface-visibility: hidden;
+            text-align: center;
+        }
+
+        .front {
+            background: var(--blue-soft);
+            color: var(--ink);
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-weight: 700;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            background: var(--teal-soft);
+        }
+
+        .quiz-question {
+            margin-bottom: 18px;
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: #fff;
+        }
+
+        .quiz-question h3 {
+            color: var(--ink);
+        }
+
+        .quiz-question label {
+            display: block;
+            margin: 8px 0;
+            color: var(--muted);
+            cursor: pointer;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+        }
+
+        .quiz-question input {
+            margin-right: 8px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--teal);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #05645f;
+        }
+
+        #quiz-result {
+            margin-top: 18px;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-weight: 700;
+        }
+
+        .score-box {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin: 25px 0;
+        }
+
+        .score-box div {
+            padding: 18px;
+            border-radius: 16px;
+            background: var(--ink);
+            color: #fff;
+            text-align: center;
+        }
+
+        .score-box strong {
+            display: block;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            font-size: 1.8rem;
+        }
+
+        .mistake {
+            color: var(--red);
+            font-weight: 700;
+        }
+
+        .correct {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        footer {
+            padding: 40px 7vw;
+            background: var(--ink);
+            color: #dbe5f2;
+            text-align: center;
+        }
+
+        footer p {
+            max-width: 800px;
+            margin: 8px auto;
+        }
+
+        @media (max-width: 1000px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .sidebar nav {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0 18px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .hero {
+                min-height: auto;
+                padding: 55px 22px 65px;
+            }
+
+            .layout {
+                padding: 28px 16px 70px;
+            }
+
+            .grid,
+            .grid.three,
+            .flashcards,
+            .score-box {
+                grid-template-columns: 1fr;
+            }
+
+            .section-head {
+                display: block;
+            }
+
+            .flow-item {
+                width: 100%;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            p,
+            li {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="hero">
+        <div class="hero-inner">
+            <span class="eyebrow">Quiz Preparation Guidebook</span>
+            <h1>Foundation of Computer Vision</h1>
+            <p>
+                A structured revision guide based on your lecture materials:
+                image processing, video representation, semantic segmentation,
+                segmentation architectures, metrics, training, and failure analysis.
+            </p>
+
+            <div class="hero-meta">
+                <span class="badge">Image Processing</span>
+                <span class="badge">Video Processing</span>
+                <span class="badge">Semantic Segmentation</span>
+                <span class="badge">U-Net and DeepLab</span>
+                <span class="badge">Quiz Practice</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h3>Guide Navigation</h3>
+            <nav>
+                <a href="#exam-map">Exam Map</a>
+                <a href="#core-vision">Computer Vision</a>
+                <a href="#image-processing">Image Processing</a>
+                <a href="#video-processing">Video Processing</a>
+                <a href="#seg-foundations">Segmentation Basics</a>
+                <a href="#architectures">Architectures</a>
+                <a href="#training">Training</a>
+                <a href="#metrics">Metrics</a>
+                <a href="#failures">Failure Analysis</a>
+                <a href="#modern">Modern Directions</a>
+                <a href="#flashcards">Flashcards</a>
+                <a href="#quiz">Practice Quiz</a>
+            </nav>
+        </aside>
+
+        <main>
+            <section id="exam-map">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Start Here</div>
+                        <h2>Exam Map</h2>
+                    </div>
+                    <p>
+                        Use the following sequence when revising. First understand the
+                        representation of images and videos, then move to pixel-level
+                        prediction and finally to evaluation.
+                    </p>
+                </div>
+
+                <div class="flow">
+                    <div class="flow-item">Pixels</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Features</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Objects</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Masks</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Evaluation</div>
+                </div>
+
+                <div class="callout teal">
+                    <strong>Central idea:</strong>
+                    Computer vision converts visual data into useful information.
+                    A strong vision system must understand both the content of an image
+                    and the spatial location of that content.
+                </div>
+
+                <div class="score-box">
+                    <div><strong>WHAT</strong>Semantic meaning</div>
+                    <div><strong>WHERE</strong>Spatial location</div>
+                    <div><strong>HOW</strong>Features and models</div>
+                    <div><strong>WHY</strong>Application objective</div>
+                </div>
+            </section>
+
+            <section id="core-vision">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Foundation</div>
+                        <h2>What Is Computer Vision?</h2>
+                    </div>
+                    <p>
+                        Computer vision enables computers to extract meaning from images
+                        and videos.
+                    </p>
+                </div>
+
+                <div class="grid">
+                    <article class="card">
+                        <h3>Simple Definition</h3>
+                        <p>
+                            Computer vision is the field of artificial intelligence that
+                            develops methods for machines to interpret visual information.
+                        </p>
+                        <p>
+                            It deals with questions such as:
+                        </p>
+                        <ul>
+                            <li>What objects are present?</li>
+                            <li>Where are they located?</li>
+                            <li>What are they doing?</li>
+                            <li>How are they related?</li>
+                            <li>What does the complete scene mean?</li>
+                        </ul>
+                    </article>
+
+                    <article class="card">
+                        <h3>Levels of Understanding</h3>
+                        <ol>
+                            <li><strong>Classification:</strong> one label for the whole image.</li>
+                            <li><strong>Detection:</strong> objects plus approximate locations.</li>
+                            <li><strong>Segmentation:</strong> one class label for every pixel.</li>
+                            <li><strong>Recognition:</strong> identify a particular object or person.</li>
+                            <li><strong>Scene understanding:</strong> understand context and relationships.</li>
+                        </ol>
+                    </article>
+                </div>
+
+                <div class="callout yellow">
+                    <strong>Why are multiple stages useful?</strong>
+                    A two-dimensional image is incomplete and ambiguous. The same object
+                    can look different because of lighting, scale, viewpoint, occlusion,
+                    background, and pose. Intermediate features such as edges, texture,
+                    depth, and shape help the system form a reliable interpretation.
+                </div>
+            </section>
+
+            <section id="image-processing">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Part 1</div>
+                        <h2>Image Processing</h2>
+                    </div>
+                    <p>
+                        Image processing changes or analyzes pixel values before semantic
+                        understanding begins.
+                    </p>
+                </div>
+
+                <div class="grid three">
+                    <article class="card">
+                        <h3>Image</h3>
+                        <p>
+                            An image is a two-dimensional discrete signal. Each pixel stores
+                            numerical information such as intensity or color.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Video</h3>
+                        <p>
+                            A video is a sequence of images called frames. Time provides an
+                            additional source of information.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Pixel</h3>
+                        <p>
+                            A pixel is a small sample of the visual scene. In an 8-bit
+                            grayscale image, values range from 0 to 255.
+                        </p>
+                    </article>
+                </div>
+
+                <h3>Color Models</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Meaning</th>
+                                <th>Typical Use</th>
+                                <th>Important Point</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">RGB</td>
+                                <td>Red, green, and blue light channels.</td>
+                                <td>Monitors, cameras, televisions, digital images.</td>
+                                <td>Additive model: adding light produces white.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">CMYK</td>
+                                <td>Cyan, magenta, yellow, and black ink.</td>
+                                <td>Printing.</td>
+                                <td>Subtractive model: ink absorbs light.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">HSL</td>
+                                <td>Hue, saturation, and lightness.</td>
+                                <td>Image editing and color filtering.</td>
+                                <td>Separates color type, intensity, and brightness.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">YCbCr</td>
+                                <td>Luminance and chrominance components.</td>
+                                <td>Image and video compression.</td>
+                                <td>Brightness can be handled separately from color.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout blue">
+                    <strong>HSL memory trick:</strong>
+                    Hue tells you which color it is. Saturation tells you how pure or
+                    intense it is. Lightness tells you how light or dark it appears.
+                </div>
+
+                <h3>JPEG Compression Pipeline</h3>
+                <div class="flow">
+                    <div class="flow-item">RGB → YCbCr</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Downsampling</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">DCT</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Quantization</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Encoding</div>
+                </div>
+
+                <ol>
+                    <li><strong>Color transform:</strong> convert RGB into brightness and color components.</li>
+                    <li><strong>Downsampling:</strong> reduce color resolution because humans are more sensitive to
+                        brightness.</li>
+                    <li><strong>DCT:</strong> convert an image block into frequency components.</li>
+                    <li><strong>Quantization:</strong> reduce precision, often removing high-frequency information.</li>
+                    <li><strong>Encoding:</strong> compress the remaining data, for example with Huffman coding.</li>
+                </ol>
+
+                <h3>Brightness, Contrast, and Dynamic Range</h3>
+                <div class="grid">
+                    <article class="card">
+                        <h3>Brightness</h3>
+                        <p>
+                            Brightness is the average intensity of all pixels in a grayscale
+                            image.
+                        </p>
+                        <span class="formula">B(I) = (1 / WH) Σᵥ Σᵤ I(u, v)</span>
+                    </article>
+
+                    <article class="card">
+                        <h3>Contrast</h3>
+                        <p>
+                            Contrast describes how widely the intensity values vary around
+                            their average.
+                        </p>
+                        <span class="formula">Contrast ≈ variation / average luminance</span>
+                    </article>
+
+                    <article class="card">
+                        <h3>Dynamic Range</h3>
+                        <p>
+                            Dynamic range is the number of distinct intensity levels used by
+                            an image.
+                        </p>
+                        <ul>
+                            <li>High dynamic range: many shades.</li>
+                            <li>Low dynamic range: fewer shades and a flatter appearance.</li>
+                        </ul>
+                    </article>
+
+                    <article class="card">
+                        <h3>Histogram</h3>
+                        <p>
+                            A histogram counts how frequently each intensity value occurs.
+                            It provides statistical information but does not tell where
+                            pixels are located.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="callout">
+                    <strong>Histogram interpretation:</strong>
+                    A narrow central peak usually indicates low contrast. A broad spread
+                    generally indicates stronger contrast. Peaks near the ends may
+                    indicate strong contrast but possible loss of detail.
+                </div>
+
+                <h3>Image Enhancement Methods</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Technique</th>
+                                <th>Purpose</th>
+                                <th>Core Idea</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">Negative</td>
+                                <td>Invert intensities.</td>
+                                <td><code>g(x,y) = L - f(x,y)</code></td>
+                            </tr>
+                            <tr>
+                                <td class="term">Histogram Equalization</td>
+                                <td>Improve contrast.</td>
+                                <td>Spread crowded intensity values over a wider range.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Log Transform</td>
+                                <td>Compress large dynamic ranges.</td>
+                                <td><code>s = c log(1 + |r|)</code></td>
+                            </tr>
+                            <tr>
+                                <td class="term">Gray-Level Slicing</td>
+                                <td>Highlight a selected intensity range.</td>
+                                <td>Keep values in <code>[A, B]</code> bright and suppress others.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Noise and Spatial Filtering</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Noise Type</th>
+                                <th>Description</th>
+                                <th>Useful Filter or Strategy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">Gaussian / White</td>
+                                <td>Many small random intensity changes.</td>
+                                <td>Gaussian or averaging filter.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Impulse / Salt-and-Pepper</td>
+                                <td>A few pixels jump to extreme values such as 0 or 255.</td>
+                                <td>Median filter.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Speckle</td>
+                                <td>Granular multiplicative variation.</td>
+                                <td>Adaptive or median-type filtering.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Shot / Poisson</td>
+                                <td>Photon-counting variation, common in low-light images.</td>
+                                <td>Denoising or variance stabilization.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout teal">
+                    <strong>Spatial filtering:</strong>
+                    A small kernel is applied to a local image neighborhood.
+                    Low-pass filters smooth images, median filters remove impulse noise,
+                    and sharpening filters emphasize edges and fine details.
+                </div>
+            </section>
+
+            <section id="video-processing">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Part 2</div>
+                        <h2>Video Processing</h2>
+                    </div>
+                    <p>
+                        Video processing uses temporal information: how visual content
+                        changes from one frame to the next.
+                    </p>
+                </div>
+
+                <h3>Video Compression</h3>
+                <div class="grid three">
+                    <article class="card">
+                        <h3>I-Frame</h3>
+                        <p>
+                            A self-contained keyframe. It can be decoded without other
+                            frames.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>P-Frame</h3>
+                        <p>
+                            A predicted frame that uses information from a previous frame.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>B-Frame</h3>
+                        <p>
+                            A bidirectionally predicted frame that uses both past and future
+                            frames.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="callout red">
+                    <strong>Why not use only B-frames?</strong>
+                    B-frames require future frames for decoding. This increases delay,
+                    memory requirements, and complexity, which is undesirable in
+                    real-time applications such as video calls.
+                </div>
+
+                <h3>Optical Flow</h3>
+                <p>
+                    Optical flow estimates the apparent motion of pixels or visual
+                    points between consecutive frames. Each flow vector has a horizontal
+                    component, a vertical component, a direction, and a magnitude.
+                </p>
+
+                <span class="formula">flow magnitude = √(u² + v²)</span>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>What It Estimates</th>
+                                <th>Advantage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">Sparse Flow</td>
+                                <td>Motion at selected informative points.</td>
+                                <td>Efficient and useful for tracking features.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Dense Flow</td>
+                                <td>Motion for almost every pixel.</td>
+                                <td>Provides a detailed motion field.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Video Descriptors</h3>
+                <div class="grid three">
+                    <article class="card">
+                        <h3>HOG</h3>
+                        <p>
+                            Histogram of Oriented Gradients. Describes appearance, shape,
+                            edges, and spatial structure.
+                        </p>
+                        <p><strong>Question answered:</strong> What does the object look like?</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>HOF</h3>
+                        <p>
+                            Histogram of Optical Flow. Counts motion vectors according to
+                            their directions.
+                        </p>
+                        <p><strong>Question answered:</strong> Which way is the object moving?</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>MBH</h3>
+                        <p>
+                            Motion Boundary Histogram. Uses gradients of optical flow to
+                            describe where motion changes.
+                        </p>
+                        <p><strong>Question answered:</strong> Where does motion differ from the background?</p>
+                    </article>
+                </div>
+
+                <div class="callout purple">
+                    <strong>Memory sentence:</strong>
+                    HOG describes appearance and shape. HOF describes motion direction.
+                    MBH describes motion boundaries.
+                </div>
+
+                <h3>Traditional Action Classification Pipeline</h3>
+                <div class="flow">
+                    <div class="flow-item">Space-Time Points</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">HOG / HOF / MBH</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Visual Words</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Histogram</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">SVM</div>
+                </div>
+
+                <ol>
+                    <li>Find space-time interest points where motion or appearance changes.</li>
+                    <li>Extract feature descriptors.</li>
+                    <li>Cluster similar descriptors into visual words.</li>
+                    <li>Represent the video as a bag-of-visual-words histogram.</li>
+                    <li>Use an SVM classifier to recognize the action.</li>
+                </ol>
+
+                <h3>Modern Video Understanding</h3>
+                <div class="grid">
+                    <article class="card">
+                        <h3>Person Search</h3>
+                        <p>
+                            Given one portrait image, find the person throughout a video even
+                            when pose, clothing, and lighting change.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Efficient Object Detection</h3>
+                        <p>
+                            Modern systems share object detections over time using motion
+                            and scene consistency rather than treating every frame as
+                            completely independent.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Video Interpolation</h3>
+                        <p>
+                            Generate intermediate frames between existing frames to create
+                            smoother or higher-frame-rate video.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Video Understanding</h3>
+                        <p>
+                            Move beyond object and action detection toward characters,
+                            relationships, events, storylines, and summaries.
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="seg-foundations">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Part 3</div>
+                        <h2>Semantic Segmentation Foundations</h2>
+                    </div>
+                    <p>
+                        Semantic segmentation assigns a class label to every pixel in an
+                        image.
+                    </p>
+                </div>
+
+                <div class="callout teal">
+                    <strong>One-line definition:</strong>
+                    Semantic segmentation = dense pixel-wise classification.
+                </div>
+
+                <div class="flow">
+                    <div class="flow-item">Image</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Features</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Class Scores</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Pixel Mask</div>
+                </div>
+
+                <h3>Classification vs Detection vs Segmentation</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Output</th>
+                                <th>Question Answered</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">Classification</td>
+                                <td>One label for the image.</td>
+                                <td>What is in the image?</td>
+                                <td>Street scene.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Object Detection</td>
+                                <td>Class, bounding box, and confidence score.</td>
+                                <td>Where is the object approximately?</td>
+                                <td>Car here, person there.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Semantic Segmentation</td>
+                                <td>One class label for each pixel.</td>
+                                <td>Which class does each pixel belong to?</td>
+                                <td>Road, car, sky, person.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Instance Segmentation</td>
+                                <td>Separate mask for each object instance.</td>
+                                <td>Which individual object is it?</td>
+                                <td>Car 1, car 2, car 3.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Panoptic Segmentation</td>
+                                <td>Class and instance information together.</td>
+                                <td>What is every region and which object instance is it?</td>
+                                <td>Road plus person 1, person 2, and car 1.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Formal Representation</h3>
+                <p>
+                    For an RGB input image of height <code>H</code> and width <code>W</code>:
+                </p>
+
+                <span class="formula">I ∈ R^(H × W × 3)</span>
+                <span class="formula">Y ∈ {1, ..., C}^(H × W)</span>
+
+                <p>
+                    Before choosing the final class, the network conceptually produces
+                    one score for every class at every pixel:
+                </p>
+
+                <span class="formula">Network output = H × W × C logits</span>
+                <span class="formula">ŷ(x,y) = argmax₍c₎ P(c | x,y)</span>
+
+                <div class="callout blue">
+                    <strong>Example:</strong>
+                    If an image has dimensions <code>256 × 256</code> and five classes,
+                    the output before argmax is <code>256 × 256 × 5</code>. The final
+                    mask is <code>256 × 256</code>.
+                </div>
+
+                <h3>Why Classification CNNs Are Not Enough</h3>
+                <div class="grid">
+                    <article class="card">
+                        <h3>Classification CNN</h3>
+                        <ul>
+                            <li>Compresses spatial information.</li>
+                            <li>Uses pooling and global aggregation.</li>
+                            <li>Produces one vector or one image-level label.</li>
+                            <li>Exact object boundaries become less important.</li>
+                        </ul>
+                    </article>
+
+                    <article class="card">
+                        <h3>Segmentation Network</h3>
+                        <ul>
+                            <li>Must preserve a spatial grid.</li>
+                            <li>Must predict a class at every location.</li>
+                            <li>Must preserve small structures and boundaries.</li>
+                            <li>Needs both semantic context and spatial precision.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <h3>The Spatial Resolution Problem</h3>
+                <div class="flow">
+                    <div class="flow-item">256 × 256</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">128 × 128</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">64 × 64</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">32 × 32</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">16 × 16</div>
+                </div>
+
+                <div class="grid">
+                    <article class="card">
+                        <h3>What Improves?</h3>
+                        <ul>
+                            <li>Larger receptive field.</li>
+                            <li>More semantic abstraction.</li>
+                            <li>Better understanding of objects and context.</li>
+                        </ul>
+                    </article>
+
+                    <article class="card">
+                        <h3>What Is Lost?</h3>
+                        <ul>
+                            <li>Fine boundaries.</li>
+                            <li>Thin structures.</li>
+                            <li>Small objects.</li>
+                            <li>Exact spatial position.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="callout red">
+                    <strong>Important:</strong>
+                    Deep layers know more about <strong>WHAT</strong> is present, but less
+                    precisely <strong>WHERE</strong> it is.
+                </div>
+
+                <h3>Upsampling</h3>
+                <p>
+                    Upsampling increases the spatial resolution of a feature map or
+                    prediction map. Common methods include nearest-neighbour interpolation,
+                    bilinear interpolation, and learned or transposed convolution.
+                </p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>How It Works</th>
+                                <th>Strength</th>
+                                <th>Limitation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">Nearest-Neighbour</td>
+                                <td>Copies the closest value.</td>
+                                <td>Fast and preserves original values.</td>
+                                <td>Can create blocky boundaries and cannot recover lost detail.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Bilinear</td>
+                                <td>Uses weighted averaging of nearby values.</td>
+                                <td>Smoother output.</td>
+                                <td>Can blur boundaries and does not add semantic understanding.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Transposed Convolution</td>
+                                <td>Learns filters for increasing resolution.</td>
+                                <td>More flexible reconstruction.</td>
+                                <td>Cannot reconstruct information that was completely discarded.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="architectures">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Architecture Journey</div>
+                        <h2>From FCN to U-Net and DeepLab</h2>
+                    </div>
+                    <p>
+                        Every architecture addresses a specific segmentation problem.
+                        Focus on the problem solved rather than memorizing names.
+                    </p>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Architecture</th>
+                                <th>Main Idea</th>
+                                <th>Problem Addressed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">FCN</td>
+                                <td>Keep a spatial feature grid and produce class-score maps.</td>
+                                <td>Converts a classifier into a dense predictor.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Encoder-Decoder</td>
+                                <td>Compress the image, then reconstruct a full-resolution mask.</td>
+                                <td>Recovers output resolution.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">U-Net</td>
+                                <td>Combines encoder and decoder features through skip connections.</td>
+                                <td>Improves boundary and small-object recovery.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Dilated Convolution</td>
+                                <td>Enlarges receptive field without pooling.</td>
+                                <td>Adds context while preserving resolution.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">ASPP</td>
+                                <td>Uses parallel dilation rates.</td>
+                                <td>Captures multiple context scales.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">DeepLabv3+</td>
+                                <td>Combines ASPP context with a boundary-refining decoder.</td>
+                                <td>Handles context and spatial precision together.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Encoder-Decoder Intuition</h3>
+                <div class="flow">
+                    <div class="flow-item">Input Image</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Encoder<br />Meaning</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Bottleneck<br />Context</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Decoder<br />Detail</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">Full Mask</div>
+                </div>
+
+                <div class="callout yellow">
+                    <strong>Encoder:</strong>
+                    reduces resolution, increases receptive field, and learns semantic
+                    features. It answers: “What is present?”
+                    <br /><br />
+                    <strong>Decoder:</strong>
+                    restores resolution and produces dense class scores. It answers:
+                    “Where exactly is it?”
+                </div>
+
+                <h3>Skip Connections and U-Net</h3>
+                <div class="grid">
+                    <article class="card">
+                        <h3>What Skip Connections Carry</h3>
+                        <ul>
+                            <li>Edges and local texture.</li>
+                            <li>Precise object boundary information.</li>
+                            <li>Fine spatial layout.</li>
+                            <li>Early visual patterns lost after pooling.</li>
+                        </ul>
+                    </article>
+
+                    <article class="card">
+                        <h3>Why U-Net Works</h3>
+                        <ul>
+                            <li>Deep features provide semantic meaning.</li>
+                            <li>Early features provide spatial precision.</li>
+                            <li>Matching encoder-decoder resolutions can be combined.</li>
+                            <li>It works well when boundaries matter.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="callout teal">
+                    <strong>Core memory:</strong>
+                    U-Net = encoder-decoder with matching skip connections.
+                    Deep layers tell the model that a region is probably a car; skip
+                    features help determine exactly where the car boundary lies.
+                </div>
+
+                <h3>Dilated Convolution and ASPP</h3>
+                <p>
+                    Dilated convolution inserts spaces between kernel samples. It sees a
+                    wider region while keeping the feature map resolution more stable.
+                </p>
+
+                <div class="grid three">
+                    <article class="card">
+                        <h3>Rate 1</h3>
+                        <p>Local view. Useful for fine detail.</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Rate 2 or 6</h3>
+                        <p>Medium view. Adds object-level context.</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Rate 12 or 18</h3>
+                        <p>Wide view. Adds scene-level context.</p>
+                    </article>
+                </div>
+
+                <div class="callout purple">
+                    <strong>ASPP:</strong>
+                    Atrous Spatial Pyramid Pooling uses several parallel branches with
+                    different dilation rates, then concatenates their outputs. It is
+                    like asking several observers with different zoom levels to describe
+                    the same feature map.
+                </div>
+
+                <h3>Failure to Architecture Fix</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Observed Failure</th>
+                                <th>Likely Architectural Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Blurry object boundaries</td>
+                                <td>Skip connections or a high-resolution decoder.</td>
+                            </tr>
+                            <tr>
+                                <td>Small objects are missed</td>
+                                <td>High-resolution features or multi-scale design.</td>
+                            </tr>
+                            <tr>
+                                <td>Road and sidewalk are confused</td>
+                                <td>Broader context or DeepLab-style context modules.</td>
+                            </tr>
+                            <tr>
+                                <td>Thin structures disappear</td>
+                                <td>Reduce aggressive downsampling and add skip connections.</td>
+                            </tr>
+                            <tr>
+                                <td>Object size varies significantly</td>
+                                <td>ASPP, feature pyramids, or multi-scale context.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="training">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Training</div>
+                        <h2>Training Semantic Segmentation Models</h2>
+                    </div>
+                    <p>
+                        Segmentation requires dense annotations and careful preprocessing.
+                    </p>
+                </div>
+
+                <h3>Training Data</h3>
+                <div class="flow">
+                    <div class="flow-item">Image<br /><code>H × W × 3</code></div>
+                    <span class="flow-arrow">+</span>
+                    <div class="flow-item">Ground Truth Mask<br /><code>H × W</code></div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">One Class ID<br />Per Pixel</div>
+                </div>
+
+                <p>
+                    A segmentation mask is commonly stored as a matrix of class IDs.
+                    For example:
+                </p>
+
+                <div class="formula">
+                    0 = sky<br />
+                    1 = building<br />
+                    2 = road<br />
+                    3 = car<br />
+                    4 = person
+                </div>
+
+                <div class="callout blue">
+                    <strong>Ignore labels:</strong>
+                    Some pixels are ambiguous, unlabeled, outside the annotation region,
+                    or difficult to classify at boundaries. An ignore label such as
+                    <code>255</code> excludes those pixels from loss computation.
+                </div>
+
+                <h3>Cross-Entropy Loss</h3>
+                <p>
+                    Pixel-wise cross-entropy treats segmentation as classification
+                    repeated across the image grid.
+                </p>
+
+                <span class="formula">CE = −log(P(true class))</span>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Prediction for True Class</th>
+                                <th>Loss</th>
+                                <th>Interpretation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0.90</td>
+                                <td>Approximately 0.105</td>
+                                <td>Good and confident prediction.</td>
+                            </tr>
+                            <tr>
+                                <td>0.50</td>
+                                <td>Approximately 0.693</td>
+                                <td>Uncertain prediction.</td>
+                            </tr>
+                            <tr>
+                                <td>0.05</td>
+                                <td>Approximately 2.996</td>
+                                <td>Bad prediction with a large penalty.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <span class="formula">
+                    L = (1 / |Ω|) Σᵢ CE(yᵢ, pᵢ)
+                </span>
+
+                <p>
+                    Here, <code>Ω</code> is the set of valid pixels. Ignored pixels are
+                    excluded.
+                </p>
+
+                <h3>Handling Class Imbalance</h3>
+                <p>
+                    Large regions such as road, sky, and background may dominate the
+                    training loss. Small but important classes such as pedestrians,
+                    tumors, or lane markings may be ignored.
+                </p>
+
+                <div class="grid">
+                    <article class="card">
+                        <h3>Weighted Cross-Entropy</h3>
+                        <p>
+                            Assign larger weights to rare or safety-critical classes.
+                        </p>
+                        <span class="formula">L = wᵧ · CE(y, p)</span>
+                        <p>
+                            Caution: weights that are too large can make optimization
+                            unstable or increase false positives.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Focal Loss</h3>
+                        <p>
+                            Reduces the contribution of easy pixels and focuses learning on
+                            difficult or uncertain pixels.
+                        </p>
+                        <p>
+                            Useful when easy background pixels dominate training.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Dice Loss</h3>
+                        <p>
+                            Useful when the foreground is small because it focuses directly
+                            on region overlap.
+                        </p>
+                    </article>
+                </div>
+
+                <h3>Data Augmentation Rules</h3>
+                <ul>
+                    <li>Apply the same flip, crop, rotation, and scale to the image and mask.</li>
+                    <li>Color jitter and image noise may be applied to the image only.</li>
+                    <li>Do not interpolate class IDs as if they were continuous colors.</li>
+                    <li>Use nearest-neighbour interpolation when resizing masks.</li>
+                </ul>
+
+                <div class="callout red">
+                    <strong>Common dataset bug:</strong>
+                    Bilinear interpolation can turn class IDs such as road = 1 and car = 2
+                    into invalid values such as 1.5. Use nearest-neighbour interpolation
+                    for masks.
+                </div>
+
+                <h3>Typical Training Pipeline</h3>
+                <ol>
+                    <li>Load an image and its mask.</li>
+                    <li>Apply aligned augmentations.</li>
+                    <li>Run a forward pass to produce logits.</li>
+                    <li>Compute loss over valid pixels.</li>
+                    <li>Backpropagate and update parameters.</li>
+                    <li>Validate using metrics such as mIoU and Dice.</li>
+                </ol>
+            </section>
+
+            <section id="metrics">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Evaluation</div>
+                        <h2>Metrics and Model Evaluation</h2>
+                    </div>
+                    <p>
+                        A high pixel accuracy does not necessarily mean a useful
+                        segmentation model.
+                    </p>
+                </div>
+
+                <h3>Pixel Accuracy</h3>
+                <p>
+                    Pixel accuracy is the fraction of correctly classified pixels.
+                    It can be misleading when one class occupies most of the image.
+                </p>
+
+                <div class="callout red">
+                    <strong>Example:</strong>
+                    If a medical image contains 9,000 background pixels and 1,000 tumor
+                    pixels, a model that predicts background everywhere achieves 90%
+                    accuracy but has tumor Dice and IoU equal to 0.
+                </div>
+
+                <h3>IoU: Intersection over Union</h3>
+                <p>
+                    IoU measures the overlap between a predicted region and the ground
+                    truth region.
+                </p>
+
+                <span class="formula">
+                    IoU = |Prediction ∩ Ground Truth| / |Prediction ∪ Ground Truth|
+                </span>
+
+                <p>
+                    IoU ranges from 0 to 1. Higher values indicate better overlap.
+                </p>
+
+                <h3>Dice Score</h3>
+                <span class="formula">
+                    Dice = 2|P ∩ G| / (|P| + |G|)
+                </span>
+
+                <p>
+                    Suppose the ground truth has 100 pixels, the prediction has 120
+                    pixels, and the overlap is 80 pixels:
+                </p>
+
+                <div class="formula">
+                    Dice = 2 × 80 / (120 + 100) = 0.727<br />
+                    IoU = 80 / (100 + 120 − 80) = 0.571
+                </div>
+
+                <div class="callout yellow">
+                    <strong>Do not confuse Dice and IoU.</strong>
+                    They both measure overlap, but their values are not directly
+                    interchangeable.
+                </div>
+
+                <h3>Mean IoU</h3>
+                <p>
+                    Mean IoU computes IoU separately for each class and then averages the
+                    class scores.
+                </p>
+
+                <span class="formula">
+                    mIoU = (IoU₁ + IoU₂ + ... + IoU꜀) / C
+                </span>
+
+                <p>
+                    Example:
+                    road = 0.91, sky = 0.88, building = 0.75, car = 0.62,
+                    person = 0.40.
+                </p>
+
+                <div class="formula">
+                    mIoU = (0.91 + 0.88 + 0.75 + 0.62 + 0.40) / 5 = 0.712
+                </div>
+
+                <h3>Metric Comparison</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Measures</th>
+                                <th>Strength</th>
+                                <th>Weakness</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="term">Pixel Accuracy</td>
+                                <td>Correct pixels overall.</td>
+                                <td>Simple to understand.</td>
+                                <td>Can hide poor rare-class performance.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">IoU</td>
+                                <td>Overlap between prediction and target.</td>
+                                <td>Standard segmentation metric.</td>
+                                <td>May not fully capture boundary quality.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">mIoU</td>
+                                <td>Average IoU across classes.</td>
+                                <td>Prevents dominant classes from hiding rare classes.</td>
+                                <td>Can hide variation unless per-class scores are inspected.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Dice</td>
+                                <td>Overlap with stronger emphasis on agreement.</td>
+                                <td>Useful for small regions and medical segmentation.</td>
+                                <td>Not numerically equal to IoU.</td>
+                            </tr>
+                            <tr>
+                                <td class="term">Boundary Quality</td>
+                                <td>Accuracy of object edges.</td>
+                                <td>Important for lanes, vessels, tumors, and surgical planning.</td>
+                                <td>Requires boundary-aware evaluation.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="failures">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Debugging</div>
+                        <h2>Failure Analysis</h2>
+                    </div>
+                    <p>
+                        Do not report only one metric. Inspect the predicted masks and
+                        identify the type of error.
+                    </p>
+                </div>
+
+                <div class="grid">
+                    <article class="card">
+                        <h3>Boundary Leak</h3>
+                        <p>
+                            The predicted mask spills outside the actual object or produces a
+                            blurry edge.
+                        </p>
+                        <p><strong>Possible causes:</strong> aggressive downsampling,
+                            weak decoder, low resolution, poor annotations.</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Small Object Missed</h3>
+                        <p>
+                            Tiny classes such as pedestrians, lane markings, vessels, or
+                            small tumors disappear.
+                        </p>
+                        <p><strong>Possible causes:</strong> object shrinks to very few
+                            feature-map cells.</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Class Confusion</h3>
+                        <p>
+                            Similar classes such as road and sidewalk receive incorrect
+                            labels.
+                        </p>
+                        <p><strong>Possible causes:</strong> similar texture, weak global
+                            context, ambiguous labels.</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Occlusion</h3>
+                        <p>
+                            Partially visible objects receive incomplete masks.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Domain Shift</h3>
+                        <p>
+                            Performance drops when testing conditions differ from training:
+                            rain, night, a new camera, a new hospital, or a new satellite
+                            sensor.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Over-Smoothing</h3>
+                        <p>
+                            The model removes fine details and produces overly simple masks.
+                        </p>
+                    </article>
+                </div>
+
+                <h3>Debugging Checklist</h3>
+                <div class="card">
+                    <ul>
+                        <li>Are image and mask transformations aligned?</li>
+                        <li>Are mask class IDs correct?</li>
+                        <li>Was nearest-neighbour interpolation used for masks?</li>
+                        <li>Are ignored pixels handled correctly?</li>
+                        <li>Is class imbalance severe?</li>
+                        <li>Does validation contain diverse scenes and conditions?</li>
+                        <li>Which class has the lowest IoU?</li>
+                        <li>Are errors mostly boundary, scale, context, or domain-shift errors?</li>
+                        <li>Have qualitative masks been inspected?</li>
+                    </ul>
+                </div>
+
+                <div class="callout teal">
+                    <strong>Engineering principle:</strong>
+                    When a mask is poor, ask whether the problem comes from data,
+                    preprocessing, loss, metric, architecture, or application constraints.
+                </div>
+            </section>
+
+            <section id="modern">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Modern Directions</div>
+                        <h2>Transformers and Foundation Segmentation</h2>
+                    </div>
+                    <p>
+                        Modern methods connect dense masks with global context, prompts,
+                        and language.
+                    </p>
+                </div>
+
+                <div class="grid">
+                    <article class="card">
+                        <h3>Transformers</h3>
+                        <p>
+                            Attention allows distant regions of an image to influence one
+                            another. This helps when local texture is ambiguous.
+                        </p>
+                        <p>
+                            For example, a gray region may be road, wall, roof, or shadow.
+                            Global scene context helps disambiguate it.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>SegFormer</h3>
+                        <p>
+                            Uses a hierarchical transformer encoder to produce multi-scale
+                            features and a lightweight decoder for dense prediction.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Mask Classification</h3>
+                        <p>
+                            Instead of assigning a class independently at every pixel, the
+                            model predicts a set of mask and class pairs.
+                        </p>
+                        <p>Examples include MaskFormer and Mask2Former.</p>
+                    </article>
+
+                    <article class="card">
+                        <h3>SAM</h3>
+                        <p>
+                            Promptable segmentation produces masks from user prompts such as
+                            points, boxes, masks, or text-like cues.
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Open-Vocabulary Segmentation</h3>
+                        <p>
+                            Uses language to specify the target, such as “segment the red
+                            car” or “find tumor-like regions.”
+                        </p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Model Selection</h3>
+                        <p>
+                            The best model depends on accuracy, latency, memory, annotation
+                            cost, robustness, and application risk.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="callout purple">
+                    <strong>Final conceptual shift:</strong>
+                    Segmentation is no longer limited to assigning one of a fixed set of
+                    class labels. It can become interactive, promptable, and
+                    language-conditioned.
+                </div>
+            </section>
+
+            <section id="flashcards">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Active Recall</div>
+                        <h2>Flashcards</h2>
+                    </div>
+                    <p>Click a card to reveal the answer.</p>
+                </div>
+
+                <div class="flashcards">
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">What is semantic segmentation?</div>
+                            <div class="face back">Assigning one semantic class label to every pixel.</div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">What does the H × W × C tensor represent?</div>
+                            <div class="face back">Class scores or logits for C classes at every spatial location.</div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">Why are skip connections useful?</div>
+                            <div class="face back">They bring high-resolution spatial and boundary information to the
+                                decoder.</div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">What does HOG describe?</div>
+                            <div class="face back">Appearance and shape using local gradient orientations.</div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">What does HOF describe?</div>
+                            <div class="face back">The distribution of optical-flow motion directions.</div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">What does MBH describe?</div>
+                            <div class="face back">Where optical-flow motion changes, highlighting motion boundaries.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">Why can accuracy be misleading?</div>
+                            <div class="face back">Large background regions can dominate the score while important small
+                                classes are missed.</div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">When is Dice useful?</div>
+                            <div class="face back">For small foreground regions and medical segmentation where overlap
+                                matters.</div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard" tabindex="0">
+                        <div class="flashcard-inner">
+                            <div class="face front">Why use nearest-neighbour for masks?</div>
+                            <div class="face back">It preserves integer class IDs and does not create invalid fractional
+                                labels.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Self-Test</div>
+                        <h2>Practice Quiz</h2>
+                    </div>
+                    <p>
+                        Answer the questions without looking back. Then check your score.
+                    </p>
+                </div>
+
+                <form id="quiz-form">
+                    <div class="quiz-question">
+                        <h3>1. What is the output tensor before argmax for a 128 × 128 image with 4 classes?</h3>
+                        <label><input type="radio" name="q1" value="a" /> 128 × 128</label>
+                        <label><input type="radio" name="q1" value="b" /> 128 × 128 × 4</label>
+                        <label><input type="radio" name="q1" value="c" /> 4 × 4 × 128</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h3>2. Which method is most suitable for removing salt-and-pepper noise?</h3>
+                        <label><input type="radio" name="q2" value="a" /> Median filtering</label>
+                        <label><input type="radio" name="q2" value="b" /> Histogram equalization</label>
+                        <label><input type="radio" name="q2" value="c" /> Gray-level slicing</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h3>3. Why is pixel accuracy misleading for a small tumor?</h3>
+                        <label><input type="radio" name="q3" value="a" /> Tumor pixels dominate the image</label>
+                        <label><input type="radio" name="q3" value="b" /> Background pixels can dominate the
+                            score</label>
+                        <label><input type="radio" name="q3" value="c" /> Accuracy measures only boundaries</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h3>4. What information do U-Net skip connections provide?</h3>
+                        <label><input type="radio" name="q4" value="a" /> Only class weights</label>
+                        <label><input type="radio" name="q4" value="b" /> High-resolution spatial detail</label>
+                        <label><input type="radio" name="q4" value="c" /> Future video frames</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h3>5. Why does dilated convolution help segmentation?</h3>
+                        <label><input type="radio" name="q5" value="a" /> It enlarges context without requiring
+                            aggressive pooling</label>
+                        <label><input type="radio" name="q5" value="b" /> It removes all class labels</label>
+                        <label><input type="radio" name="q5" value="c" /> It converts images into videos</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h3>6. Which metric is calculated by averaging IoU across classes?</h3>
+                        <label><input type="radio" name="q6" value="a" /> Pixel accuracy</label>
+                        <label><input type="radio" name="q6" value="b" /> mIoU</label>
+                        <label><input type="radio" name="q6" value="c" /> HOF</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h3>7. Which descriptor focuses on motion direction?</h3>
+                        <label><input type="radio" name="q7" value="a" /> HOG</label>
+                        <label><input type="radio" name="q7" value="b" /> HOF</label>
+                        <label><input type="radio" name="q7" value="c" /> MBH</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h3>8. Which interpolation should normally be used when resizing class-ID masks?</h3>
+                        <label><input type="radio" name="q8" value="a" /> Bilinear</label>
+                        <label><input type="radio" name="q8" value="b" /> Bicubic</label>
+                        <label><input type="radio" name="q8" value="c" /> Nearest-neighbour</label>
+                    </div>
+
+                    <button type="button" onclick="gradeQuiz()">Check Score</button>
+                    <div id="quiz-result"></div>
+                </form>
+            </section>
+
+            <section id="last-minute">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">Final Revision</div>
+                        <h2>Last-Minute Memory Sheet</h2>
+                    </div>
+                    <p>
+                        Review these statements immediately before the quiz.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <ol>
+                        <li>Computer vision converts images and videos into meaningful information.</li>
+                        <li>An image is a 2D discrete signal; a video is a sequence of frames.</li>
+                        <li>RGB is additive and used for digital displays; CMYK is subtractive and used for printing.
+                        </li>
+                        <li>A histogram shows intensity frequency but not pixel location.</li>
+                        <li>Histogram equalization improves contrast by spreading intensity values.</li>
+                        <li>Optical flow describes apparent motion between frames.</li>
+                        <li>HOG describes appearance and shape.</li>
+                        <li>HOF describes motion direction.</li>
+                        <li>MBH describes changes in motion.</li>
+                        <li>Semantic segmentation assigns a class to every pixel.</li>
+                        <li>Detection gives boxes; segmentation gives pixel-level regions.</li>
+                        <li>Deep layers provide semantic context but lose spatial precision.</li>
+                        <li>Skip connections carry high-resolution “WHERE” information.</li>
+                        <li>U-Net combines encoder semantics with decoder detail.</li>
+                        <li>Dilated convolution increases receptive field without aggressive downsampling.</li>
+                        <li>ASPP captures context at multiple scales.</li>
+                        <li>Cross-entropy is a standard pixel-wise classification loss.</li>
+                        <li>Weighted CE and focal loss help with class imbalance and hard pixels.</li>
+                        <li>Dice and IoU measure overlap.</li>
+                        <li>mIoU averages IoU across classes.</li>
+                        <li>Accuracy can be high even when a rare class is completely missed.</li>
+                        <li>Good segmentation requires architecture, data, loss, metric, and failure analysis.</li>
+                    </ol>
+                </div>
+
+                <div class="callout teal">
+                    <strong>Best one-sentence answer:</strong>
+                    A good segmentation system combines deep semantic context for
+                    understanding WHAT is present with high-resolution spatial information
+                    for deciding WHERE each class begins and ends.
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>
+            Prepared as a quiz revision guide from the supplied Foundation of Vision
+            and Language lecture material.
+        </p>
+        <p>
+            Educational use only. Verify any course-specific assessment details with
+            your instructor.
+        </p>
+    </footer>
+
+    <script>
+        function gradeQuiz() {
+            const answers = {
+                q1: "b",
+                q2: "a",
+                q3: "b",
+                q4: "b",
+                q5: "a",
+                q6: "b",
+                q7: "b",
+                q8: "c"
+            };
+
+            let score = 0;
+            let answered = 0;
+
+            Object.keys(answers).forEach((question) => {
+                const selected = document.querySelector(
+                    `input[name="${question}"]:checked`
+                );
+
+                if (selected) {
+                    answered += 1;
+
+                    if (selected.value === answers[question]) {
+                        score += 1;
+                        selected.parentElement.classList.add("correct");
+                    } else {
+                        selected.parentElement.classList.add("mistake");
+                    }
+                }
+            });
+
+            const result = document.getElementById("quiz-result");
+            const total = Object.keys(answers).length;
+            const percentage = Math.round((score / total) * 100);
+
+            result.innerHTML =
+                `Score: ${score}/${total} (${percentage}%). ` +
+                `${answered < total ? `You answered ${answered} of ${total} questions.` : "All questions answered."}`;
+        }
+
+        document.querySelectorAll(".flashcard").forEach((card) => {
+            card.addEventListener("click", () => {
+                card.classList.toggle("is-flipped");
+            });
+
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    card.classList.toggle("is-flipped");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
