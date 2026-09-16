@@ -986,9 +986,9 @@
                 <p>Every concept your instructor actually taught across eight lectures — reorganised around the one
                     thing she repeated in almost every class: you will be asked to think, not to recite.</p>
                 <div class="hero-stats">
-                    <span>8 lectures</span>
-                    <span>48 scenario drills</span>
-                    <span>20-question mock</span>
+                    <span>8 lectures + 9 slide decks</span>
+                    <span>91 scenario drills</span>
+                    <span>27-question mock</span>
                     <span>7 open questions she left you</span>
                 </div>
             </div>
@@ -1023,6 +1023,7 @@
                 <a class="lec" href="#l7"><em>L7</em><span>Segmentation, U-Net</span></a>
                 <a class="lec" href="#l8"><em>L8</em><span>Dilation, training, metrics</span></a>
                 <div class="grp"></div>
+                <a href="#cases">Her six worked cases</a>
                 <a href="#confuse">Confusion killers</a>
                 <a href="#drills">Scenario drill bank</a>
                 <a href="#homework">Her open questions</a>
@@ -1072,6 +1073,13 @@
                             She rejected “global maxima,” “latent space” and “overfitting” as answers when they were
                             borrowed rather than understood.</p>
                     </div>
+                    <div class="card" style="border-top:3px solid var(--veg)">
+                        <h4>Where the questions come from</h4>
+                        <p>The slide decks end almost every section with an <em>Ask:</em> line or a concept-check block,
+                            and several carry her model answer printed underneath. Those are the highest-signal material
+                            in the course — every one of them is reproduced in the drill bank and in <a
+                                href="#cases">her six worked cases</a>.</p>
+                    </div>
                 </div>
 
                 <h3>Three sentences that predict most of the paper</h3>
@@ -1086,11 +1094,54 @@
                         tension.</li>
                 </ol>
 
+                <h3>Where the marks actually are</h3>
+                <p>Taken from the course-introduction slides. Part 1 is the computer vision module — everything in this
+                    handbook. Parts 2 and 3 are the two NLP modules taught by the other instructors.</p>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Regular students</th>
+                                <th>Executive students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">Final exam</td>
+                                <td>50% — Parts 2 and 3 only</td>
+                                <td>50% — Parts 1, 2 and 3</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Midterm</td>
+                                <td>20% — <strong>Part 1 only</strong></td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Quizzes</td>
+                                <td>—</td>
+                                <td>30% — all three parts</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Assignment / mini project</td>
+                                <td>30% — 10% per part</td>
+                                <td>20% — all three parts</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="note warn">
+                    <strong>Read those two columns carefully — they point in opposite directions.</strong> If you are a
+                    <strong>regular</strong> student, computer vision is examined <em>only</em> in the 20% midterm and
+                    does not appear in the final at all. If you are an <strong>executive</strong> student there is no
+                    midterm, so this material is examined inside the 50% final alongside both NLP modules. Same content,
+                    very different revision budget.
+                </div>
                 <div class="note sky">
-                    <strong>Course logistics as stated in class:</strong> the CV part is examined primarily in the
-                    mid-semester for regular students; a 20-mark quiz was announced and then pushed to after the mid-sem
-                    to let the late-joining batch catch up; the graded project is a Kaggle-style competition with a
-                    November deadline. Confirm dates on Google Classroom rather than from any handbook.
+                    <strong>Also stated in class:</strong> a 20-mark quiz was announced and then pushed to after the
+                    mid-sem so the late-joining batch could catch up, and the graded project is a Kaggle-style
+                    competition with a November deadline. Course structure is 3–0–0 with 3 credits, taught by three
+                    instructors across three parts. Confirm all dates on Google Classroom rather than from any handbook.
                 </div>
             </section>
 
@@ -1226,7 +1277,8 @@
                         to the observer's viewpoint only</em>. You have added information beyond X and Y, but you have
                     not reached a full volume model: you still know nothing about the object from any other viewpoint.
                     It is halfway, hence the half. She pushed the class hard on this one and rejected “it's still x and
-                    y” until viewpoint was named.
+                    y” until viewpoint was named. The slide's own example: looking at a basketball, you can estimate
+                    that the visible surface is curved — but you cannot see its back, so you have no volume model.
                 </div>
 
                 <h3>The challenge list</h3>
@@ -1320,22 +1372,38 @@
                             <li><strong>Stable</strong> — not flickering in and out under processing</li>
                             <li><strong>Repeatable</strong> under scale, rotation, lighting and viewpoint change</li>
                         </ul>
+                        <p style="margin-top:10px">Typically <strong>corners or blobs with unique texture
+                                patterns</strong> work best, because they are easy to localise precisely and easy to
+                            match.</p>
                     </div>
                     <div class="card">
                         <h4>SIFT</h4>
                         <p>Classical feature detection, designed to be invariant to scale and rotation. Rotate or scale
                             a building and the same key points are still found — which is what lets you undo a
-                            distortion afterwards.</p>
+                            distortion afterwards. The mechanism, if asked: it detects key points using a
+                            <strong>scale-space representation</strong> and assigns an <strong>orientation</strong> to
+                            each key point, which is what makes the descriptor scale- and rotation-invariant.
+                        </p>
                     </div>
                     <div class="card">
                         <h4>Gradient</h4>
                         <p>She would not accept “slope.” The definition is <strong>rate of change</strong>. It carries
                             two pieces of information: <strong>magnitude</strong> (how important) and
-                            <strong>direction</strong> (alignment).</p>
+                            <strong>direction</strong> (alignment).
+                        </p>
                     </div>
                 </div>
                 <p><strong>HOG</strong> — histogram of oriented gradients — builds a descriptor out of exactly those two
-                    quantities. It describes appearance and structure.</p>
+                    quantities. For every pixel it records the gradient <strong>magnitude</strong> (how strong the
+                    intensity change is) and the gradient <strong>orientation</strong> (which direction it points), then
+                    aggregates these over small blocks across the whole image.</p>
+                <div class="note car">
+                    <strong>Why that is enough to find a person.</strong> Someone may wear different clothes in
+                    different colours, but the <em>arrangement of edges</em> stays similar: curved edges around the
+                    head, diagonal edges at the shoulders, vertical edges along the body, separated edges for the legs.
+                    HOG deliberately cares less about exact pixel intensities and more about the directions in which
+                    brightness changes — which is precisely why it generalises across appearance.
+                </div>
 
                 <div class="note good">
                     <strong>The question she liked best:</strong> do we still need handcrafted descriptors now that we
@@ -1347,8 +1415,14 @@
                     human, not a property of CNNs.
                 </div>
 
-                <p><strong>Where HOG fails:</strong> very low contrast, irregular or highly curved shapes, random
-                    patterns with no consistent gradient direction, occlusion, and dense environments.</p>
+                <p><strong>Where HOG fails</strong>, combining the class discussion with the slide's own answer:
+                    <strong>highly deformable objects</strong> (animals in varied poses), objects <strong>lacking strong
+                        edges or with smooth surfaces</strong>, very low contrast, irregular or highly curved shapes,
+                    random patterns with no consistent gradient direction, and anything <strong>occluded or in
+                        clutter</strong>. The single underlying reason — and the sentence to write — is that HOG depends
+                    on <strong>consistent edge-orientation patterns over a fixed grid</strong>. Remove that consistency
+                    and the descriptor has nothing to match.
+                </p>
             </section>
 
             <!-- ================= LECTURE 2 ================= -->
@@ -1364,7 +1438,10 @@
                 <p>Her ICCV 2009 example: build a coherent 3D model from many 2D photographs taken by different people,
                     on different hardware, at different times, under different lighting. The two things that made it
                     work were <strong>camera position</strong> and <strong>viewing angle</strong> — find matching points
-                    across images, estimate where each camera was standing, then merge.</p>
+                    across images, estimate where each camera was standing, then merge. The mechanism named on the slide
+                    is <strong>triangulation</strong>: locate the same feature in several photographs, and once you know
+                    where each camera stood and which way it was pointing, you can compute where that point must sit in
+                    3D space.</p>
 
                 <h3>ImageNet and why architectures got bigger</h3>
                 <p>ImageNet was started in 2004 by Fei-Fei Li — she called her the godmother of AI — and grew to roughly
@@ -1468,6 +1545,22 @@
                     space. That separation into high and low frequency <em>is</em> the importance ranking — keep the
                     low-frequency content, aggressively reduce the high-frequency content, and the information loss
                     stays perceptually small.</p>
+                <h4>The JPEG pipeline, in the five steps she listed</h4>
+                <div class="chain">
+                    <div class="step"><b>1 · Colour transform</b><span>RGB → YCbCr, separating brightness from
+                            colour.</span></div>
+                    <div class="step"><b>2 · Downsample</b><span>Reduce the resolution of the <em>colour</em> channels,
+                            because we are more sensitive to brightness than to colour.</span></div>
+                    <div class="step"><b>3 · DCT</b><span>Transform each block into frequency space.</span></div>
+                    <div class="step"><b>4 · Quantise</b><span>Reduce precision — high frequencies are often thrown away
+                            entirely.</span></div>
+                    <div class="step"><b>5 · Encode</b><span>Compress what remains, e.g. with Huffman coding.</span>
+                    </div>
+                </div>
+                <p>Decompression applies the reverse steps to reconstruct the image. Step 2 is the one worth being able
+                    to justify: the eye's sensitivity to luminance is higher than to chrominance, so discarding colour
+                    resolution costs less perceptually than discarding brightness resolution — which is the whole reason
+                    for converting to YCbCr in step 1.</p>
                 <p><strong>PNG is lossless; JPG is lossy.</strong> A JPG looks smoother because intensity detail has
                     been removed.</p>
 
@@ -1523,7 +1616,8 @@
                 <h3>The histogram, and its one limitation</h3>
                 <p>A histogram counts how often each intensity value occurs. For an 8-bit grayscale image that is 256
                     distinct levels. Plotted together the bars start to look like a distribution, but it remains
-                    <strong>purely statistical</strong>.</p>
+                    <strong>purely statistical</strong>.
+                </p>
                 <div class="note warn">
                     <strong>The point she built a whole slide around:</strong> a histogram tells you <em>how many</em>,
                     never <em>where</em>. There is no pixel-location information in it at all. Consequence, and a very
@@ -1738,7 +1832,10 @@
                 <h3>Optical flow, and the first sight of HOF/MBH</h3>
                 <p>Optical flow estimates apparent motion between consecutive frames. Every flow vector carries
                     <strong>direction and magnitude</strong>, and colour in a flow visualisation encodes direction and
-                    speed.</p>
+                    speed. Writing <span class="mono">(u, v)</span> for the horizontal and vertical motion at a pixel,
+                    the flow magnitude — how fast that pixel is moving between frames — is the length of the vector:
+                </p>
+                <span class="formula">magnitude = &radic;(u&sup2; + v&sup2;)</span>
                 <div class="tw">
                     <table>
                         <thead>
@@ -1822,6 +1919,16 @@
                     <em>not</em> an object bounding box. It is not an outline drawn around the object. It is a
                     highlighted region where motion differs from nearby regions — the legs light up, the static torso
                     does not.
+                </div>
+
+                <div class="note car">
+                    <strong>MBH has two components, and a student asked about exactly this.</strong> Because you take
+                    the gradient of the flow field, you get a horizontal and a vertical part — <strong>MBH-x</strong>
+                    and <strong>MBH-y</strong>. The slide's illustration of how they become useful: train on 100 videos
+                    of people walking, compute MBH-x and MBH-y for each, and average them. You get a pattern that reads
+                    roughly as <em>“strong motion change at the legs, some at the arms.”</em> A new clip is then
+                    classified by asking whether its MBH descriptor resembles that average walking pattern. That is what
+                    a handcrafted descriptor actually buys you — a comparable numeric signature, not an outline.
                 </div>
 
                 <div class="tw">
@@ -1926,6 +2033,12 @@
                         the input. Now you can ask “why did this accident happen, and who was more at fault?” and
                         retrieve only the relevant chunk instead of scanning everything. Memory networks store what
                         happened when.</li>
+                    <li><strong>Story-level understanding</strong> — the slide's endpoint for this thread: build an
+                        <em>event flow</em> of a film as a text synopsis and a <em>character interaction map</em>, both
+                        constructed automatically from the video by vision models, then match the film against
+                        high-level story summaries. The goal is no longer detecting actions or objects but recognising
+                        contextual storylines, events and relationships.
+                    </li>
                 </ul>
 
                 <h3>Detection opens: what a detector predicts</h3>
@@ -1985,6 +2098,35 @@
                         and aspect ratio</strong> at each grid point raises the probability that at least one starting
                     box roughly matches each object.</p>
 
+                <h3>How this is actually computed — the part that makes it cheap</h3>
+                <p>Take the backbone's output feature map <span class="mono">V</span>. Each feature vector <span
+                        class="mono">v<sub>ij</sub></span> in that grid corresponds to one sliding-window position, i.e.
+                    one anchor. For that position:</p>
+                <span class="formula">category score = SoftMax(W<sub>cls</sub> &middot; v<sub>ij</sub>) &nbsp;·&nbsp;
+                    offset from anchor = W<sub>loc</sub> &middot; v<sub>ij</sub></span>
+                <div class="note good">
+                    <strong>The key observation, and a very fair exam question.</strong> The <em>same</em> <span
+                        class="mono">W<sub>cls</sub></span> and <span class="mono">W<sub>loc</sub></span> can be reused
+                    for every position <span class="mono">i, j</span> — provided the anchors are <strong>of the same
+                        shape</strong> and <strong>contained in and centred on the receptive field</strong>. And once
+                    the weights are shared across all positions, applying them everywhere is exactly what a convolution
+                    does:
+                    <span class="formula" style="margin:12px 0 0">category scores = SoftMax(Conv(V; W<sub>cls</sub>))
+                        &nbsp;·&nbsp; offsets = Conv(V; W<sub>loc</sub>)</span>
+                    <p style="margin-top:10px">So the entire anchor grid is predicted in a single convolution pass. That
+                        is the answer to “why is anchor-based detection not as slow as sliding windows” — the sliding is
+                        folded into the convolution.</p>
+                </div>
+                <p>But the sharing condition above assumed one anchor shape. Two ways out, both on the slides:</p>
+                <ul class="tight">
+                    <li><strong>Multiple weight sets.</strong> Keep one <span class="mono">W<sub>cls</sub>,
+                            W<sub>loc</sub></span> pair per aspect ratio and scale — <span
+                            class="mono">W<sub>cls,ar1</sub>, W<sub>cls,ar2</sub>, W<sub>cls,ar3</sub>…</span></li>
+                    <li><strong>Multiple anchor grid resolutions.</strong> Predict from several feature maps at
+                        different resolutions rather than one — the SSD idea, and the direct ancestor of the feature
+                        pyramid later in this lecture.</li>
+                </ul>
+
                 <div class="note sky">
                     <strong>The framework she wants you to carry into your own thesis.</strong> Any model design has
                     three dimensions: <strong>architecture, loss function, optimisation.</strong> Roughly everyone works
@@ -2014,6 +2156,23 @@
                             target</strong>.</li>
                 </ol>
 
+                <h3>The training objective, written out</h3>
+                <span class="formula">L(anchor a) = &alpha; &middot; &delta;(a has matching ground truth) &middot;
+                    L<sub>loc</sub>(t<sub>loc</sub>, W<sub>loc</sub>&middot;v<sub>ij</sub>) &nbsp;+&nbsp; &beta;
+                    &middot; SoftMaxCrossEntropy(t<sub>cls</sub>, W<sub>cls</sub>&middot;v<sub>ij</sub>)</span>
+                <p>Total loss is the average of this over all anchors, minimised with SGD. Three things in that line are
+                    worth being able to explain:</p>
+                <ul class="tight">
+                    <li><span class="mono">&delta;(&middot;)</span> is an <strong>indicator</strong> — the localisation
+                        term only exists for anchors that matched a ground-truth box. Unmatched anchors contribute
+                        classification loss only, which is consistent with giving them no regression target.</li>
+                    <li><span class="mono">&alpha;</span> and <span class="mono">&beta;</span> <strong>balance the two
+                            tasks</strong>. Detection is multi-task learning, and the relative weight of localisation
+                        against classification is a design choice, not a given.</li>
+                    <li>The classification term is ordinary softmax cross-entropy over classes; the localisation term is
+                        where Huber replaces the more obvious L2.</li>
+                </ul>
+
                 <h3>Box encoding — the two design decisions</h3>
                 <div class="cards">
                     <div class="card">
@@ -2027,7 +2186,8 @@
                         <h4>Take log of width and height</h4>
                         <p>Log brings exponentially-spread values onto one scale, and it makes scaling behave
                             <strong>symmetrically</strong>: enlargement becomes a positive change and shrinking a
-                            negative one, of comparable magnitude.</p>
+                            negative one, of comparable magnitude.
+                        </p>
                     </div>
                 </div>
 
@@ -2038,18 +2198,76 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>Error e</th>
+                                <th>Squared loss e&sup2;</th>
+                                <th>Smooth L1</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0.1</td>
+                                <td>0.01</td>
+                                <td>0.005</td>
+                            </tr>
+                            <tr>
+                                <td>0.5</td>
+                                <td>0.25</td>
+                                <td>0.125</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0.5</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>4</td>
+                                <td>1.5</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>25</td>
+                                <td>4.5</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td><strong style="color:var(--person)">100</strong></td>
+                                <td><strong style="color:var(--veg)">9.5</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h4>The four-box example — learn this one, it is the cleanest thing in the deck</h4>
+                <p>Target offset is 0. Four anchors produce errors of 0.2, 0.3, 0.4 and 10. Three are nearly right; one
+                    is badly wrong.</p>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
                                 <th>Box</th>
                                 <th>Error</th>
-                                <th>MSE</th>
-                                <th>Huber / smooth L1</th>
+                                <th>Squared loss</th>
+                                <th>Smooth L1</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
+                                <td>0.2</td>
+                                <td>0.04</td>
+                                <td>0.02</td>
+                            </tr>
+                            <tr>
                                 <td>2</td>
-                                <td>4</td>
-                                <td>1.5</td>
+                                <td>0.3</td>
+                                <td>0.09</td>
+                                <td>0.045</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>0.4</td>
+                                <td>0.16</td>
+                                <td>0.08</td>
                             </tr>
                             <tr>
                                 <td>4</td>
@@ -2059,6 +2277,14 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="note warn">
+                    <strong>The number to quote:</strong> the three good boxes together contribute 0.04 + 0.09 + 0.16 =
+                    <strong>0.29</strong> under squared loss. The single bad box contributes <strong>100</strong> —
+                    roughly <strong>345 times more than all three good boxes combined</strong>. Gradient descent will
+                    spend the step almost entirely on the one box it understands least. Under smooth L1 the bad box
+                    still dominates at 9.5, but the model can keep learning from the many moderately-correct boxes,
+                    which is the whole point.
                 </div>
                 <div class="note">
                     <strong>Why not just use MSE?</strong> Her reasoning is about <em>training dynamics</em>, not
@@ -2125,6 +2351,17 @@
                 </p>
                 <span class="formula">IoU = area of overlap / area of union &nbsp;·&nbsp; 0 = disjoint · 1 =
                     identical</span>
+                <p>Stated as an algorithm: sort detections by score in decreasing order; walk down the list; reject a
+                    detection if it overlaps a previously-kept detection with IoU above the threshold; return everything
+                    not rejected.</p>
+                <div class="note warn">
+                    <strong>Two shortcomings of NMS the slides ask you to remember</strong> — and they are exactly the
+                    kind of thing she would ask, because they are limitations rather than mechanics.
+                    <strong>(1)</strong> It imposes a <em>hard limit on how close two objects can be</em> and still both
+                    be detected: genuinely overlapping objects in a crowd get suppressed as if they were duplicates.
+                    <strong>(2)</strong> <em>Similar classes do not suppress each other</em> — suppression is computed
+                    within a class, so a box labelled “dog” and a box labelled “cat” over the same animal both survive.
+                </div>
 
                 <h3>One stage versus two stage</h3>
                 <div class="tw">
@@ -2157,10 +2394,22 @@
                 </div>
                 <div class="note warn">
                     <strong>Do not write “one-stage is fast, two-stage is accurate” as a rule.</strong> She said this
-                    directly, twice. There is no such universal claim — it depends on your domain. Modern systems blur
-                    the distinction. Also note her terminology point: a <strong>stage</strong> may contain multiple
+                    directly, twice, and the slides call it a “somewhat-outdated understanding.” Today the divide is
+                    fuzzy. Also note her terminology point: a <strong>stage</strong> may contain multiple
                     <strong>steps</strong>, but multiple steps do not make multiple stages. Stages can be connected or
                     disconnected.
+                </div>
+                <div class="note good">
+                    <strong>The distinction that has actually survived</strong>, and a far better answer than
+                    speed-versus-accuracy:
+                    <ul class="tight" style="margin-top:8px">
+                        <li><strong>One-stage</strong> has a simpler architecture built from only standard operations —
+                            convolution, batch norm, ReLU, concatenation — but is <em>fussier to get right</em>.</li>
+                        <li><strong>Two-stage</strong> requires NMS and RoIAlign <em>at training time</em>, which is
+                            more machinery. In exchange it yields <strong>per-instance feature vectors</strong>, and
+                            that is what makes it easy to bolt other tasks onto Faster R-CNN — mask prediction,
+                            keypoints, attributes. Mask R-CNN exists because of this property.</li>
+                    </ul>
                 </div>
 
                 <h3>RetinaNet and the feature pyramid</h3>
@@ -2258,13 +2507,62 @@
                     resolution and can look blurry. That is what “low resolution” means. What is preserved is the
                     <em>relative</em> structure between objects — and that is what stage 2 needs.
                 </div>
+                <h4>RoIAlign, mechanically</h4>
+                <p>The operation has a name — <strong>RoIAlign</strong>, or crop-and-resize — and one detail that
+                    matters more than the rest:</p>
+                <ol class="tight">
+                    <li>Lay a regular grid over the proposal box.</li>
+                    <li>The sample points <strong>will not line up</strong> with the cells of the RPN feature map.</li>
+                    <li>So compute the feature at each sample point by <strong>bilinear interpolation over the four
+                            neighbouring cells</strong>, summing over those four neighbours.</li>
+                    <li>That whole operation is <strong>differentiable</strong> with respect to the underlying feature
+                        map — which is exactly why the two stages can be trained jointly at all.</li>
+                </ol>
+                <div class="note warn">
+                    <strong>The detail people get wrong:</strong> stage 2 crops from the <strong>RPN feature
+                        map</strong>, not from the image pixels. The backbone runs once over the whole image; every
+                    proposal reuses those features. That sharing is what put the “Faster” in Faster R-CNN.
+                </div>
 
                 <h3>Datasets, and the long tail</h3>
-                <ul class="tight">
-                    <li><strong>Pascal VOC</strong> — 20 classes, roughly 5,000 images.</li>
-                    <li><strong>MS COCO</strong> — 80 classes, 120K images. Effectively the default in serious papers.
-                    </li>
-                </ul>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Classes</th>
+                                <th>Images</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">Pascal VOC</td>
+                                <td>20</td>
+                                <td>~5K</td>
+                                <td>The classic small benchmark</td>
+                            </tr>
+                            <tr>
+                                <td class="k">MS COCO</td>
+                                <td>80</td>
+                                <td>~120K</td>
+                                <td>Effectively the default in serious papers</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Open Images</td>
+                                <td>600</td>
+                                <td>1.7M</td>
+                                <td>Scale, and a severe long tail</td>
+                            </tr>
+                            <tr>
+                                <td class="k">LVIS v0.5</td>
+                                <td>1,000</td>
+                                <td>50K</td>
+                                <td>Built specifically around the long-tail problem</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="note warn">
                     <strong>Long-tailed dataset problem.</strong> Plot boxes per class, sorted. A handful of classes
                     have very many boxes; a long tail of classes have very few. She was explicit that this is
@@ -2327,7 +2625,8 @@
                     the other way and the reverse happens. So you sweep the threshold, record the pair at each setting,
                     and plot the <strong>precision–recall curve</strong>. The area under it summarises the trade-off.
                     <strong>AP</strong> is computed per class; <strong>mAP</strong> averages AP across classes, and COCO
-                    additionally averages over multiple IoU thresholds.</p>
+                    additionally averages over multiple IoU thresholds.
+                </p>
                 <div class="note">
                     <strong>Which one you want depends on the cost of each error.</strong> In fraud detection and
                     shoplifting, missing a real case is the expensive failure, so you favour <strong>recall</strong>. In
@@ -2345,16 +2644,100 @@
                     more accurate you add layers and modules, which consumes more resources. You cannot improve one
                     without making the other worse. The job is to locate the point where both are acceptable.
                 </div>
+                <p>Three decisions define a detector, and the slides put them side by side:</p>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Decision</th>
+                                <th>Options given</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">Meta-architecture</td>
+                                <td>SSD, Faster R-CNN, R-FCN</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Feature extractor</td>
+                                <td>VGG, ResNet, Inception v2, Inception v3, MobileNet</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Input image size</td>
+                                <td>300&times;300, 512&times;512, 600&times;1024, 800&times;1296</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>And the constraints that decide between them: sensor, device, latency budget, memory budget. A
+                    laptop, a datacentre, a phone, a Raspberry Pi and a TPU are five different answers to the same
+                    question.</p>
+
+                <h4>What the combinations actually score on COCO</h4>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Configuration</th>
+                                <th>mAP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>SSD with MobileNet, low resolution</td>
+                                <td>21</td>
+                            </tr>
+                            <tr>
+                                <td>SSD with Inception V2, low resolution</td>
+                                <td>24</td>
+                            </tr>
+                            <tr>
+                                <td>R-FCN with ResNet-101, 300 proposals</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td>Faster R-CNN with ResNet-101, 100 proposals</td>
+                                <td>32</td>
+                            </tr>
+                            <tr>
+                                <td>Faster R-CNN with Inception-ResNet V2, 300 proposals</td>
+                                <td><strong>37</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Do not memorise the numbers. Memorise the shape: heavier backbone and more proposals buy accuracy and
+                    cost time, monotonically, with no free lunch anywhere on the curve.</p>
+
                 <ul class="tight">
-                    <li><strong>Lower input resolution</strong> → much faster, and it misses small objects.</li>
-                    <li><strong>Fewer proposals</strong> → much faster, and mAP drops.</li>
+                    <li><strong>Lower input resolution</strong> → much faster, and it <em>tends to miss smaller
+                            objects</em>.</li>
+                    <li><strong>Fewer proposals</strong> → much faster, and it <em>sacrifices a bit of recall</em>
+                        specifically — which is the metric to name, not just “mAP drops”.</li>
                     <li><strong>Backbone</strong> → ResNet and Inception-ResNet give higher mAP; MobileNet is efficient
                         with lower mAP.</li>
-                    <li><strong>Transfer learning</strong> → initialise from a model pre-trained on another dataset.
-                        Larger pre-training is better.</li>
                     <li>There is no rule that a given meta-architecture is right for a given domain. <strong>Evaluate,
                             then decide.</strong></li>
                 </ul>
+
+                <h3>Two practical problems the slides raise that nothing else does</h3>
+                <div class="note car">
+                    <strong>1 · High-resolution training breaks batch norm.</strong> Look at the training resolutions:
+                    MNIST 28&times;28, CIFAR 32&times;32, ImageNet 112 / 224 / 299, but COCO detection runs at
+                    640&times;640, 600&times;1024, 1024&times;1024, 800&times;1333 — often <strong>ten times more
+                        pixels</strong>. Larger images force <strong>smaller batch sizes</strong> to fit in memory, and
+                    small batches make <strong>batch-norm statistics noisy</strong>, which destabilises training. Three
+                    standard responses: <strong>freeze batch norm</strong>, swap in a batch-size-independent variant
+                    such as <strong>GroupNorm</strong>, or train across multiple GPUs/TPUs with <strong>synchronised
+                        batch norm</strong>. This is a very good short-answer question because it connects a data
+                    property to an optimisation failure.
+                </div>
+                <div class="note good">
+                    <strong>2 · Transfer learning, and how far it scales.</strong> Initialise the backbone from a model
+                    pre-trained to classify some other dataset — and the larger that dataset, the better. The slides'
+                    reference point is JFT-300M with 18,000 labels, from “Revisiting the Unreasonable Effectiveness of
+                    Data in the Deep Learning Era.” Transfer the weights, then fine-tune for detection.
+                </div>
             </section>
 
             <!-- ================= LECTURE 7 ================= -->
@@ -2398,7 +2781,9 @@
                     </div>
                     <div class="card" style="border-top:3px solid var(--road)">
                         <h4>Panoptic</h4>
-                        <p>Class and instance together — “things” plus “stuff.”</p>
+                        <p>Class and instance together. <strong>Things</strong> are countable objects — person, car,
+                            dog. <strong>Stuff</strong> is amorphous regions — road, sky, grass. Panoptic labels both in
+                            one unified scene map.</p>
                     </div>
                 </div>
                 <div class="note">
@@ -2424,7 +2809,8 @@
                 </div>
                 <p>Softmax is used rather than sigmoid because the per-pixel probabilities must sum to one and compete:
                     <span class="mono">e<sup>z<sub>i</sub></sup> / Σ<sub>k</sub> e<sup>z<sub>k</sub></sup></span>. With
-                    sigmoid, 0.9 and 0.5 could both appear and nothing forces a decision.</p>
+                    sigmoid, 0.9 and 0.5 could both appear and nothing forces a decision.
+                </p>
 
                 <h3>Why a classification CNN cannot be reused directly</h3>
                 <p>Two independent reasons, and a strong answer names both.</p>
@@ -2494,8 +2880,84 @@
                                 may still need broader context, and objects appear at many scales.</em></span></div>
                     <div class="step"><b>DeepLab</b><span>Multi-scale context — Lecture 8.</span></div>
                 </div>
-                <p>FCN naming, since she worked it live: FCN-32s on a 256×256 input gives 256/32 = 8×8; FCN-16s gives
-                    16×16. The number is the downsampling factor.</p>
+                <p>FCN naming, since she worked it live: the number is the downsampling factor, so on a 256&times;256
+                    input FCN-32s gives 256/32 = 8&times;8 and FCN-16s gives 16&times;16.</p>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Variant</th>
+                                <th>Uses</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">FCN-32s</td>
+                                <td>Only the 1/32 map</td>
+                                <td>Strong semantics, coarse boundaries</td>
+                            </tr>
+                            <tr>
+                                <td class="k">FCN-16s</td>
+                                <td>Adds the 1/16 map</td>
+                                <td>Better spatial detail</td>
+                            </tr>
+                            <tr>
+                                <td class="k">FCN-8s</td>
+                                <td>Adds the 1/8 map</td>
+                                <td>Better still on boundaries</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>That progression <em>is</em> the birth of the skip connection: deep layers give semantic meaning,
+                    earlier layers give finer localisation, and combining them improves the mask. U-Net later makes it
+                    systematic.</p>
+
+                <h4>Trace the tensor shapes once, out loud</h4>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Stage</th>
+                                <th>Shape</th>
+                                <th>What it is</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">Input</td>
+                                <td>256 &times; 256 &times; 3</td>
+                                <td>RGB image</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Encoder feature</td>
+                                <td>64 &times; 64 &times; 128</td>
+                                <td>Internal representation</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Bottleneck</td>
+                                <td>16 &times; 16 &times; 512</td>
+                                <td>Compressed semantics</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Class scores</td>
+                                <td>16 &times; 16 &times; C</td>
+                                <td>Low-resolution logits</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Output mask</td>
+                                <td>256 &times; 256</td>
+                                <td>One label per pixel</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Her check question on that table: if C = 7, what is the shape of the low-resolution class-score map?
+                    <strong>16 &times; 16 &times; 7</strong>, before any upsampling or decoding. The U-Net resolution
+                    path is the symmetric version: 256 → 128 → 64 → 32 → <strong>16</strong> → 32 → 64 → 128 → 256, with
+                    skips joining the matching pairs.
+                </p>
 
                 <div class="note good">
                     <strong>The methodological point she wanted more than any architecture name:</strong> architecture
@@ -2518,9 +2980,11 @@
                         <tbody>
                             <tr>
                                 <td class="k">Nearest neighbour</td>
-                                <td>Copy the nearest value — a 2×2 becomes 4×4 with each element repeated four times
-                                </td>
-                                <td>Blocky; object shapes and boundaries are lost</td>
+                                <td>Copy the nearest value. A 2&times;2 map <span class="mono">[A B / C D]</span>
+                                    becomes <span class="mono">[A A B B / A A B B / C C D D / C C D D]</span> — each
+                                    element repeated four times</td>
+                                <td>Blocky; object shapes and boundaries are lost. Makes the mask larger by copying, not
+                                    by understanding</td>
                             </tr>
                             <tr>
                                 <td class="k">Bilinear</td>
@@ -2634,16 +3098,41 @@
                     local patches are ambiguous. The rate <code>r</code> is a hyperparameter — she was asked directly
                     whether an adaptive algorithm could choose it from the input and said no, there is no such solution;
                     you set it.</p>
+                <div class="note warn">
+                    <strong>The caution that keeps you from over-claiming.</strong> A very large dilation rate creates a
+                    <strong>sparse sampling pattern</strong> — the kernel is looking at scattered points with large
+                    holes between them, and fine structure falls into the gaps. That is precisely why real models do not
+                    simply pick one big rate: they <strong>combine several rates</strong>. Which is ASPP, and which is
+                    why the parallel design is not decoration.
+                </div>
 
                 <h3>ASPP and DeepLabv3+</h3>
                 <p><strong>ASPP</strong> — Atrous Spatial Pyramid Pooling. The key structural point: standard
                     convolution layers are <em>sequential</em>; here the dilated branches run in
                     <strong>parallel</strong> at different rates, and their outputs are concatenated or otherwise fused.
                     One branch sees fine local structure, another sees a broad region, and combining them handles
-                    different object scales.</p>
+                    different object scales.
+                </p>
+                <div class="chain">
+                    <div class="step"><b>rate 1</b><span>Local.</span></div>
+                    <div class="step"><b>rate 6</b><span>Small context.</span></div>
+                    <div class="step"><b>rate 12</b><span>Medium context.</span></div>
+                    <div class="step"><b>rate 18</b><span>Large context.</span></div>
+                    <div class="step"><b>concatenate</b><span>Prediction with multi-scale context.</span></div>
+                </div>
+                <p>The canonical rate set on the slides is <strong>1, 6, 12, 18</strong> running side by side on the
+                    same feature map.</p>
                 <span class="formula">DeepLabv3+ = ASPP (context → WHAT) + decoder using low-level features (detail →
                     WHERE)</span>
                 <p>Which is the “what + where” principle stated one last time, now as an architecture.</p>
+                <div class="note sky">
+                    <strong>Segmentation is one member of a family.</strong> Classification gives one prediction per
+                    image; detection gives N predictions per image; segmentation gives H&times;W predictions per image.
+                    Everything in that last category is <strong>dense prediction</strong>, and the siblings share the
+                    same architectural problems: <strong>depth estimation, optical flow, surface normals, keypoint
+                        heatmaps</strong>. If you understand why U-Net and DeepLab look the way they do, you can read a
+                    depth-estimation paper without relearning anything.
+                </div>
 
                 <h3>Choosing an architecture</h3>
                 <div class="tw">
@@ -2689,7 +3178,11 @@
                 <p>ML design has three parts: <strong>data, model, training and evaluation</strong>. Architecture was
                     the model. This is the rest.</p>
                 <p>Every image is paired with a pixel-level mask stored as class IDs — 0 = sky, 1 = building, 2 = road,
-                    3 = car, 4 = person.</p>
+                    3 = car, 4 = person. A tiny 5&times;5 mask is literally just a matrix of integers:</p>
+                <span class="formula">0 0 0 0 0<br>1 1 0 0 1<br>2 2 3 3 2<br>2 2 3 4 2<br>2 2 2 4 2</span>
+                <p>Training uses those class IDs. The colour masks in slides and papers are visualisation only — a point
+                    worth making explicitly, because it is the reason the interpolation rule later in this lecture
+                    exists.</p>
                 <div class="note sky">
                     <strong>Ignore labels.</strong> Not every pixel is useful: some lie outside the annotated region,
                     some are genuinely uncertain at a boundary, some are too ambiguous, some were never labelled. Those
@@ -2731,13 +3224,67 @@
                 </div>
 
                 <h4>Class imbalance, and why it is a safety issue</h4>
+                <p>The full distribution from the slide, for a 100,000-pixel street scene:</p>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Pixels</th>
+                                <th>Share</th>
+                                <th>Suggested weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">road</td>
+                                <td>50,000</td>
+                                <td>50%</td>
+                                <td>0.5</td>
+                            </tr>
+                            <tr>
+                                <td class="k">sky</td>
+                                <td>25,000</td>
+                                <td>25%</td>
+                                <td>0.7</td>
+                            </tr>
+                            <tr>
+                                <td class="k">building</td>
+                                <td>20,000</td>
+                                <td>20%</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="k">car</td>
+                                <td>4,000</td>
+                                <td>4%</td>
+                                <td>2.0</td>
+                            </tr>
+                            <tr>
+                                <td class="k">pedestrian</td>
+                                <td>1,000</td>
+                                <td><strong>1%</strong></td>
+                                <td><strong>5.0</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="note warn">
-                    <strong>Her concrete numbers:</strong> in a street scene, road might cover 50,000 pixels while
-                    pedestrian covers 1,000. Train on that and the model becomes excellent at road segmentation and poor
-                    at pedestrians. Her conclusion, stated plainly: <em>this is why the question of whether autonomous
-                        vehicles are safe for pedestrians was a real one.</em> Two fixes — <strong>weighted
-                        cross-entropy</strong> (raise the weight on rare, safety-critical classes) and <strong>focal
-                        loss</strong> (down-weight easy, well-classified background pixels and focus on hard ones).
+                    <strong>Read the first and last rows together.</strong> Road outnumbers pedestrian fifty to one.
+                    Train on that and the model becomes excellent at road segmentation and poor at pedestrians — her
+                    conclusion, stated plainly: <em>this is why the question of whether autonomous vehicles are safe for
+                        pedestrians was a real one.</em> The weight column is the fix: <strong>weighted
+                        cross-entropy</strong> multiplies each pixel's loss by a class weight, <span class="mono">L =
+                        w<sub>y</sub> &middot; CE(y, p)</span>, so rare and safety-critical classes count for more. Her
+                    caution, which belongs in the answer: <strong>weights that are too large make training unstable or
+                        increase false positives.</strong> You are trading one failure mode for another.
+                </div>
+                <div class="note good">
+                    <strong>Focal loss, made concrete.</strong> An <em>easy</em> pixel: true class road, P(road) = 0.99
+                    — already solved, and it should not dominate training. A <em>hard</em> pixel: on the boundary
+                    between a car and the road, P(car) = 0.45 — uncertain, and it is where the learning is. Focal loss
+                    reduces the weight of the first kind and concentrates on the second. The teaching line: <strong>not
+                        all pixels should contribute equally to learning.</strong>
                 </div>
 
                 <h3>Evaluation</h3>
@@ -2779,8 +3326,18 @@
                         </tbody>
                     </table>
                 </div>
-                <p>Ground truth 100 pixels, prediction 120, overlap 80. Notice that Dice and IoU measure the same
-                    overlap and give <strong>different numbers</strong>. They are not interchangeable.</p>
+                <p>Ground truth 100 pixels, prediction 120, overlap 80 — so union = 100 + 120 &minus; 80 = 140. Notice
+                    that Dice and IoU measure the same overlap and give <strong>different numbers</strong>. They are not
+                    interchangeable, and comparing a Dice figure in one paper against an IoU figure in another is simply
+                    an error.</p>
+                <h4>mIoU, worked</h4>
+                <p>Compute IoU per class, then average. Her example:</p>
+                <span class="formula">road 0.91 &nbsp;·&nbsp; sky 0.88 &nbsp;·&nbsp; building 0.75 &nbsp;·&nbsp; car
+                    0.62 &nbsp;·&nbsp; person 0.40<br>mIoU = (0.91 + 0.88 + 0.75 + 0.62 + 0.40) / 5 =
+                    <strong>0.712</strong></span>
+                <p>And note what the average is hiding: person sits at 0.40 while road sits at 0.91. mIoU stops rare
+                    classes disappearing behind dominant ones, but it does not stop <em>you</em> from ignoring the
+                    per-class table underneath. Always read the column, not just the mean.</p>
                 <div class="note warn">
                     <strong>The pixel-accuracy trap, which is nearly certain to appear.</strong> 9,000 background
                     pixels, 1,000 tumour pixels. Predict background everywhere: 9,000/10,000 = <strong>90%
@@ -2802,6 +3359,46 @@
                     matters to your problem.
                 </div>
 
+                <h4>Choosing the loss from the failure you actually have</h4>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Situation</th>
+                                <th>Loss</th>
+                                <th>Why</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">Many classes, balanced pixels</td>
+                                <td>Cross-entropy</td>
+                                <td>Standard pixel-wise classification; nothing is broken</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Rare but important class</td>
+                                <td>Weighted CE or focal</td>
+                                <td>Gives rare or hard pixels more influence</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Tiny foreground region</td>
+                                <td>Dice, or CE + Dice</td>
+                                <td>Directly optimises overlap rather than per-pixel correctness</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Poor boundaries</td>
+                                <td>Boundary-aware loss, or a higher-resolution decoder</td>
+                                <td>Encourages sharper edges, which overlap terms do not</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="note good">
+                    <strong>The practical rule from the slide, and a good closing line for any loss question:</strong>
+                    start simple, then add loss terms <em>only when a failure mode is visible</em>. Do not assemble a
+                    four-term objective before you have seen what the model gets wrong.
+                </div>
+
                 <h3>Data augmentation and two practical traps</h3>
                 <ul>
                     <li>Apply the <strong>same geometric transform to the image and to the mask</strong> — flip, crop,
@@ -2815,10 +3412,38 @@
                     <strong>Data leakage, which she called self-deception.</strong> Compute normalisation statistics —
                     min, max, or z-score parameters — on the <strong>training set only</strong>. If you fit them on the
                     whole dataset, the test distribution has leaked into training: the model now knows the test data's
-                    range, performs well, and that performance is not real. Keep train, validation and test genuinely
-                    separate if you intend to deploy. Her framing: if you only want to show a result you can cut
-                    corners; if you want to deploy, you cannot.
+                    range, performs well, and that performance is not real. Her framing: if you only want to show a
+                    result you can cut corners; if you want to deploy, you cannot.
                 </div>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Split</th>
+                                <th>What it is for</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="k">Training set</td>
+                                <td>Updating model weights</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Validation set</td>
+                                <td>Tuning decisions and selecting between models</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Test set</td>
+                                <td><strong>Used once</strong>, for final reporting</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Two segmentation-specific additions. The validation set must cover <strong>diverse scenes, object
+                        sizes, lighting, domains and rare classes</strong> — a validation set drawn only from easy
+                    daytime scenes tells you nothing about the deployment you care about. And high training IoU
+                    alongside low validation IoU is simply overfitting; read it as that and stop tuning the
+                    architecture.</p>
 
                 <h3>Failure modes and the debugging checklist</h3>
                 <div class="cards">
@@ -2977,6 +3602,36 @@
                                 <td>Effectiveness–efficiency trade-off curve vs the 80/20 rule. She corrects this one.
                                 </td>
                             </tr>
+                            <tr>
+                                <td class="k">Things vs stuff</td>
+                                <td>Countable objects (person, car, dog) vs amorphous regions (road, sky, grass).
+                                    Instance segmentation handles things; panoptic handles both.</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Gradient magnitude vs orientation</td>
+                                <td>How strong the intensity change is vs which way it points. HOG needs both; dropping
+                                    either destroys the descriptor.</td>
+                            </tr>
+                            <tr>
+                                <td class="k">MBH-x vs MBH-y</td>
+                                <td>Horizontal and vertical components of the flow gradient — two halves of one
+                                    descriptor, not two descriptors.</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Weighted CE vs focal loss</td>
+                                <td>A fixed per-class weight set by you vs a per-pixel weight that depends on how
+                                    confident the model already is.</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Validation set vs test set</td>
+                                <td>Used repeatedly to choose between models vs used once for final reporting. Reusing
+                                    the test set is leakage by another name.</td>
+                            </tr>
+                            <tr>
+                                <td class="k">Crop from pixels vs crop from features</td>
+                                <td>Faster R-CNN crops proposals from the shared <em>feature map</em>, not the image.
+                                    That sharing is what makes it fast.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -3006,7 +3661,8 @@
                         <p>Most likely contrast, confirmed by a narrow, crowded histogram. Contrast governs the
                             <em>spread</em>. Check brightness separately by looking at where the distribution sits, and
                             dynamic range by counting how many distinct levels are actually occupied — a dull image
-                            typically uses few.</p>
+                            typically uses few.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
@@ -3039,7 +3695,8 @@
                             distribution and becomes <strong>biased</strong> toward the dominant region, missing the
                             fine structures you care about. In gray-level slicing the suppressed region is made
                             <em>completely</em> dark — there is no pattern left to learn, so it cannot dominate.
-                            Variation is what gets learned, not darkness.</p>
+                            Variation is what gets learned, not darkness.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
@@ -3121,8 +3778,7 @@
                 </details>
                 <details class="drill">
                     <summary>Fixed camera, ball moving upward against a still wall. HOF or MBH?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>HOF. Direction is the clue and the background is stable, so the upward bin dominates cleanly.
                         </p>
@@ -3142,12 +3798,12 @@
                     <div class="ans">
                         <p>HOF: rightward — that is the dominant direction. MBH: a strong response around the legs,
                             because the upper body is nearly static while the legs pedal. MBH is locating where motion
-                            <em>changes</em>, not outlining the cyclist.</p>
+                            <em>changes</em>, not outlining the cyclist.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Is it correct to say HOF "fails" under camera motion?<span class="drill-tag">asked
-                    </summary>
+                    <summary>Is it correct to say HOF "fails" under camera motion?<span class="drill-tag">asked</span>
                     </summary>
                     <div class="ans">
                         <p>No, and she corrected this wording explicitly. Optical flow is genuinely present — the camera
@@ -3156,9 +3812,8 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Can HOF or MBH tell you an object's colour or exact shape?<span class="drill-tag">asked
-                    </summary>
-                    </summary>
+                    <summary>Can HOF or MBH tell you an object's colour or exact shape?<span
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>No. There is no colour information in a gradient- or flow-based descriptor at all. Even HOG
                             gives only a high-level blob structure — enough to say "human" or "animal," not enough to
@@ -3167,8 +3822,7 @@
                 </details>
                 <details class="drill">
                     <summary>Deep models learn motion features automatically. Is MBH obsolete?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>No, on genuinely constrained hardware — microcontroller-class devices with kilobytes of
                             memory, where a deep model cannot be deployed at all. Elsewhere deep models outperform. Same
@@ -3182,7 +3836,8 @@
                             <strong>memorised</strong> the training set. Take two real data points, generate roughly ten
                             intermediate samples, and check whether the transformation is seamless. Inception Score and
                             FID measure quality and diversity — neither detects memorisation, which is why only stronger
-                            papers report interpolation.</p>
+                            papers report interpolation.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
@@ -3303,8 +3958,7 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>What exactly does FPN fix?<span class="drill-tag">asked</summary>
-                    </summary>
+                    <summary>What exactly does FPN fix?<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>High-resolution feature maps live at early layers where semantics are weak, so the maps
                             capable of detecting small objects cannot benefit from network depth. FPN adds a top-down
@@ -3314,9 +3968,8 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Do early CNN layers carry high or low semantic information?<span class="drill-tag">asked
-                    </summary>
-                    </summary>
+                    <summary>Do early CNN layers carry high or low semantic information?<span
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Low. Meaning develops with depth. Her textile analogy: the actual quality of the cloth —
                             rough or fine — only becomes clear at the later stages. Her traffic analogy: how local areas
@@ -3334,8 +3987,7 @@
                 </details>
                 <details class="drill">
                     <summary>Why are Faster R-CNN's two stages trained jointly rather than separately?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Because the stages are dependent — her analogy is that a student's semester-1 performance
                             strongly predicts semester 2. Stage-wise training assumes independence and confines each
@@ -3344,7 +3996,7 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Why not just call resize() on each region proposal?<span class="drill-tag">asked</summary>
+                    <summary>Why not just call resize() on each region proposal?<span class="drill-tag">asked</span>
                     </summary>
                     <div class="ans">
                         <p>A naive resize loses precision and, more importantly, the <strong>relative relationships
@@ -3356,20 +4008,19 @@
                 </details>
                 <details class="drill">
                     <summary>What is a long-tailed dataset, and why is calling it "class imbalance" insufficient?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>A few classes have very many annotated boxes and a long tail of classes have very few. She
                             was explicit that this is more severe than plain imbalance and that the imbalance is across
                             <strong>semantic categories</strong> rather than merely foreground versus background. It is
                             not an outlier problem — outliers are one or two points; this is a structural property of
-                            every major detection dataset.</p>
+                            every major detection dataset.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
                     <summary>A prediction box partially overlaps the ground truth. Correct or wrong?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Unanswerable without a threshold — which is exactly the point. Compute IoU and compare
                             against a chosen α, the same way you choose 0.5 in a classifier. IoU is 0 for disjoint boxes
@@ -3384,7 +4035,7 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>A shoplifting detection system: precision or recall?<span class="drill-tag">asked</summary>
+                    <summary>A shoplifting detection system: precision or recall?<span class="drill-tag">asked</span>
                     </summary>
                     <div class="ans">
                         <p>Recall. Missing a real case is the expensive failure. Contrast with a system where a false
@@ -3395,8 +4046,7 @@
                 </details>
                 <details class="drill">
                     <summary>What does the Pareto optimal curve describe here, and what is it not?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>The trade-off between effectiveness and efficiency: adding layers and modules raises accuracy
                             and consumes more resources, so you cannot improve one without worsening the other. The task
@@ -3416,8 +4066,7 @@
                 <h3>Segmentation</h3>
                 <details class="drill">
                     <summary>An autonomous vehicle must know the exact drivable road surface. Is a bounding box
-                        enough?<span class="drill-tag">asked</summary>
-                    </summary>
+                        enough?<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>No. A box contains object plus background and gives only approximate location. Free-space
                             estimation needs the actual region shape, so it needs segmentation. The general rule:
@@ -3426,8 +4075,7 @@
                 </details>
                 <details class="drill">
                     <summary>If segmentation is strictly more informative, why not use it for everything?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Computation — a 512×512 image is 262,144 pixels to classify densely — and annotation, since
                             every pixel must be labelled by hand, by an expert in medical work. This is precisely why
@@ -3437,8 +4085,7 @@
                 </details>
                 <details class="drill">
                     <summary>Two cars overlap. Under semantic segmentation, how many cars are in the mask?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Effectively one. They receive the same label and the same colour, so they merge into a single
                             blob that reads as one large car. Semantic segmentation does no counting. Instance
@@ -3448,8 +4095,7 @@
                 </details>
                 <details class="drill">
                     <summary>A 128×128 image with 4 classes. What is the output tensor before argmax, and after?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Before: 128 × 128 × 4 — one probability map per class. After argmax: 128 × 128. She pressed
                             the class on this until the per-class maps were named.</p>
@@ -3457,8 +4103,7 @@
                 </details>
                 <details class="drill">
                     <summary>Why is a 1×1×1000 ImageNet classifier output useless for segmentation?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>There is no spatial grid left. Segmentation requires a class decision at <em>every spatial
                                 location</em>, and that output has collapsed all locations into a single vector.</p>
@@ -3466,8 +4111,7 @@
                 </details>
                 <details class="drill">
                     <summary>Give two independent reasons a classification CNN cannot be used directly for
-                        segmentation.<span class="drill-tag">asked</summary>
-                    </summary>
+                        segmentation.<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>(1) Resolution collapses through convolution and pooling, so spatial information is destroyed
                             by construction. (2) CNNs are built on translation <strong>invariance</strong> — a dog
@@ -3476,20 +4120,19 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Downsampling is both useful and harmful. Explain both halves.<span class="drill-tag">asked
-                    </summary>
-                    </summary>
+                    <summary>Downsampling is both useful and harmful. Explain both halves.<span
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Useful: it enlarges the receptive field and builds semantics — the <em>what</em>. Harmful: it
                             destroys precise location, boundaries, thin structures and small objects — the
                             <em>where</em>. Segmentation needs both, which is why the rest of the course is
-                            architectural attempts to hold them simultaneously.</p>
+                            architectural attempts to hold them simultaneously.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
                     <summary>The encoder never captured the lane markings. Can a symmetric decoder reconstruct
-                        them?<span class="drill-tag">asked</summary>
-                    </summary>
+                        them?<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>No. Information discarded in encoding cannot be recovered in decoding, regardless of how good
                             the decoder is. This single fact is the entire motivation for skip connections.</p>
@@ -3508,8 +4151,7 @@
                 </details>
                 <details class="drill">
                     <summary>What information does a U-Net skip connection carry to the decoder?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Spatial detail — edges, local texture, precise boundary position. The decoder already has
                             meaning, because the deep features arriving from the bottleneck carry the semantics. What it
@@ -3517,8 +4159,7 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Why does U-Net dominate medical imaging specifically?<span class="drill-tag">asked
-                    </summary>
+                    <summary>Why does U-Net dominate medical imaging specifically?<span class="drill-tag">asked</span>
                     </summary>
                     <div class="ans">
                         <p>Medical and scientific images need precise boundaries <em>and</em> typically come with
@@ -3528,8 +4169,7 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Concatenation or element-wise sum for the skip fusion?<span class="drill-tag">asked
-                    </summary>
+                    <summary>Concatenation or element-wise sum for the skip fusion?<span class="drill-tag">asked</span>
                     </summary>
                     <div class="ans">
                         <p>It depends on the domain — and she refused to endorse concatenation as a default. Her
@@ -3539,8 +4179,7 @@
                 </details>
                 <details class="drill">
                     <summary>A mask keeps confusing road with sidewalk. Boundary problem or context problem?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Context. The local patch is genuinely ambiguous — two surfaces of similar texture — so the
                             fix is a wider receptive field and broader scene context, i.e. dilated convolution or a
@@ -3550,8 +4189,7 @@
                 </details>
                 <details class="drill">
                     <summary>Why can you not just enlarge the CNN receptive field until context is sufficient?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Computational cost rises significantly, and if the field becomes too large you start losing
                             fine spatial precision again. You need both scales — and because local and global
@@ -3561,8 +4199,7 @@
                 </details>
                 <details class="drill">
                     <summary>What is the single advantage of dilated convolution over pooling?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>It increases the receptive field <strong>without pooling</strong> — and pooling is what was
                             destroying the information. Same kernel, same cost, wider coverage, spatial grid intact.</p>
@@ -3570,19 +4207,18 @@
                 </details>
                 <details class="drill">
                     <summary>What is structurally unusual about ASPP compared with normal conv layers?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Standard convolution layers are sequential; ASPP runs dilated branches at different rates in
                             <strong>parallel</strong> and then fuses their outputs. One branch sees fine local
                             structure, another sees a broad region, and the combination handles several object scales at
-                            once.</p>
+                            once.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>Can the dilation rate be chosen automatically from the input?<span class="drill-tag">asked
-                    </summary>
-                    </summary>
+                    <summary>Can the dilation rate be chosen automatically from the input?<span
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>No — she was asked directly and said there is no adaptive solution that decides it from the
                             problem. <code>r</code> is a hyperparameter you set. The adjacent research area is AutoML
@@ -3602,8 +4238,7 @@
                 </details>
                 <details class="drill">
                     <summary>Road: 50,000 pixels. Pedestrian: 1,000. What happens, and what do you do?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>The model becomes excellent at road and poor at pedestrians — her stated reason why
                             pedestrian safety in autonomous vehicles was a genuine open question. Fixes: weighted
@@ -3613,8 +4248,7 @@
                 </details>
                 <details class="drill">
                     <summary>9,000 background pixels, 1,000 tumour pixels. A model predicts background everywhere.
-                        Report its accuracy, Dice and IoU.<span class="drill-tag">asked</summary>
-                    </summary>
+                        Report its accuracy, Dice and IoU.<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Pixel accuracy 90%. Tumour Dice 0. Tumour IoU 0. This is the canonical demonstration that
                             pixel accuracy is misleading, and the reason to report <strong>mIoU</strong> — per-class IoU
@@ -3623,12 +4257,12 @@
                 </details>
                 <details class="drill">
                     <summary>Ground truth 100 pixels, prediction 120, overlap 80. Compute Dice and IoU and say what the
-                        difference proves.<span class="drill-tag">asked</summary>
-                    </summary>
+                        difference proves.<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Dice = 2×80/(120+100) = <strong>0.727</strong>. IoU = 80/(100+120−80) =
                             <strong>0.571</strong>. Same overlap, different numbers — which is precisely why they are
-                            not interchangeable. Convention: Dice in medical, IoU in road and scene segmentation.</p>
+                            not interchangeable. Convention: Dice in medical, IoU in road and scene segmentation.
+                        </p>
                     </div>
                 </details>
                 <details class="drill">
@@ -3643,8 +4277,7 @@
                 </details>
                 <details class="drill">
                     <summary>Why not train directly on Dice, since it is what you are measuring?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>You can — but evaluation metrics and loss functions are generally kept separate, and her
                             answer was careful rather than absolute. Nothing prevents designing a loss that penalises
@@ -3672,8 +4305,7 @@
                 </details>
                 <details class="drill">
                     <summary>A segmenter trained on clear daytime footage degrades badly at night and in rain. Name the
-                        failure.<span class="drill-tag">asked</summary>
-                    </summary>
+                        failure.<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Domain shift. Same family as deploying at a new hospital or with a new sensor: the training
                             and deployment distributions differ. Distinguish it from a boundary problem or class
@@ -3682,8 +4314,7 @@
                 </details>
                 <details class="drill">
                     <summary>Brain tumour segmentation where missing the tumour is serious. Which metric?<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Dice — the medical convention, and appropriate because the foreground region is small, which
                             is exactly the case where pixel accuracy misleads and overlap-focused metrics are
@@ -3691,8 +4322,7 @@
                     </div>
                 </details>
                 <details class="drill">
-                    <summary>What is a token in a Vision Transformer?<span class="drill-tag">asked</summary>
-                    </summary>
+                    <summary>What is a token in a Vision Transformer?<span class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>A patch. The image is divided into patches, and each patch plays the role a word token plays
                             in a text transformer. Self-attention is computationally expensive but captures local
@@ -3710,15 +4340,292 @@
                 </details>
                 <details class="drill">
                     <summary>Distinguish language-conditioned from language-guided segmentation.<span
-                            class="drill-tag">asked</summary>
-                    </summary>
+                            class="drill-tag">asked</span></summary>
                     <div class="ans">
                         <p>Conditioning: text acts as a <strong>control signal</strong> on the model — "make this face
                             smiling" conditions the generation of an image you supplied. Guided: text is used as an
                             <strong>input</strong> alongside the image, the way CLIP consumes both together. Condition
-                            versus input.</p>
+                            versus input.
+                        </p>
                     </div>
                 </details>
+
+                <h3>From the slide decks</h3>
+                <details class="drill">
+                    <summary>Why is sliding-window detection not actually as slow as sliding a window, once you use a
+                        convnet?<span class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Because the per-position weights can be shared. If every anchor has the same shape and sits
+                            centred in the receptive field, the same <span class="mono">W<sub>cls</sub></span> and <span
+                                class="mono">W<sub>loc</sub></span> apply at every grid position — and applying one
+                            weight set at every position <em>is</em> a convolution. So <span class="mono">Conv(V;
+                                W<sub>cls</sub>)</span> and <span class="mono">Conv(V; W<sub>loc</sub></span>) predict
+                            the whole anchor grid in one pass. The sliding is folded into the convolution.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>That weight-sharing argument assumed one anchor shape. How do real detectors get
+                        several?<span class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Two ways. Keep a separate weight pair per aspect ratio and scale — <span
+                                class="mono">W<sub>cls,ar1</sub>, W<sub>cls,ar2</sub>, W<sub>cls,ar3</sub></span> and so
+                            on. Or predict from <strong>several feature maps at different resolutions</strong> rather
+                            than one, which is the SSD idea and the direct ancestor of the feature pyramid.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>In the per-anchor loss, what is the indicator function doing, and what do α and β do?<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>The indicator switches the <strong>localisation term off for unmatched anchors</strong> —
+                            consistent with the rule that an anchor with no matching ground truth gets class 0 and no
+                            regression target. α and β <strong>balance the two tasks</strong> against each other:
+                            detection is multi-task learning, and how much localisation error should weigh against
+                            classification error is a design choice, not something the data tells you.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Errors of 0.2, 0.3, 0.4 and 10 across four boxes. Quantify why MSE fails here.<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Under squared loss the three good boxes contribute 0.04 + 0.09 + 0.16 =
+                            <strong>0.29</strong>; the bad box alone contributes <strong>100</strong> — roughly
+                            <strong>345×</strong> more than all three combined. The gradient step is spent almost
+                            entirely on the one box the model understands least. Under smooth L1 the same four become
+                            0.02, 0.045, 0.08 and 9.5: the outlier still matters, but the model can keep learning from
+                            the boxes that are nearly right.
+                        </p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Name two shortcomings of NMS.<span class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p><strong>(1)</strong> It puts a hard limit on how close two objects can be and still both be
+                            detected — genuinely overlapping objects in a crowd get suppressed as if they were
+                            duplicates of one object. <strong>(2)</strong> Similar classes do not suppress each other,
+                            because suppression is computed within a class; a "dog" box and a "cat" box over the same
+                            animal both survive.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Give a reason to prefer two-stage detection that has nothing to do with accuracy.<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>It yields <strong>per-instance feature vectors</strong>, which makes it straightforward to
+                            attach further tasks to the detector — masks, keypoints, attributes. Mask R-CNN exists
+                            because Faster R-CNN produces a feature vector per region. One-stage is architecturally
+                            simpler, using only conv, batch norm, ReLU and concat, but it is fussier to get right and
+                            offers no per-instance handle.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Why must RoIAlign use bilinear interpolation, and why does that matter for training?<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>The regular grid laid over a proposal box will not line up with the cells of the feature map,
+                            so each sample point is computed by interpolating over its <strong>four neighbouring
+                                cells</strong>. The reason this matters is not accuracy — it is that the operation is
+                            <strong>differentiable with respect to the feature map</strong>. Without differentiability
+                            you could not backpropagate from stage 2 into stage 1, and joint training would be
+                            impossible.
+                        </p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Detection training uses images ten times larger than ImageNet classification. Name the
+                        optimisation problem that causes.<span class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Larger images force <strong>smaller batch sizes</strong> to fit in memory, and small batches
+                            produce <strong>noisy batch-norm statistics</strong>, which destabilises training. Three
+                            standard responses: freeze batch norm, replace it with a batch-size-independent variant such
+                            as GroupNorm, or train across multiple GPUs/TPUs with synchronised batch norm.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>You halve the number of region proposals. Which metric specifically degrades?<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p><strong>Recall.</strong> Fewer proposals means fewer chances to cover each real object, so
+                            objects get missed — that is a recall loss, not a general "accuracy" loss. Name the metric;
+                            it shows you know which error you are trading away.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>A bottleneck is 16×16×512 and there are 7 classes. What is the shape of the low-resolution
+                        class-score map?<span class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p><strong>16 × 16 × 7</strong>, before any upsampling or decoding. One spatial score map per
+                            class at whatever resolution you are currently at — the channel dimension becomes the class
+                            dimension.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>What does the number in FCN-32s, FCN-16s and FCN-8s refer to, and what does going from 32
+                        to 8 buy you?<span class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>The downsampling factor: on a 256×256 input, FCN-32s predicts from an 8×8 map and FCN-16s
+                            from 16×16. Adding the 1/16 map improves spatial detail; adding the 1/8 map improves
+                            boundaries further. That progression is the birth of the skip connection — deep layers
+                            supply meaning, earlier layers supply localisation — and U-Net later makes it systematic.
+                        </p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Why do real models combine several dilation rates instead of picking one large one?<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Because a very large dilation rate produces a <strong>sparse sampling pattern</strong> — the
+                            kernel looks at scattered points with large holes between them, and fine structure falls
+                            into the gaps. Combining rates (the canonical set is 1, 6, 12, 18) keeps fine local
+                            structure alongside broad context. That is what ASPP is for, and why the branches run in
+                            parallel rather than in sequence.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Class weights of road 0.5, sky 0.7, car 2.0, pedestrian 5.0. What is the risk?<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Overly large weights can make training <strong>unstable</strong> or <strong>increase false
+                                positives</strong> — the model starts seeing pedestrians everywhere because the penalty
+                            for missing one is so steep. You are trading one failure mode for another, and the right
+                            weight is an empirical question, not a formula.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Give an easy pixel and a hard pixel, and say what focal loss does to each.<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Easy: true class road with P(road) = 0.99 — already solved, and should not dominate training.
+                            Hard: a pixel on the car/road boundary with P(car) = 0.45 — uncertain, and where the
+                            learning actually is. Focal loss suppresses the first and concentrates on the second. The
+                            line: not all pixels should contribute equally to learning.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>When does the test set get used?<span class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p><strong>Once</strong>, for final reporting. The training set updates weights; the validation
+                            set is what you tune decisions and select models on. Reusing the test set to make choices is
+                            leakage by another name. For segmentation specifically, the validation set must span diverse
+                            scenes, object sizes, lighting, domains and rare classes — otherwise it cannot tell you
+                            anything about deployment.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>Name four dense prediction tasks other than semantic segmentation.<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Depth estimation, optical flow, surface normals, keypoint heatmaps. The point of grouping
+                            them: they share the same architectural problem — H×W outputs requiring both semantic
+                            understanding and spatial precision — so U-Net and DeepLab-style designs transfer across all
+                            of them.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>What is the difference between "things" and "stuff"?<span class="drill-tag">slides</span>
+                    </summary>
+                    <div class="ans">
+                        <p>Things are <strong>countable objects</strong> — person, car, dog — and can be given instance
+                            identities. Stuff is <strong>amorphous regions</strong> — road, sky, grass — which cannot
+                            meaningfully be counted. Instance segmentation handles things; panoptic segmentation labels
+                            both in one unified scene map.</p>
+                    </div>
+                </details>
+                <details class="drill">
+                    <summary>How does averaging MBH descriptors over 100 walking videos give you a classifier?<span
+                            class="drill-tag">slides</span></summary>
+                    <div class="ans">
+                        <p>Each video produces MBH-x and MBH-y components. Averaging across the training set gives a
+                            template that reads roughly as "strong motion change at the legs, some at the arms." A new
+                            clip is classified by asking whether its MBH descriptor resembles that average. This is what
+                            a handcrafted descriptor buys you: a comparable numeric signature you can match against, not
+                            a segmentation or an outline.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- ================= WORKED CASES ================= -->
+            <section id="cases">
+                <div class="rule"></div>
+                <h2>The six worked cases she put on slides</h2>
+                <p class="dek">Three of these come with her own model answers printed on the slide, which makes them the
+                    closest thing available to a marking scheme. The other three she left as a class activity.</p>
+
+                <div class="card" style="border-top:4px solid var(--person)">
+                    <h4>Case 1 · 95% pixel accuracy, but it misses pedestrians and cyclists</h4>
+                    <p><em>A segmentation model for autonomous driving reaches 95% pixel accuracy but frequently misses
+                            pedestrians and cyclists. Is it a good model? What would you check next?</em></p>
+                    <p><strong>Her answer.</strong> No — not necessarily. Large classes such as road, sky and building
+                        dominate the pixel count, so a model can score high overall while failing on the classes that
+                        matter. Small classes like pedestrian occupy very few pixels and barely move the headline
+                        number. And in autonomous driving, missing a pedestrian is far more serious than misclassifying
+                        a few road pixels, so the metric is not aligned with the risk.</p>
+                    <p><strong>What to check next:</strong> per-class IoU, mIoU, class-wise recall — particularly
+                        pedestrian and cyclist recall — the confusion matrix, and small-object performance. Then look at
+                        the specific conditions: night, occlusion, distance.</p>
+                    <p><strong>The takeaway sentence she wrote:</strong> overall accuracy can be dominated by large easy
+                        regions, so always inspect per-class performance <em>and</em> application-specific risk.</p>
+                </div>
+
+                <div class="card" style="border-top:4px solid var(--sky)">
+                    <h4>Case 2 · FCN-32s finds the person but the mask is blobby</h4>
+                    <p><em>FCN-32s correctly identifies that a person is present, but the predicted mask has rough
+                            boundaries and loses the arms and legs. What is happening inside the network, and what would
+                            fix it?</em></p>
+                    <p><strong>Her answer.</strong> The deepest feature map is semantically strong but spatially coarse.
+                        Repeated downsampling has removed fine boundaries and thin structures, and one large upsampling
+                        jump from that coarse map produces a blobby mask. The model knows “person” — it does not know
+                        the outline.</p>
+                    <p><strong>The fix:</strong> fuse high-resolution earlier features with the deep semantic
+                        prediction. Concretely: FCN-16s or FCN-8s, which add finer feature maps; skip connections
+                        generally; or U-Net, which makes encoder-to-decoder skips systematic.</p>
+                    <p><strong>The sentence:</strong> deep layers know WHAT, earlier layers preserve WHERE — deep
+                        semantics plus spatial detail gives a sharper mask.</p>
+                </div>
+
+                <div class="card" style="border-top:4px solid var(--veg)">
+                    <h4>Case 3 · Tumour occupies 2% of pixels; the model predicts background everywhere and scores 98%
+                    </h4>
+                    <p><em>How would you redesign training and evaluation?</em></p>
+                    <p><strong>Her answer, split in two.</strong> On <strong>evaluation</strong>: abandon accuracy. Use
+                        Dice, tumour-class IoU, tumour recall or sensitivity, precision if false alarms carry cost, and
+                        boundary quality where the mask will be used clinically. On <strong>training</strong>: weighted
+                        cross-entropy, Dice loss or CE + Dice, oversampling images that contain tumours, patch-based
+                        training around tumour regions, and hard-example mining.</p>
+                    <p><strong>The framing she used:</strong> the shift is from <em>overall pixels</em> to
+                        <em>clinically important pixels</em> — design the evaluation and the loss around the real cost
+                        of failure, not around what is easy to compute.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h4>Case 4 · Brain tumour segmentation — the tumour is small and missing it is serious</h4>
+                    <p>Which loss and metric? <strong>Dice</strong> — the medical convention, and the right family of
+                        metric when the foreground is small, since that is exactly where pixel accuracy breaks. Pair it
+                        with tumour recall.</p>
+                </div>
+
+                <div class="card">
+                    <h4>Case 5 · Road scene where road and sidewalk boundaries matter</h4>
+                    <p>Which failure should be inspected? <strong>Boundary quality</strong>. Overlap metrics can look
+                        acceptable while the edge between two adjacent surfaces is blurred, and the edge is the thing
+                        the application depends on.</p>
+                </div>
+
+                <div class="card">
+                    <h4>Case 6 · Crop and weed look similar under new lighting</h4>
+                    <p>Two issues at once, and a strong answer names both: <strong>class confusion</strong>, because two
+                        classes are visually similar and local appearance is not enough to separate them, and
+                        <strong>domain shift</strong>, because the lighting at deployment differs from training. The
+                        first calls for context modules and multi-scale features; the second for augmentation, diverse
+                        data and domain adaptation.
+                    </p>
+                </div>
+
+                <div class="note teal" style="border-left-color:var(--road);background:var(--tint-road)">
+                    <strong>The pattern across all six.</strong> None of them asks you to compute anything. Each hands
+                    you a symptom and asks you to name the cause and the class of fix. That is the shape of the paper.
+                </div>
             </section>
 
             <!-- ================= HOMEWORK ================= -->
@@ -3842,12 +4749,29 @@
                         <li>Precision is correctness of what was said; recall is completeness of what was found; choose
                             by cost of error.</li>
                         <li>Deep layers know <em>what</em>; early layers know <em>where</em>. Skip connections carry
-                            <em>where</em> forward.</li>
+                            <em>where</em> forward.
+                        </li>
                         <li>Whatever the encoder discards, no decoder can reconstruct.</li>
                         <li>Dilated convolution enlarges the receptive field without pooling; ASPP does it in parallel
                             at several rates.</li>
                         <li>Pixel accuracy hides rare classes — report mIoU, and never resize a mask with bilinear
                             interpolation.</li>
+                        <li>Shared W_cls and W_loc across anchor positions is a convolution — that is why detection is
+                            tractable.</li>
+                        <li>One error of 10 costs 100 under MSE against 0.29 for three good boxes: ~345× domination.
+                        </li>
+                        <li>NMS limits how close two real objects can be, and does not suppress across classes.</li>
+                        <li>Two-stage gives per-instance feature vectors, which is why Mask R-CNN was easy to build.
+                        </li>
+                        <li>RoIAlign is bilinear over four neighbours, and differentiable — that is what allows joint
+                            training.</li>
+                        <li>Large detection images force small batches, which makes batch norm noisy: freeze it,
+                            GroupNorm it, or sync it.</li>
+                        <li>Things are countable, stuff is not; panoptic covers both.</li>
+                        <li>ASPP rates 1, 6, 12, 18 in parallel; one huge rate samples too sparsely.</li>
+                        <li>Class weights road 0.5 up to pedestrian 5.0 — and weights that are too large destabilise
+                            training.</li>
+                        <li>The test set is used once. Everything else is the validation set's job.</li>
                     </ol>
                 </div>
                 <div class="note good">
@@ -3926,7 +4850,15 @@
                 ["mIoU", "Per-class IoU averaged across classes, so rare classes cannot hide behind dominant ones."],
                 ["Domain shift", "Deployment conditions differ from training conditions — rain, night, a new sensor, a new hospital."],
                 ["Data leakage", "Fitting statistics on data the model should not have seen, making performance look better than it is."],
-                ["Pareto optimal curve", "The effectiveness–efficiency trade-off: you cannot improve one without worsening the other."]
+                ["Pareto optimal curve", "The effectiveness–efficiency trade-off: you cannot improve one without worsening the other."],
+                ["Things vs stuff", "Things are countable objects (person, car, dog); stuff is amorphous regions (road, sky, grass)."],
+                ["RoIAlign", "Crop-and-resize on the feature map using bilinear interpolation over four neighbours — differentiable, so the two stages train jointly."],
+                ["Triangulation", "Find the same feature in several photos; knowing camera positions and viewing angles, compute where the point sits in 3D."],
+                ["MBH-x and MBH-y", "The horizontal and vertical components of the optical-flow gradient — two halves of one descriptor."],
+                ["Weighted cross-entropy", "L = w_y · CE(y, p). Larger weights on rare or safety-critical classes; too large and training destabilises."],
+                ["Sync BN / GroupNorm", "Fixes for noisy batch-norm statistics when large detection images force small batch sizes."],
+                ["Shared detection weights", "One W_cls and W_loc reused at every grid position — which is exactly a convolution over the feature map."],
+                ["Test set", "Used once, for final reporting. The validation set is what you tune and select on."]
             ];
             var fcs = document.getElementById("fcs");
             if (fcs) {
@@ -4045,6 +4977,41 @@
                     q: "9,000 background pixels and 1,000 tumour pixels. Predicting background everywhere gives:",
                     o: ["90% pixel accuracy, tumour Dice 0, tumour IoU 0", "90% pixel accuracy and tumour Dice 0.9", "10% pixel accuracy and tumour IoU 0", "Undefined metrics"], a: 0,
                     w: "The canonical demonstration that pixel accuracy is misleading — and the reason to report mIoU, which forces every class to be scored."
+                },
+                {
+                    q: "Why can one set of weights predict every anchor position at once in a convnet detector?",
+                    o: ["Because anchors are independent of the image", "Because identical anchor shapes centred in the receptive field allow weight sharing — which is what a convolution is", "Because the backbone normalises all positions", "Because NMS removes the rest"], a: 1,
+                    w: "With W_cls and W_loc shared across positions, applying them everywhere is literally Conv(V; W). The sliding is folded into the convolution — that is why anchor-based detection is not as slow as sliding windows."
+                },
+                {
+                    q: "Four boxes have errors 0.2, 0.3, 0.4 and 10. Under squared loss, the bad box contributes roughly:",
+                    o: ["Twice the other three combined", "About 345 times the other three combined", "The same as the other three combined", "Less than the other three, because it is only one box"], a: 1,
+                    w: "0.04 + 0.09 + 0.16 = 0.29 against 100. The gradient step goes almost entirely to the box the model understands least — which is why smooth L1 exists."
+                },
+                {
+                    q: "Which is a genuine shortcoming of NMS?",
+                    o: ["It cannot handle more than one class", "Similar classes do not suppress each other, so a 'dog' box and a 'cat' box over the same animal both survive", "It requires ground-truth boxes at inference", "It only works on square boxes"], a: 1,
+                    w: "Suppression is computed within a class. The other listed shortcoming: NMS imposes a hard limit on how close two real objects can be and still both be detected."
+                },
+                {
+                    q: "Detection trains on images roughly 10× larger than ImageNet classification. The optimisation consequence is:",
+                    o: ["Gradients vanish in the backbone", "Smaller batch sizes make batch-norm statistics noisy", "The learning rate must be raised proportionally", "Anchors stop matching ground truth"], a: 1,
+                    w: "Fixes: freeze batch norm, use a batch-size-independent variant such as GroupNorm, or train multi-GPU/TPU with synchronised batch norm."
+                },
+                {
+                    q: "Why do segmentation models combine several dilation rates rather than using one large one?",
+                    o: ["To reduce the parameter count", "Because a very large rate samples sparsely and fine structure falls into the gaps", "Because large rates are not differentiable", "To keep the kernel square"], a: 1,
+                    w: "The canonical ASPP set is 1, 6, 12, 18 running in parallel — fine local structure from the low rate, broad context from the high one."
+                },
+                {
+                    q: "Which statement about the test set is correct?",
+                    o: ["It is used every epoch to monitor training", "It is used once, for final reporting; the validation set is what you tune on", "It should be drawn from the same scenes as training for fairness", "It replaces the validation set when data is limited"], a: 1,
+                    w: "Reusing the test set to make choices is leakage by another name. For segmentation, the validation set must also span diverse scenes, sizes, lighting, domains and rare classes."
+                },
+                {
+                    q: "A regular M.Tech student asks where the CV module is examined. The answer is:",
+                    o: ["In the 50% final exam", "In the 20% midterm only — the final covers Parts 2 and 3", "Only through quizzes", "Equally across midterm and final"], a: 1,
+                    w: "Per the course-introduction slides: regular students have Final 50% for Parts 2 and 3, Midterm 20% for Part 1 only, and 30% assignment/mini-project split 10% per part. Executive students have no midterm, so Part 1 sits inside their 50% final."
                 }
             ];
 
