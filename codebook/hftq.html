@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HFT Interview Roadmap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #0ea5e9;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #06b6d4;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .gap-analysis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .gap-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .gap-box h3 {
+            color: #22c55e;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .gap-box.challenge h3 {
+            color: #ef4444;
+        }
+
+        .gap-box ul {
+            list-style: none;
+        }
+
+        .gap-box li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .gap-box.strength li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .gap-box.challenge li:before {
+            content: "●";
+            position: absolute;
+            left: 0;
+            color: #ef4444;
+        }
+
+        .roadmap {
+            margin-top: 50px;
+        }
+
+        .phase {
+            margin-bottom: 40px;
+            border-left: 4px solid #0ea5e9;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .phase::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            border: 3px solid #0f172a;
+        }
+
+        .phase h2 {
+            color: #06b6d4;
+            font-size: 1.6em;
+            margin-bottom: 5px;
+        }
+
+        .phase-meta {
+            color: #94a3b8;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+        }
+
+        .phase-content {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #38bdf8;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .section li {
+            padding: 6px 0 6px 20px;
+            position: relative;
+            color: #cbd5e1;
+        }
+
+        .section li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #0ea5e9;
+        }
+
+        .resource {
+            background: rgba(15, 23, 42, 0.9);
+            border-left: 3px solid #0ea5e9;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .resource-title {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .critical {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            color: #fca5a5;
+        }
+
+        .tip {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid #22c55e;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            color: #86efac;
+        }
+
+        .interview-prep {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .interview-prep h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+        }
+
+        .question {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border-left: 3px solid #60a5fa;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #cbd5e1;
+        }
+
+        .month {
+            text-align: center;
+        }
+
+        .month-label {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .gap-analysis {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .phase h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 HFT Quantitative Research & Trading</h1>
+            <p class="subtitle">Interview Preparation Roadmap for DeepFin | 16-Week Strategic Plan</p>
+        </header>
+
+        <section class="gap-analysis">
+            <div class="gap-box strength">
+                <h3>🚀 Your Competitive Advantages</h3>
+                <ul>
+                    <li>8 years backend engineering (distributed systems, low-latency thinking)</li>
+                    <li>Strong Python proficiency (can quickly add C++)</li>
+                    <li>AI/ML + LLM research foundation</li>
+                    <li>Microservices architecture knowledge (order routing parallels)</li>
+                    <li>Real systems deployment experience (Kafka, AWS, Kubernetes)</li>
+                    <li>Research mindset (M.Tech thesis work)</li>
+                </ul>
+            </div>
+
+            <div class="gap-box challenge">
+                <h3>⚠️ Gaps to Address</h3>
+                <ul>
+                    <li>Zero HFT trading experience (the biggest gap)</li>
+                    <li>No market microstructure knowledge</li>
+                    <li>Missing L3 data / order book dynamics</li>
+                    <li>No C++ systems programming</li>
+                    <li>No execution algorithm experience</li>
+                    <li>Limited financial markets understanding</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="roadmap">
+            <h2 style="color: #06b6d4; margin-bottom: 30px; font-size: 1.8em;">📋 16-Week Execution Plan</h2>
+
+            <!-- Phase 1 -->
+            <div class="phase">
+                <h2>Phase 1: Market Foundations (Weeks 1-4)</h2>
+                <div class="phase-meta">🎓 Goal: Build domain vocabulary and mental models</div>
+                <div class="phase-content">
+                    <div class="section">
+                        <div class="section-title">Core Concepts (Priority: Critical)</div>
+                        <ul>
+                            <li>Market Microstructure (read "Microstructure of Financial Markets" by O'Hara or
+                                Lynch-Cuskley papers)</li>
+                            <li>Order Book Dynamics & L3 Data (bid-ask spread, order flow, imbalance)</li>
+                            <li>Futures Market Mechanics (contract specs, rollover, basis, calendar spreads)</li>
+                            <li>Latency & Slippage (measurement, impact models)</li>
+                            <li>Execution Algorithms (VWAP, TWAP, implementation shortfall)</li>
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Hands-On Learning</div>
+                        <ul>
+                            <li>Paper trade on <strong>Alpaca</strong> or <strong>Interactive Brokers</strong> (live
+                                order book observation)</li>
+                            <li>Download 1 week of real market data (futures L2/L3) from <strong>HistData</strong> or
+                                <strong>Binance</strong>
+                            </li>
+                            <li>Analyze order book snapshots - write a Jupyter notebook showing spread dynamics</li>
+                            <li>Study 3 real execution algorithms end-to-end (find research papers or blog posts)</li>
+                        </ul>
+                    </div>
+
+                    <div class="resource">
+                        <span class="resource-title">📚 Key Resources:</span> "Flash Boys" (Lewis - quick read), SEC
+                        microstructure research, CME Futures guides
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="phase">
+                <h2>Phase 2: Deep Dive into HFT Systems (Weeks 5-8)</h2>
+                <div class="phase-meta">⚙️ Goal: Understand production HFT architecture and signal-to-execution pipeline
+                </div>
+                <div class="phase-content">
+                    <div class="section">
+                        <div class="section-title">HFT System Architecture</div>
+                        <ul>
+                            <li>Signal generation → Order routing → Execution → PnL measurement</li>
+                            <li>Market data ingestion pipelines (tick data processing, latency optimization)</li>
+                            <li>Risk controls & circuit breakers (pre-trade, in-trade, post-trade)</li>
+                            <li>Order placement strategies (dark pools, smart order routing, iceberg orders)</li>
+                            <li>Post-trade analytics & PnL attribution</li>
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Programming Deep Dive</div>
+                        <ul>
+                            <li><strong>Python:</strong> Build a market microstructure simulator (LOB, order matching
+                                engine)</li>
+                            <li><strong>C++ Fundamentals:</strong> Start learning C++ for low-latency (focus: memory
+                                management, lock-free structures)</li>
+                            <li>Implement a simple VWAP execution algorithm in Python</li>
+                            <li>Study <strong>ZeroMQ</strong> or <strong>gRPC</strong> for messaging (systems design)
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Advanced Topics</div>
+                        <ul>
+                            <li>Cross-exchange arbitrage (basis trading, futures-spot arb)</li>
+                            <li>Market-making basics (bid-ask management, inventory risk)</li>
+                            <li>Statistical arbitrage in short timeframes (mean reversion, momentum)</li>
+                        </ul>
+                    </div>
+
+                    <div class="resource">
+                        <span class="resource-title">📚 Key Resources:</span> "Algorithmic Trading" by Narang, Wilmott
+                        derivatives papers, GitHub HFT trading repos
+                    </div>
+
+                    <div class="critical">
+                        <strong>🔴 Critical Action:</strong> Build a toy HFT system end-to-end: data ingestion → signal
+                        → order placement → backtest. This becomes your interview demo.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="phase">
+                <h2>Phase 3: Quantitative Finance & Modeling (Weeks 9-12)</h2>
+                <div class="phase-meta">📊 Goal: Master short-horizon predictive models and quant foundations</div>
+                <div class="phase-content">
+                    <div class="section">
+                        <div class="section-title">Statistical & ML for Trading</div>
+                        <ul>
+                            <li>Time series forecasting for 1s-1min horizons (ARIMA, LSTM, Transformers)</li>
+                            <li>Feature engineering from LOB data (imbalance ratios, price momentum, volume-weighted
+                                indicators)</li>
+                            <li>Backtesting frameworks (Backtrader, VectorBT) + proper handling of lookahead bias</li>
+                            <li>Regime detection (mean-reverting vs. trending market identification)</li>
+                            <li>Your AI/ML background → Apply to ultra-short-horizon prediction</li>
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Advanced Quant Topics</div>
+                        <ul>
+                            <li>Optimal execution (Almgren-Chriss model for execution cost minimization)</li>
+                            <li>Transaction cost analysis (spread, market impact, opportunity cost)</li>
+                            <li>Risk metrics for intraday strategies (Sharpe, sortino, max drawdown over hours/minutes)
+                            </li>
+                            <li>Market impact models (linear, square-root, multiplicative)</li>
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Practical Coding Projects</div>
+                        <ul>
+                            <li>Build a feature pipeline: LOB → predictive features → ML model inference</li>
+                            <li>Implement order book imbalance signal (simple but effective for HFT)</li>
+                            <li>Develop Sharpe/PnL attribution notebook for a simulated strategy</li>
+                            <li>Start C++ project: basic order book implementation (linked list-based, fast updates)
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="resource">
+                        <span class="resource-title">📚 Key Resources:</span> Almgren papers, "Advances in Financial ML"
+                        (López de Prado), Kaggle Optiver Bid-Ask competition
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4 -->
+            <div class="phase">
+                <h2>Phase 4: Interview Preparation & Deep Dives (Weeks 13-16)</h2>
+                <div class="phase-meta">🎤 Goal: Prepare for technical + behavioral interviews at the senior level</div>
+                <div class="phase-content">
+                    <div class="section">
+                        <div class="section-title">Technical Interview Focus Areas</div>
+                        <ul>
+                            <li><strong>System Design:</strong> Design an HFT execution system (data flow, latency
+                                optimization, order routing)</li>
+                            <li><strong>Microstructure Problems:</strong> Detect market manipulation, optimal order
+                                placement, PnL calculation</li>
+                            <li><strong>Quantitative Problems:</strong> Short-horizon prediction, alpha generation, risk
+                                management</li>
+                            <li><strong>Coding Challenges:</strong> Low-latency data processing, order book simulations,
+                                backtest engines</li>
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Portfolio of Work (Your "Proof")</div>
+                        <ul>
+                            <li><strong>GitHub Repo:</strong> Your HFT simulator + multiple trading strategies
+                                (well-documented)</li>
+                            <li><strong>Jupyter Notebooks:</strong> Real data analysis, PnL attribution, strategy
+                                backtests</li>
+                            <li><strong>Written Brief:</strong> "DeepFin Strategy Proposal" (identify 2-3 alpha sources,
+                                execution roadmap)</li>
+                            <li><strong>System Design Doc:</strong> How you'd build an execution algorithm for your
+                                proposed strategy</li>
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Behavioral & Domain Deep Dives</div>
+                        <ul>
+                            <li>Study DeepFin's public materials (LinkedIn, research blog if any)</li>
+                            <li>Understand recent market events (flash crashes, regulatory changes)</li>
+                            <li>Prepare stories: "Tell us about a complex system you built" → connect to HFT</li>
+                            <li>Research recent HFT trends: AI in trading, regulatory landscape, market structure
+                                changes</li>
+                        </ul>
+                    </div>
+
+                    <div class="critical">
+                        <strong>🔴 Critical Questions You'll Face:</strong>
+                        <div style="margin-top: 10px;">
+                            <div class="question">1. "You don't have direct HFT experience - how will you ramp up?"
+                            </div>
+                            <div class="question">2. "Walk us through your HFT system design. Where are the latency
+                                bottlenecks?"</div>
+                            <div class="question">3. "How would you monetize alpha while minimizing execution costs?"
+                            </div>
+                            <div class="question">4. "Describe a situation where you had to optimize a system for
+                                latency. How did you approach it?"</div>
+                            <div class="question">5. "What microstructure insights have you gained from analyzing order
+                                book data?"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interview Prep Section -->
+        <section class="interview-prep">
+            <h3>🎯 Key Technical Talking Points for Interviews</h3>
+            <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <strong style="color: #60a5fa;">Your Unique Angle:</strong>
+                    <ul style="list-style: none; padding-left: 0; margin-top: 10px;">
+                        <li style="padding: 6px 0; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0;">→</span>
+                            8 years of distributed systems → You understand <strong>horizontal scaling</strong>,
+                            <strong>fault tolerance</strong>, <strong>real-time data pipelines</strong>
+                        </li>
+                        <li style="padding: 6px 0; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0;">→</span>
+                            AI/ML researcher → You can <strong>innovate on signal generation</strong>, <strong>optimize
+                                ML for latency</strong>
+                        </li>
+                        <li style="padding: 6px 0; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0;">→</span>
+                            M.Tech in AI → You have <strong>structured research methodology</strong>, <strong>academic
+                                rigor</strong>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <strong style="color: #60a5fa;">Key Metrics to Mention:</strong>
+                    <ul style="list-style: none; padding-left: 0; margin-top: 10px;">
+                        <li style="padding: 6px 0; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0;">→</span>
+                            Latency (μs to ms): "Built Kafka pipelines handling 100K msgs/sec"
+                        </li>
+                        <li style="padding: 6px 0; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0;">→</span>
+                            Accuracy: "Achieved 65% directional accuracy on 1-min forecasts"
+                        </li>
+                        <li style="padding: 6px 0; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0;">→</span>
+                            Scale: "Deployed models to production serving live inference"
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Specific Milestones -->
+        <section style="margin-top: 40px;">
+            <h2 style="color: #06b6d4; margin-bottom: 20px;">📌 Measurable Milestones</h2>
+            <div
+                style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 6px; padding: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div
+                        style="background: rgba(15, 23, 42, 0.8); padding: 15px; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                        <strong style="color: #06b6d4;">Week 4</strong>
+                        <p style="margin-top: 8px; color: #cbd5e1; font-size: 0.9em;">✓ 1 week LOB data analyzed +
+                            visualization</p>
+                    </div>
+                    <div
+                        style="background: rgba(15, 23, 42, 0.8); padding: 15px; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                        <strong style="color: #06b6d4;">Week 8</strong>
+                        <p style="margin-top: 8px; color: #cbd5e1; font-size: 0.9em;">✓ Toy HFT system GitHub repo +
+                            backtest results</p>
+                    </div>
+                    <div
+                        style="background: rgba(15, 23, 42, 0.8); padding: 15px; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                        <strong style="color: #06b6d4;">Week 12</strong>
+                        <p style="margin-top: 8px; color: #cbd5e1; font-size: 0.9em;">✓ C++ LOB implementation + Python
+                            ML pipeline</p>
+                    </div>
+                    <div
+                        style="background: rgba(15, 23, 42, 0.8); padding: 15px; border-radius: 4px; border-left: 3px solid #0ea5e9;">
+                        <strong style="color: #06b6d4;">Week 16</strong>
+                        <p style="margin-top: 8px; color: #cbd5e1; font-size: 0.9em;">✓ Mock interviews + Strategy
+                            proposal doc</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Tips -->
+        <section style="margin-top: 40px;">
+            <h2 style="color: #06b6d4; margin-bottom: 20px;">💡 Critical Success Factors</h2>
+            <div class="tip">
+                <strong>1. Build a "Proof Portfolio"</strong><br>
+                By week 8, you need concrete evidence: GitHub + notebooks + PnL stats. Talk is cheap in quant finance;
+                code is gold.
+            </div>
+            <div class="tip">
+                <strong>2. Prepare for the "Experience Gap" Question"</strong><br>
+                They will ask. Your answer: "No direct HFT experience, but I've built distributed systems at scale. I
+                understand latency, throughput, reliability. I've studied market microstructure intensively [show
+                proof]. I'm ready to learn the domain depth quickly."
+            </div>
+            <div class="tip">
+                <strong>3. Emphasize Your AI/ML Advantage</strong><br>
+                Most traditional HFT traders aren't deep ML practitioners. Position yourself as someone who can bring
+                modern ML to signal generation & execution optimization.
+            </div>
+            <div class="tip">
+                <strong>4. Start C++ NOW</strong><br>
+                You have 4 weeks to get to a basic level. Focus on: vectors, memory management, threading, lock-free
+                structures (for order books).
+            </div>
+            <div class="tip">
+                <strong>5. Real Data Analysis Early</strong><br>
+                Week 2-3: Download actual futures order book data. Visualize spreads, order flow, imbalances. This
+                grounds your learning in reality.
+            </div>
+        </section>
+
+        <footer
+            style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #334155; text-align: center; color: #94a3b8;">
+            <p>💼 Remember: DeepFin is looking for technical depth + research rigor + real-world execution experience.
+                You have the first two. Your 16 weeks must demonstrate the third.</p>
+        </footer>
+    </div>
+</body>
+
+</html>
