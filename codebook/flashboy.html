@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flash Boys Crash Course</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky tab bar over one reading column (max 980px); animations sit in scrollable SVG frames, flashcards centre on a single flip card.
+   Palette: ink navy ground, amber accent for "the thing to remember", green/red reserved for bid/ask meaning, blue for the client's order. */
+:root {
+  --bg: #0a0f1a; --surface: #111a2b; --surface2: #182339; --line: #253453;
+  --fg: #e7edf8; --muted: #93a3c2; --accent: #f2b544; --accent-ink: #1a1305;
+  --bid: #3fcf8e; --ask: #ff6b6b; --info: #5aa9ff;
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f2f5fb; --surface: #ffffff; --surface2: #e8edf7; --line: #d0d8e8;
+    --fg: #111a2c; --muted: #52607b; --accent: #9a5b00; --accent-ink: #ffffff;
+    --bid: #0d7f4e; --ask: #c23636; --info: #1b64c4; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f2f5fb; --surface: #ffffff; --surface2: #e8edf7; --line: #d0d8e8;
+  --fg: #111a2c; --muted: #52607b; --accent: #9a5b00; --accent-ink: #ffffff;
+  --bid: #0d7f4e; --ask: #c23636; --info: #1b64c4; color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--font-body); padding-inline: 16px; padding-block: 0 48px; }
+.wrap { max-width: 980px; margin-inline: auto; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 500 0.75rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header.top { padding-block: 32px 20px; display: grid; gap: 12px; }
+.top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.sub-hero { color: var(--muted); font-size: 1.05rem; }
+.ticker { display: flex; gap: 20px; overflow-x: auto; padding-block: 10px; border-block: 1px solid var(--line); font: 500 0.8rem/1 var(--font-mono); white-space: nowrap; color: var(--muted); }
+.ticker b { color: var(--fg); font-weight: 500; }
+.ticker .up { color: var(--bid); } .ticker .dn { color: var(--ask); }
+
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 6px; overflow-x: auto; padding-block: 10px; border-bottom: 1px solid var(--line); }
+.tab { flex: none; border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.92rem; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn { border: 1px solid var(--line); background: var(--surface2); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.good { border-color: var(--bid); color: var(--bid); }
+.btn.bad { border-color: var(--ask); color: var(--ask); }
+
+.panel { display: grid; gap: 28px; padding-block: 28px; }
+.grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.grid3 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.box p { font-size: 0.95rem; }
+.lede { font-size: 1.15rem; max-width: 62ch; }
+.thesis { border-left: 3px solid var(--accent); padding-left: 16px; }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-left: 1px solid var(--line); margin-left: 6px; }
+.timeline li { display: grid; grid-template-columns: 78px 1fr; gap: 12px; padding: 10px 0 10px 16px; position: relative; }
+.timeline li::before { content: ""; position: absolute; left: -4px; top: 18px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.timeline .yr { font: 500 0.85rem/1.6 var(--font-mono); color: var(--accent); }
+.timeline p { font-size: 0.95rem; }
+.timeline b { font-weight: 600; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-size: 0.85rem; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+figure { margin: 0; display: grid; gap: 10px; }
+figcaption { color: var(--muted); font-size: 0.9rem; max-width: 70ch; }
+.svgwrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.svgwrap svg { display: block; min-width: 560px; width: 100%; height: auto; }
+.ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ctl input[type=range] { flex: 1 1 160px; min-width: 0; accent-color: var(--accent); }
+.clock { font: 500 0.85rem var(--font-mono); color: var(--accent); min-width: 12ch; }
+.toggle { display: inline-flex; gap: 8px; align-items: center; font-weight: 500; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
+.takeaway { background: var(--surface2); border-radius: 8px; padding: 12px 16px; font-size: 0.95rem; }
+.takeaway b { color: var(--accent); font-weight: 600; }
+
+/* svg palette */
+.wire { stroke: var(--line); stroke-width: 1.5; fill: none; }
+.fast { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 5; fill: none; opacity: 0.75; }
+.node { fill: var(--surface2); stroke: var(--line); stroke-width: 1.5; }
+.node.hot { stroke: var(--accent); }
+.lbl { fill: var(--fg); font: 600 13px var(--font-body); }
+.sm { fill: var(--muted); font: 500 12px var(--font-mono); }
+.pk-o { fill: var(--info); } .pk-h { fill: var(--accent); }
+.t-bid { fill: var(--bid); font: 600 12px var(--font-mono); }
+.t-ask { fill: var(--ask); font: 600 12px var(--font-mono); }
+.t-mut { fill: var(--muted); font: 500 12px var(--font-mono); }
+.t-acc { fill: var(--accent); font: 600 13px var(--font-mono); }
+.flow { fill: none; stroke: var(--info); stroke-width: 2; stroke-dasharray: 6 6; animation: dash 1.2s linear infinite; }
+.flow.acc { stroke: var(--accent); } .flow.gr { stroke: var(--bid); }
+@keyframes dash { to { stroke-dashoffset: -24; } }
+
+/* order book */
+table.book { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.book td { padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.book .px { width: 80px; } .book .qty { width: 64px; text-align: right; } .book .bar { width: 40%; }
+.book .bar i { display: block; height: 12px; border-radius: 2px; }
+.book .ask .px { color: var(--ask); } .book .ask .bar i { background: var(--ask); opacity: 0.6; }
+.book .bid .px { color: var(--bid); } .book .bid .bar i { background: var(--bid); opacity: 0.6; }
+.book .spread td { text-align: center; color: var(--accent); background: var(--surface2); }
+.book .note { color: var(--muted); font-size: 0.8rem; }
+.scroll-x { overflow-x: auto; }
+
+/* flashcards */
+.deck-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.progress { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--bid); transition: width 0.3s; }
+.stage { perspective: 1200px; }
+.card { display: block; width: 100%; min-height: 280px; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; position: relative; }
+.card .inner { position: relative; min-height: 280px; transition: transform 0.5s; transform-style: preserve-3d; }
+.card.flipped .inner { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 22px; display: grid; grid-template-rows: auto 1fr auto; gap: 12px; overflow: auto; }
+.face.back { transform: rotateY(180deg); background: var(--surface2); border-color: var(--accent); }
+.face .q { font: 600 1.35rem/1.35 var(--font-display); align-self: center; }
+.face .a { font-size: 1.05rem; line-height: 1.55; align-self: center; }
+.face .hint { font: 500 0.75rem var(--font-mono); color: var(--muted); }
+.box-dots { display: inline-flex; gap: 4px; }
+.box-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+.box-dots i.on { background: var(--accent); }
+.answer-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* quiz / interview / glossary */
+.opt { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; cursor: pointer; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt.right { border-color: var(--bid); background: color-mix(in srgb, var(--bid) 14%, var(--surface)); }
+.opt.wrong { border-color: var(--ask); background: color-mix(in srgb, var(--ask) 14%, var(--surface)); }
+details.qa { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0; }
+details.qa summary { padding: 14px 18px; cursor: pointer; font-weight: 600; list-style-position: outside; }
+details.qa .ans { padding: 0 18px 16px; display: grid; gap: 8px; }
+details.qa .ans p { font-size: 0.95rem; }
+.field { display: grid; gap: 4px; font-size: 0.9rem; }
+.field span { display: flex; justify-content: space-between; gap: 8px; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.result { font: 600 1.4rem var(--font-mono); }
+input[type=search] { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; }
+dl.gloss { display: grid; gap: 10px; margin: 0; }
+dl.gloss div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+dl.gloss dt { font: 500 0.95rem var(--font-mono); color: var(--accent); }
+dl.gloss dd { margin: 4px 0 0; font-size: 0.95rem; }
+.note-foot { color: var(--muted); font-size: 0.85rem; max-width: 80ch; border-top: 1px solid var(--line); padding-top: 16px; margin-top: 20px; }
+@media (max-width: 520px) { .timeline li { grid-template-columns: 1fr; gap: 2px; } }
+@media (prefers-reduced-motion: reduce) { .card .inner { transition: none; } .flow { animation: none; } .progress i { transition: none; } }
+</style>
+
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="top-row">
+    <span class="eyebrow">Michael Lewis, 2014</span>
+    <button class="btn" id="themeBtn" type="button" aria-label="Change theme">Theme: auto</button>
+  </div>
+  <h1>Flash Boys, compressed for the HFT interview</h1>
+  <p class="sub-hero">The story, the mechanics, the animations and 58 flashcards. About 90 minutes end to end.</p>
+  <div class="ticker" aria-hidden="true">
+    <span>CHI→NJ fiber <b>~13 ms</b> round trip</span><span>IEX bump <b>350 µs</b></span><span>Spread build <b>~$300M</b></span><span>Tick <b>$0.01</b></span><span>Access fee cap <b>$0.003/sh</b></span><span>Light in glass <b class="dn">~200 km/ms</b></span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" data-tab="story" aria-selected="true">Story</button>
+  <button class="tab" role="tab" data-tab="anim" aria-selected="false">Animations</button>
+  <button class="tab" role="tab" data-tab="interview" aria-selected="false">Interview bridge</button>
+  <button class="tab" role="tab" data-tab="cards" aria-selected="false">Flashcards</button>
+  <button class="tab" role="tab" data-tab="quiz" aria-selected="false">Quiz</button>
+  <button class="tab" role="tab" data-tab="gloss" aria-selected="false">Glossary</button>
+</nav>
+
+<!-- STORY -->
+<section class="panel" id="tab-story">
+  <div class="thesis">
+    <p class="lede">A small group of traders with faster cables and closer servers could see your order coming, and trade ahead of it on other exchanges. A bank trader, Brad Katsuyama, proved it, built a router to beat it, then built an exchange to remove the advantage.</p>
+  </div>
+
+  <div class="grid3">
+    <div class="box"><span class="eyebrow">Problem</span><h3>Vanishing liquidity</h3><p>Katsuyama's screen showed shares offered. When he clicked buy, the offers disappeared before his order arrived, and the price moved up.</p></div>
+    <div class="box"><span class="eyebrow">Cause</span><h3>Fragmentation + speed</h3><p>One order was split over many exchanges. Orders reached them at different times. Fast traders saw the first arrival and pulled quotes on the rest.</p></div>
+    <div class="box"><span class="eyebrow">Fix</span><h3>Make arrival simultaneous</h3><p>Thor delayed the nearer legs so every piece landed at once. IEX then built the delay into the venue itself.</p></div>
+  </div>
+
+  <div style="display:grid;gap:12px">
+    <h2>Timeline</h2>
+    <ol class="timeline">
+      <li><span class="yr">2001</span><p><b>Decimalization.</b> Minimum tick falls from 1/16 to one cent. Spreads shrink, so market making becomes a volume-and-speed business.</p></li>
+      <li><span class="yr">2005–07</span><p><b>Reg NMS.</b> Order protection and a national best bid and offer (NBBO). Exchanges must be reachable fast, so competing electronic venues multiply.</p></li>
+      <li><span class="yr">Late 2000s</span><p><b>The puzzle.</b> At RBC, Katsuyama sees quotes vanish as he trades. Ronan Ryan and the team trace it to network timing.</p></li>
+      <li><span class="yr">2009</span><p><b>Sergey Aleynikov.</b> Goldman programmer arrested for copying code when he left. Lewis uses the case to show how valuable the trading code is.</p></li>
+      <li><span class="yr">2010</span><p><b>Spread Networks line.</b> Near-straight fiber Chicago to New Jersey, about $300M. Round trip about 17 ms down to about 13 ms.</p></li>
+      <li><span class="yr">2010–11</span><p><b>Thor at RBC.</b> Router that staggers order departure so all legs arrive together. Fills on displayed size improve sharply.</p></li>
+      <li><span class="yr">2012</span><p><b>IEX founded.</b> Katsuyama leaves RBC with Ronan Ryan and John Schwall.</p></li>
+      <li><span class="yr">2013</span><p><b>IEX dark pool launches</b> with a 350 µs speed bump.</p></li>
+      <li><span class="yr">Mar 2014</span><p><b>Flash Boys published.</b> Debate over whether the market is "rigged" goes mainstream.</p></li>
+      <li><span class="yr">2016</span><p><b>SEC approves IEX as a national exchange.</b> The speed bump is allowed as a protected quote.</p></li>
+    </ol>
+  </div>
+
+  <div class="grid2">
+    <div class="box"><span class="eyebrow">Cast</span><h3>Who to name in an interview</h3>
+      <p><b>Brad Katsuyama</b>, RBC trader, IEX CEO.</p>
+      <p><b>Ronan Ryan</b>, network and infrastructure expert, IEX co-founder.</p>
+      <p><b>Sergey Aleynikov</b>, Goldman programmer, code-theft case.</p>
+      <p><b>Dan Spivey</b>, driving force behind Spread Networks.</p>
+    </div>
+    <div class="box"><span class="eyebrow">Contested</span><h3>What critics say</h3>
+      <p>Lewis writes as a journalist with a hero. Academic work finds HFT narrowed spreads for small orders, while also finding the latency race is a real cost (Budish, Cramton and Shim, 2015).</p>
+      <p>"Front-running" here is not the legal kind. It is speed-based information advantage. Say that precisely in an interview.</p>
+    </div>
+  </div>
+
+  <div class="takeaway"><b>Six things to remember:</b> (1) fragmentation creates arbitrage, (2) speed decides who sees news first, (3) stale quotes get picked off, (4) rebates bend routing, (5) simultaneous arrival kills the trick, (6) a tiny bump protects resting orders.</div>
+  <p class="note-foot">Summary of the book and public sources. Figures are approximate and animations are illustrative, not to scale. Check any number before quoting it in a live interview.</p>
+</section>
+
+<!-- ANIMATIONS -->
+<section class="panel" id="tab-anim" hidden>
+  <div class="chips" id="subchips" role="group" aria-label="Choose animation">
+    <button class="chip" type="button" data-sub="race" aria-pressed="true">1 · Latency race &amp; Thor</button>
+    <button class="chip" type="button" data-sub="speed" aria-pressed="false">2 · Chicago → NJ</button>
+    <button class="chip" type="button" data-sub="book" aria-pressed="false">3 · Order book</button>
+    <button class="chip" type="button" data-sub="flow" aria-pressed="false">4 · Order flow &amp; rebates</button>
+    <button class="chip" type="button" data-sub="iex" aria-pressed="false">5 · IEX speed bump</button>
+  </div>
+
+  <div id="anim-race" class="subpanel">
+    <figure>
+      <label class="toggle"><input type="checkbox" id="thor"> Thor ON (delay the nearer legs)</label>
+      <div class="svgwrap"><svg id="svg-race" viewBox="0 0 640 320" role="img" aria-label="A bank order to three exchanges. Without Thor, fast traders pull quotes on the farther exchanges before the order arrives. With Thor, all pieces arrive together."></svg></div>
+      <div class="ctl"></div>
+      <figcaption>The client sends 9,000 shares as three orders of 3,000. Blue dots are the client's orders. Amber dots are the fast trader's messages, moving four times faster. Run it with Thor off, then on.</figcaption>
+    </figure>
+    <div class="takeaway"><b>Say it like this:</b> "The order reached the nearest venue first. A co-located trader saw that, and cancelled or repriced its quotes on the farther venues before my slower legs arrived. Thor removes the timing gap by delaying the near legs."</div>
+  </div>
+
+  <div id="anim-speed" class="subpanel" hidden>
+    <figure>
+      <div class="svgwrap"><svg id="svg-speed" viewBox="0 0 640 260" role="img" aria-label="Three signals leave Chicago at the same time for New Jersey. The fastest arrives first and takes the stale quote."></svg></div>
+      <div class="ctl"></div>
+      <figcaption>Futures move in Chicago. Stocks and ETFs in New Jersey are stale for a few milliseconds. Whoever's signal arrives first trades against the old price. One-way times: old fiber about 8.5 ms, Spread fiber about 6.5 ms, microwave about 4 ms (microwave is my estimate, not from the book).</figcaption>
+    </figure>
+    <div class="takeaway"><b>Maths:</b> glass carries light at about two thirds of c, roughly 200 km per ms. Fiber path 827 miles ≈ 1,330 km, so ≈ 6.7 ms one way, ≈ 13 ms round trip. That matches the number in the book. Air is close to c and the path is straighter, so microwave wins.</div>
+  </div>
+
+  <div id="anim-book" class="subpanel" hidden>
+    <figure>
+      <div class="box" style="gap:12px">
+        <div class="scroll-x"><table class="book" id="bookTable"><tbody></tbody></table></div>
+        <p id="bookCap" style="min-height:4.5em"></p>
+        <div class="ctl">
+          <button class="btn" type="button" id="bookPrev">← Back</button>
+          <button class="btn primary" type="button" id="bookNext">Next step →</button>
+          <span class="clock" id="bookStep"></span>
+        </div>
+      </div>
+      <figcaption>A price-time priority limit order book for one stock. Step through to see the spread, the queue, a market order and a stale quote getting hit.</figcaption>
+    </figure>
+    <div class="takeaway"><b>Say it like this:</b> "A market maker earns the spread plus any rebate, and loses when informed flow hits a stale quote. Queue position sets both the fill odds and the adverse selection you take."</div>
+  </div>
+
+  <div id="anim-flow" class="subpanel" hidden>
+    <figure>
+      <div class="svgwrap"><svg id="svg-flow" viewBox="0 0 640 300" role="img" aria-label="An investor order goes to a broker. The broker can route to a wholesaler that pays for order flow, to an exchange that pays a rebate, or to a dark pool."></svg></div>
+      <figcaption>Where money and orders travel. The broker's incentive is the rebate or payment, which may not match the best execution for the client. That is the conflict Lewis points at.</figcaption>
+    </figure>
+    <div class="takeaway"><b>Say it like this:</b> "Maker-taker pays whoever posts liquidity and charges whoever takes it, capped at $0.003 a share under Reg NMS. Brokers that route to the highest rebate can worsen the client's fill."</div>
+  </div>
+
+  <div id="anim-iex" class="subpanel" hidden>
+    <figure>
+      <label class="toggle"><input type="checkbox" id="bump" checked> 350 µs speed bump ON</label>
+      <div class="svgwrap"><svg id="svg-iex" viewBox="0 0 640 280" role="img" aria-label="A sniper order and a market data update race to the IEX matching engine. With the speed bump on, the data arrives first and the quote reprices before the sniper order lands."></svg></div>
+      <div class="ctl"></div>
+      <figcaption>A price moves on another exchange at t = 0. The sniper, sitting closer, fires at the stale IEX quote. IEX hears about the move over its own direct feed with no delay. Toggle the bump and compare.</figcaption>
+    </figure>
+    <div class="takeaway"><b>Say it like this:</b> "The bump delays all inbound orders equally, but IEX's own market data is not delayed. The venue reprices before a stale-quote snipe arrives, so resting orders are protected."</div>
+  </div>
+</section>
+
+<!-- INTERVIEW -->
+<section class="panel" id="tab-interview" hidden>
+  <p class="lede">The book gives you the story. These are the questions interviewers turn it into. Open each and answer out loud first.</p>
+  <div style="display:grid;gap:10px" id="qaList"></div>
+
+  <div class="box" style="gap:14px">
+    <span class="eyebrow">Calculator</span>
+    <h3>Is quoting worth it? Expected profit per share filled</h3>
+    <div class="grid2">
+      <label class="field"><span>Half-spread earned <b class="num" id="v-s"></b></span><input id="in-s" type="range" min="0" max="2" step="0.05" value="0.5"></label>
+      <label class="field"><span>Rebate <b class="num" id="v-r"></b></span><input id="in-r" type="range" min="0" max="0.3" step="0.01" value="0.2"></label>
+      <label class="field"><span>Adverse move if picked off <b class="num" id="v-m"></b></span><input id="in-m" type="range" min="0.2" max="5" step="0.1" value="1.5"></label>
+      <label class="field"><span>Probability the fill is informed <b class="num" id="v-p"></b></span><input id="in-p" type="range" min="0" max="100" step="1" value="30"></label>
+    </div>
+    <div class="result" id="ev-out"></div>
+    <p class="muted" id="ev-note"></p>
+  </div>
+</section>
+
+<!-- FLASHCARDS -->
+<section class="panel" id="tab-cards" hidden>
+  <div class="deck-top">
+    <div class="chips" id="topicChips" role="group" aria-label="Topic filter"></div>
+    <div class="clock" id="deckStat"></div>
+  </div>
+  <div class="progress" aria-label="Mastered"><i id="deckBar"></i></div>
+  <div class="stage">
+    <button class="card" id="card" type="button" aria-live="polite">
+      <div class="inner">
+        <div class="face front"><span class="hint" id="cTopic"></span><div class="q" id="cQ"></div><span class="hint">Tap or press Space to flip</span></div>
+        <div class="face back"><span class="hint" id="cTopic2"></span><div class="a" id="cA"></div><span class="hint"><span class="box-dots" id="cDots"></span></span></div>
+      </div>
+    </button>
+  </div>
+  <div class="answer-row">
+    <button class="btn bad" type="button" id="btnAgain">← Again</button>
+    <button class="btn" type="button" id="btnFlip">Flip</button>
+    <button class="btn good" type="button" id="btnGot">Got it →</button>
+    <button class="btn" type="button" id="btnShuffle">New session</button>
+  </div>
+  <p class="muted" style="font-size:0.85rem">Boxes 0–4. "Again" resets a card to box 0 and brings it back in three cards. "Got it" moves it up a box. Box 3 or higher counts as mastered. Weakest cards come first. Progress saves in this browser.</p>
+</section>
+
+<!-- QUIZ -->
+<section class="panel" id="tab-quiz" hidden>
+  <div id="quizBox" style="display:grid;gap:14px"></div>
+</section>
+
+<!-- GLOSSARY -->
+<section class="panel" id="tab-gloss" hidden>
+  <input type="search" id="glossQ" placeholder="Search terms, e.g. NBBO, dark pool, colo" aria-label="Search glossary">
+  <dl class="gloss" id="glossList"></dl>
+</section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function txt(parent, x, y, s, cls, anchor) { var t = el("text", { x: x, y: y, "class": cls || "lbl", "text-anchor": anchor || "middle" }, parent); t.textContent = s; return t; }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+  function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+  /* ---------- theme ---------- */
+  var themes = ["auto", "dark", "light"], ti = Math.max(0, themes.indexOf(store("fb.theme") || "auto"));
+  function applyTheme() {
+    var t = themes[ti], r = document.documentElement;
+    if (t === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", t);
+    $("#themeBtn").textContent = "Theme: " + t;
+  }
+  $("#themeBtn").addEventListener("click", function () { ti = (ti + 1) % 3; store("fb.theme", themes[ti]); applyTheme(); });
+  applyTheme();
+
+  /* ---------- tabs ---------- */
+  var activeTab = "story";
+  function showTab(name) {
+    if (!$("#tab-" + name)) name = "story";
+    activeTab = name;
+    $$(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false"); });
+    $$(".panel").forEach(function (p) { p.hidden = p.id !== "tab-" + name; });
+    store("fb.tab", name);
+    if (name !== "anim") Object.keys(anims).forEach(function (k) { anims[k].playing = false; syncBtn(anims[k]); });
+  }
+  $$(".tab").forEach(function (b) { b.addEventListener("click", function () { showTab(b.dataset.tab); }); });
+  $$("#subchips .chip").forEach(function (c) {
+    c.addEventListener("click", function () {
+      $$("#subchips .chip").forEach(function (x) { x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
+      $$(".subpanel").forEach(function (p) { p.hidden = p.id !== "anim-" + c.dataset.sub; });
+      Object.keys(anims).forEach(function (k) { anims[k].playing = false; syncBtn(anims[k]); });
+    });
+  });
+
+  /* ---------- animation engine ---------- */
+  var anims = {};
+  function syncBtn(a) { a.play.textContent = a.playing ? "Pause" : (a.t >= a.dur ? "Replay" : "Play"); }
+  function render(a) {
+    var label = a.draw(a.t);
+    a.clock.textContent = label || "";
+    a.range.value = String(Math.round(a.t / a.dur * 1000));
+  }
+  function register(id, dur, draw) {
+    var root = $("#anim-" + id), ctl = $(".ctl", root);
+    ctl.innerHTML = '<button type="button" class="btn primary" data-a="play">Replay</button><button type="button" class="btn" data-a="reset">Reset</button><input type="range" min="0" max="1000" value="1000" aria-label="Scrub timeline"><span class="clock"></span>';
+    var a = { id: id, dur: dur, draw: draw, t: dur, playing: false, play: $('[data-a=play]', ctl), range: $("input", ctl), clock: $(".clock", ctl) };
+    a.play.addEventListener("click", function () {
+      if (a.playing) a.playing = false; else { if (a.t >= a.dur) a.t = 0; a.playing = true; }
+      syncBtn(a);
+    });
+    $("[data-a=reset]", ctl).addEventListener("click", function () { a.playing = false; a.t = 0; render(a); syncBtn(a); });
+    a.range.addEventListener("input", function () { a.playing = false; a.t = a.range.value / 1000 * a.dur; render(a); syncBtn(a); });
+    anims[id] = a; render(a); syncBtn(a);
+    return a;
+  }
+  var last = 0;
+  function frame(ts) {
+    var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0; last = ts;
+    Object.keys(anims).forEach(function (k) {
+      var a = anims[k];
+      if (!a.playing) return;
+      a.t += dt;
+      if (a.t >= a.dur) { a.t = a.dur; a.playing = false; }
+      render(a); syncBtn(a);
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* ---------- 1. latency race + Thor ---------- */
+  (function () {
+    var svg = $("#svg-race"), B = { x: 62, y: 150 };
+    var E = [{ x: 330, y: 60, n: "Exchange A" }, { x: 450, y: 150, n: "Exchange B" }, { x: 550, y: 250, n: "Exchange C" }];
+    var V = 100, VF = 400, SH = 3000;
+    E.forEach(function (e) { el("line", { x1: B.x, y1: B.y, x2: e.x, y2: e.y, "class": "wire" }, svg); });
+    el("line", { x1: E[0].x, y1: E[0].y, x2: E[1].x, y2: E[1].y, "class": "fast" }, svg);
+    el("line", { x1: E[1].x, y1: E[1].y, x2: E[2].x, y2: E[2].y, "class": "fast" }, svg);
+    el("path", { d: "M" + E[0].x + " " + E[0].y + " Q " + 470 + " " + 110 + " " + E[2].x + " " + E[2].y, "class": "fast" }, svg);
+    el("rect", { x: B.x - 34, y: B.y - 24, width: 68, height: 48, rx: 6, "class": "node" }, svg);
+    txt(svg, B.x, B.y - 2, "Client", "lbl"); txt(svg, B.x, B.y + 14, "9,000 sh", "sm");
+    var qt = [];
+    E.forEach(function (e, i) {
+      el("rect", { x: e.x - 46, y: e.y - 22, width: 92, height: 44, rx: 6, "class": "node hot" }, svg);
+      txt(svg, e.x, e.y - 3, e.n, "lbl"); txt(svg, e.x, e.y + 13, "+ HFT server", "sm");
+      qt[i] = txt(svg, e.x, e.y + 40, "", "t-mut");
+    });
+    var po = E.map(function () { return el("circle", { r: 7, "class": "pk-o", cx: -20, cy: -20 }, svg); });
+    var ph = E.map(function () { return el("circle", { r: 5, "class": "pk-h", cx: -20, cy: -20 }, svg); });
+    var info = txt(svg, 20, 306, "", "t-acc", "start");
+    txt(svg, 20, 24, "Dashed amber = HFT fast lane", "sm", "start");
+    function calc() {
+      var thor = $("#thor").checked;
+      var d = E.map(function (e) { return Math.hypot(e.x - B.x, e.y - B.y); });
+      var dmax = Math.max.apply(null, d);
+      var dep = d.map(function (x) { return thor ? (dmax - x) / V : 0; });
+      var arr = d.map(function (x, i) { return dep[i] + x / V; });
+      var first = Math.min.apply(null, arr), f = arr.indexOf(first);
+      var pull = E.map(function (e, j) { return j === f ? Infinity : first + Math.hypot(e.x - E[f].x, e.y - E[f].y) / VF; });
+      var filled = arr.map(function (a, j) { return a <= pull[j]; });
+      return { d: d, dep: dep, arr: arr, first: first, f: f, pull: pull, filled: filled };
+    }
+    function pos(a, b, fr) { return { x: a.x + (b.x - a.x) * fr, y: a.y + (b.y - a.y) * fr }; }
+    var a = register("race", 6, function (t) {
+      var c = calc(), got = 0, pulled = 0;
+      E.forEach(function (e, i) {
+        var vis = t >= c.dep[i] && t < c.arr[i], p = vis ? pos(B, e, (t - c.dep[i]) * V / c.d[i]) : { x: -20, y: -20 };
+        po[i].setAttribute("cx", p.x); po[i].setAttribute("cy", p.y);
+        var hv = i !== c.f && t >= c.first && t < c.pull[i], hp = hv ? pos(E[c.f], e, (t - c.first) * VF / Math.hypot(e.x - E[c.f].x, e.y - E[c.f].y)) : { x: -20, y: -20 };
+        ph[i].setAttribute("cx", hp.x); ph[i].setAttribute("cy", hp.y);
+        var s, cls;
+        if (t >= c.arr[i] && c.filled[i]) { s = "FILLED " + fmt(SH); cls = "t-bid"; got += SH; }
+        else if (t >= c.arr[i]) { s = "MISSED · quote gone"; cls = "t-ask"; pulled++; }
+        else if (t >= c.pull[i]) { s = "PULLED · 0 left"; cls = "t-ask"; pulled++; }
+        else { s = fmt(SH) + " @ 25.00"; cls = "t-mut"; }
+        qt[i].textContent = s; qt[i].setAttribute("class", cls);
+      });
+      info.textContent = "Filled " + fmt(got) + " of 9,000 shares" + (pulled ? " · " + pulled + " venue(s) repriced against you" : "");
+      return "t = " + t.toFixed(1) + " ms (illustrative)";
+    });
+    $("#thor").addEventListener("change", function () { a.playing = false; a.t = a.dur; render(a); syncBtn(a); });
+  })();
+
+  /* ---------- 2. Chicago -> NJ ---------- */
+  (function () {
+    var svg = $("#svg-speed"), X0 = 96, X1 = 500;
+    var L = [{ n: "Old fiber", T: 8.5, y: 70 }, { n: "Spread fiber", T: 6.5, y: 130 }, { n: "Microwave (approx.)", T: 4.0, y: 190 }];
+    txt(svg, X0, 26, "Chicago (CME futures)", "lbl", "middle"); txt(svg, 566, 26, "New Jersey", "lbl", "middle");
+    el("rect", { x: 528, y: 44, width: 76, height: 170, rx: 6, "class": "node hot" }, svg);
+    var quote = txt(svg, 566, 118, "Stale", "t-mut"), quote2 = txt(svg, 566, 136, "quote", "t-mut");
+    var runners = [], labels = [];
+    L.forEach(function (l, i) {
+      el("line", { x1: X0, y1: l.y, x2: X1 + 20, y2: l.y, "class": "wire" }, svg);
+      txt(svg, X0 - 10, l.y + 4, l.T + " ms", "sm", "end");
+      txt(svg, X0 + 4, l.y - 12, l.n, "sm", "start");
+      runners.push(el("circle", { cx: X0, cy: l.y, r: 8, "class": i === 2 ? "pk-h" : "pk-o" }, svg));
+      labels.push(txt(svg, X1 + 16, l.y - 12, "", "t-mut", "end"));
+    });
+    var res = txt(svg, 20, 244, "", "t-acc", "start");
+    register("speed", 6, function (t) {
+      var tm = t / 6 * 10, winner = 2, over = false;
+      L.forEach(function (l, i) {
+        var fr = Math.min(1, tm / l.T);
+        runners[i].setAttribute("cx", X0 + (X1 - X0) * fr);
+        if (tm >= l.T) { labels[i].textContent = i === winner ? "WINS the quote" : "late by " + (l.T - L[winner].T).toFixed(1) + " ms"; labels[i].setAttribute("class", i === winner ? "t-bid" : "t-ask"); over = true; }
+        else { labels[i].textContent = ""; }
+      });
+      var won = tm >= L[winner].T;
+      quote.textContent = won ? "Taken by" : "Stale"; quote2.textContent = won ? "microwave" : "quote";
+      quote.setAttribute("class", won ? "t-acc" : "t-mut"); quote2.setAttribute("class", won ? "t-acc" : "t-mut");
+      res.textContent = won ? "Winner takes all: ~2 ms of fiber was worth $300M to buyers of Spread." : "All three signals left Chicago at the same instant.";
+      return "t = " + tm.toFixed(2) + " ms";
+    });
+  })();
+
+  /* ---------- 3. order book stepper ---------- */
+  (function () {
+    var steps = [
+      { cap: "Start. Best bid 25.00, best ask 25.01: the spread is one tick (1¢). Each price level is a queue, first in first out.",
+        asks: [[25.03, 400, ""], [25.02, 700, ""], [25.01, 500, "Queue: HFT 200 → Fund 300"]], bids: [[25.00, 600, "Queue: Fund 400 → HFT 200"], [24.99, 900, ""], [24.98, 1100, ""]] },
+      { cap: "A retail investor buys 200 at market. It takes the front of the 25.01 queue, which is the HFT market maker. The maker earns the 1¢ spread plus any rebate. The taker pays a fee (capped by Reg NMS).",
+        asks: [[25.03, 400, ""], [25.02, 700, ""], [25.01, 300, "Queue: Fund 300 (HFT just filled 200)"]], bids: [[25.00, 600, "Queue: Fund 400 → HFT 200"], [24.99, 900, ""], [24.98, 1100, ""]] },
+      { cap: "News hits another venue: fair value drops. The fast maker cancels its 200 bid at 25.00 in microseconds. The slower fund's bid is now stale and still standing.",
+        asks: [[25.03, 400, ""], [25.02, 700, ""], [25.01, 300, "Queue: Fund 300"]], bids: [[25.00, 400, "Queue: Fund 400 (HFT cancelled)"], [24.99, 900, ""], [24.98, 1100, ""]] },
+      { cap: "A sniper sells 400 into the fund's stale bid at 25.00 while fair value is now 24.98. That is adverse selection: the fund bought at a price that was already wrong. This is what Thor and IEX try to stop.",
+        asks: [[25.03, 400, ""], [25.02, 700, ""], [25.01, 300, "Queue: Fund 300"]], bids: [[25.00, 0, "Gone: filled by the sniper at a stale price"], [24.99, 900, ""], [24.98, 1100, ""]] }
+    ];
+    var i = 0, tb = $("#bookTable tbody");
+    function row(kind, r) {
+      var w = Math.round(r[1] / 1100 * 100);
+      return '<tr class="' + kind + '"><td class="px">' + r[0].toFixed(2) + '</td><td class="bar"><i style="width:' + w + '%"></i></td><td class="qty">' + fmt(r[1]) + '</td><td class="note">' + r[2] + '</td></tr>';
+    }
+    function draw() {
+      var s = steps[i], h = "";
+      s.asks.forEach(function (r) { h += row("ask", r); });
+      h += '<tr class="spread"><td colspan="4">spread ' + (i === 3 ? "widens to 2¢ on the bid side" : "1¢") + '</td></tr>';
+      s.bids.forEach(function (r) { h += row("bid", r); });
+      tb.innerHTML = h;
+      $("#bookCap").textContent = s.cap;
+      $("#bookStep").textContent = "Step " + (i + 1) + " of " + steps.length;
+      $("#bookPrev").disabled = i === 0; $("#bookNext").disabled = i === steps.length - 1;
+    }
+    $("#bookPrev").addEventListener("click", function () { if (i > 0) { i--; draw(); } });
+    $("#bookNext").addEventListener("click", function () { if (i < steps.length - 1) { i++; draw(); } });
+    draw();
+  })();
+
+  /* ---------- 4. order flow ---------- */
+  (function () {
+    var svg = $("#svg-flow");
+    function box(x, y, w, h, a, b, hot) { el("rect", { x: x, y: y, width: w, height: h, rx: 6, "class": "node" + (hot ? " hot" : "") }, svg); txt(svg, x + w / 2, y + h / 2 - 2, a, "lbl"); if (b) txt(svg, x + w / 2, y + h / 2 + 14, b, "sm"); }
+    box(14, 118, 100, 54, "Investor", "buys 100 sh");
+    box(190, 118, 100, 54, "Broker", "routes order", true);
+    box(420, 20, 130, 54, "Wholesaler", "internalises");
+    box(420, 118, 130, 54, "Exchange", "maker-taker");
+    box(420, 216, 130, 54, "Dark pool", "no displayed quotes");
+    el("path", { d: "M114 145 L190 145", "class": "flow" }, svg);
+    el("path", { d: "M290 138 C340 138 350 47 420 47", "class": "flow acc" }, svg);
+    el("path", { d: "M290 145 L420 145", "class": "flow" }, svg);
+    el("path", { d: "M290 152 C340 152 350 243 420 243", "class": "flow" }, svg);
+    el("path", { d: "M420 60 C350 70 340 120 290 128", "class": "flow gr", "stroke-dashoffset": "0" }, svg);
+    txt(svg, 355, 30, "pays broker per order", "sm"); txt(svg, 355, 166, "order → fee or rebate", "sm");
+    txt(svg, 355, 262, "matched off-exchange", "sm");
+    txt(svg, 575, 47, "profit:", "sm", "start"); txt(svg, 575, 62, "spread", "t-bid", "start");
+    txt(svg, 575, 145, "rebate to", "sm", "start"); txt(svg, 575, 160, "makers", "t-bid", "start");
+    txt(svg, 575, 243, "risk:", "sm", "start"); txt(svg, 575, 258, "info leak", "t-ask", "start");
+    txt(svg, 190, 210, "Conflict: pick the venue that pays the broker,", "sm", "start");
+    txt(svg, 190, 226, "not always the one that is best for the client.", "sm", "start");
+  })();
+
+  /* ---------- 5. IEX bump ---------- */
+  (function () {
+    var svg = $("#svg-iex");
+    var SNIP = { x: 60, y: 70 }, MKT = { x: 60, y: 220 }, ENG = { x: 560, y: 140 };
+    var poly = [{ x: 270, y: 70 }], cx = 270;
+    for (var k = 0; k < 7; k++) { cx += 18; var yy = k % 2 === 0 ? 30 : 110; poly.push({ x: cx - 18, y: yy }); poly.push({ x: cx, y: yy }); }
+    poly.push({ x: cx, y: poly[poly.length - 1].y === 30 ? 30 : 110 });
+    var pts = poly.map(function (p) { return p.x + "," + p.y; }).join(" ");
+    var lens = [0], total = 0;
+    for (var j = 1; j < poly.length; j++) { total += Math.hypot(poly[j].x - poly[j - 1].x, poly[j].y - poly[j - 1].y); lens.push(total); }
+    function along(f) { var d = f * total, m = 1; while (m < lens.length - 1 && lens[m] < d) m++; var s = (d - lens[m - 1]) / ((lens[m] - lens[m - 1]) || 1); return { x: poly[m - 1].x + (poly[m].x - poly[m - 1].x) * s, y: poly[m - 1].y + (poly[m].y - poly[m - 1].y) * s }; }
+    var endP = poly[poly.length - 1];
+    el("line", { x1: SNIP.x + 40, y1: SNIP.y, x2: 270, y2: 70, "class": "wire" }, svg);
+    el("line", { x1: MKT.x + 40, y1: MKT.y, x2: ENG.x - 44, y2: ENG.y + 12, "class": "wire" }, svg);
+    var coil = el("polyline", { points: pts, fill: "none", "class": "wire", "stroke-width": 3 }, svg);
+    var legOut = el("line", { x1: endP.x, y1: endP.y, x2: ENG.x - 44, y2: ENG.y - 10, "class": "wire" }, svg);
+    var bypass = el("line", { x1: 270, y1: 70, x2: endP.x, y2: endP.y, "class": "fast", opacity: 0 }, svg);
+    txt(svg, 330, 132, "~38 miles of coiled fiber", "sm"); txt(svg, 330, 148, "(the bump)", "sm");
+    el("rect", { x: SNIP.x - 44, y: SNIP.y - 26, width: 88, height: 52, rx: 6, "class": "node hot" }, svg); txt(svg, SNIP.x, SNIP.y - 2, "Sniper", "lbl"); txt(svg, SNIP.x, SNIP.y + 14, "co-located", "sm");
+    el("rect", { x: MKT.x - 44, y: MKT.y - 26, width: 88, height: 52, rx: 6, "class": "node" }, svg); txt(svg, MKT.x, MKT.y - 2, "Other venue", "lbl"); txt(svg, MKT.x, MKT.y + 14, "price moves", "sm");
+    el("rect", { x: ENG.x - 44, y: ENG.y - 32, width: 88, height: 64, rx: 6, "class": "node hot" }, svg); txt(svg, ENG.x, ENG.y - 12, "IEX", "lbl"); txt(svg, ENG.x, ENG.y + 2, "engine", "lbl");
+    var qt = txt(svg, ENG.x, ENG.y + 22, "", "t-mut");
+    var ps = el("circle", { r: 7, "class": "pk-h", cx: -20, cy: -20 }, svg), pm = el("circle", { r: 7, "class": "pk-o", cx: -20, cy: -20 }, svg);
+    var st = txt(svg, 20, 262, "", "t-acc", "start");
+    var lg = txt(svg, 20, 24, "Amber = sniper order · Blue = market data", "sm", "start");
+    function P(a, b, f) { f = Math.max(0, Math.min(1, f)); return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f }; }
+    var a = register("iex", 5, function (t) {
+      var bump = $("#bump").checked, us = t / 5 * 500;
+      var arrS = bump ? 450 : 100, arrM = 200;
+      coil.setAttribute("stroke", bump ? "var(--accent)" : "var(--line)"); bypass.setAttribute("opacity", bump ? 0 : 0.8);
+      var p;
+      if (us < 60) p = P({ x: SNIP.x + 40, y: SNIP.y }, { x: 270, y: 70 }, us / 60);
+      else if (bump && us < 410) p = along((us - 60) / 350);
+      else if (bump && us < 450) p = P(endP, { x: ENG.x - 44, y: ENG.y - 10 }, (us - 410) / 40);
+      else if (!bump && us < 100) p = P({ x: 270, y: 70 }, { x: ENG.x - 44, y: ENG.y - 10 }, (us - 60) / 40);
+      else p = null;
+      var showS = p && us < arrS;
+      ps.setAttribute("cx", showS ? p.x : -20); ps.setAttribute("cy", showS ? p.y : -20);
+      var m = us < arrM ? P({ x: MKT.x + 40, y: MKT.y }, { x: ENG.x - 44, y: ENG.y + 12 }, us / arrM) : null;
+      pm.setAttribute("cx", m ? m.x : -20); pm.setAttribute("cy", m ? m.y : -20);
+      var repriced = us >= arrM, sniped = !bump && us >= arrS;
+      if (sniped) { qt.textContent = "SNIPED @ 25.00"; qt.setAttribute("class", "t-ask"); }
+      else if (repriced) { qt.textContent = "repriced 25.02"; qt.setAttribute("class", "t-bid"); }
+      else { qt.textContent = "ask 25.00 (stale)"; qt.setAttribute("class", "t-mut"); }
+      if (us >= 450 || (!bump && us >= 100 && us >= arrM)) {
+        st.textContent = bump ? "Order landed at " + arrS + " µs, after the reprice at " + arrM + " µs. Snipe fails." : "Order landed at " + arrS + " µs, before the reprice at " + arrM + " µs. Snipe works.";
+      } else if (!bump && us >= arrS) st.textContent = "Order landed at " + arrS + " µs, before the reprice at " + arrM + " µs. Snipe works.";
+      else st.textContent = "";
+      return "t = " + Math.round(us) + " µs";
+    });
+    $("#bump").addEventListener("change", function () { a.playing = false; a.t = a.dur; render(a); syncBtn(a); });
+  })();
+
+  /* ---------- interview Q&A ---------- */
+  var QA = [
+    ["How is latency arbitrage different from market making?", "Market making earns the spread by quoting both sides and managing inventory. Latency arbitrage trades against stale quotes by reacting to information faster than the quoter can update. Same speed technology, opposite side of the trade: one gets picked off, the other picks off. Many firms do both, and the difference shows up in whether they add or take liquidity."],
+    ["Why do market makers cancel quotes so fast?", "Because a resting quote is a free option to informed traders. If related prices move, the quote is stale, and whoever hits it wins. Cancelling within microseconds is a defensive cost of quoting, which is why slower makers quote wider spreads."],
+    ["Why did Katsuyama's orders miss displayed liquidity?", "One order was split to many venues that were at different network distances. The first leg arrived early, a co-located trader saw the fill and repriced the remaining venues before the slower legs arrived. Latency differences between legs are the whole mechanism."],
+    ["What exactly does IEX's speed bump do?", "It adds about 350 µs of delay to inbound and outbound messages through coiled fiber. Because IEX gets its own market data without that delay, it can reprice quotes (its crumbling quote logic) before a stale-quote order lands. It protects resting orders without slowing the price feed."],
+    ["Is the speed race socially wasteful? What is the alternative?", "Budish, Cramton and Shim argue continuous limit order books make tiny speed edges enormously valuable, which drives an arms race. Their proposal is frequent batch auctions: uniform-price auctions every fraction of a second, so competition is on price, not speed. Counterpoint: HFT lowered spreads and costs for small investors."],
+    ["Give a quick estimate: what does 1 ms buy?", "Light in glass covers about 200 km per ms. Chicago to New Jersey is roughly 1,200 km in a straight line, so around 6 ms one way at best. The old route was about 8.5 ms one way, the Spread line about 6.5 ms. Microwave through air is about 4 ms."],
+    ["Explain maker-taker and its distortions.", "Exchanges pay a rebate to orders that add liquidity and charge a fee to orders that remove it, capped at $0.003 per share under Reg NMS. This can tilt routing toward the highest rebate, not the best price, and makes queue position more valuable. Some venues use taker-maker or inverted fees to compete."],
+    ["How does inventory change quoting?", "In the Avellaneda–Stoikov idea, the reservation price shifts against your position: long inventory pushes both bid and ask lower to attract sellers less and buyers more. Risk aversion and volatility scale the shift. Simple version to say aloud: skew quotes away from the side you already hold."],
+    ["What does Glosten–Milgrom say about spreads?", "A market maker faces informed and uninformed traders it can't tell apart. The spread must cover expected losses to the informed, so it widens with the probability that a trade is informed. Faster news for informed traders raises adverse selection, which is why latency shows up in spreads."]
+  ];
+  var qaList = $("#qaList");
+  QA.forEach(function (q, i) {
+    var d = document.createElement("details"); d.className = "qa";
+    var s = document.createElement("summary"); s.textContent = q[0]; d.appendChild(s);
+    var a = document.createElement("div"); a.className = "ans"; var p = document.createElement("p"); p.textContent = q[1]; a.appendChild(p); d.appendChild(a);
+    qaList.appendChild(d);
+  });
+  function ev() {
+    var s = +$("#in-s").value, r = +$("#in-r").value, m = +$("#in-m").value, p = +$("#in-p").value / 100;
+    $("#v-s").textContent = s.toFixed(2) + "¢"; $("#v-r").textContent = r.toFixed(2) + "¢"; $("#v-m").textContent = m.toFixed(1) + "¢"; $("#v-p").textContent = Math.round(p * 100) + "%";
+    var e = s + r - p * m, be = m > 0 ? (s + r) / m : 0;
+    var out = $("#ev-out"); out.textContent = "EV = " + (e >= 0 ? "+" : "") + e.toFixed(2) + "¢ per share";
+    out.style.color = e >= 0 ? "var(--bid)" : "var(--ask)";
+    $("#ev-note").textContent = "EV = half-spread + rebate − P(informed) × adverse move. Break-even probability of being picked off: " + Math.min(100, be * 100).toFixed(0) + "%. Slower quotes raise P(informed), which is why speed matters. Numbers are illustrative.";
+  }
+  ["s", "r", "m", "p"].forEach(function (k) { $("#in-" + k).addEventListener("input", ev); }); ev();
+
+  /* ---------- flashcards ---------- */
+  var CARDS = [
+    ["Story", "What is Flash Boys about?", "Michael Lewis (2014). How speed-advantaged traders exploit a fragmented market, and how Brad Katsuyama built a router and then an exchange (IEX) to fix it."],
+    ["Story", "What puzzle started the story?", "Katsuyama's screen showed shares offered, but when he clicked buy the offers vanished before his order filled and the price moved against him."],
+    ["Story", "Why did the displayed offers vanish?", "HFTs co-located at the exchanges saw his order hit the nearest venue first and cancelled or repriced their quotes on the other venues before his slower legs arrived."],
+    ["Story", "What was Thor?", "RBC's router that delayed the departure of the nearer legs so every piece of the order reached every exchange at the same time."],
+    ["Story", "What did Thor prove?", "That the timing gap, not lack of liquidity, caused the misses. With simultaneous arrival, displayed size actually filled."],
+    ["Story", "Who is Brad Katsuyama?", "RBC equities trader who discovered the latency problem, left in 2012 and became CEO of IEX."],
+    ["Story", "Who is Ronan Ryan?", "Network and infrastructure specialist who helped trace the latency problem at RBC and co-founded IEX."],
+    ["Story", "Who is Sergey Aleynikov?", "Goldman Sachs programmer arrested in 2009 for copying code on leaving. Convicted, then the federal conviction was overturned in 2012. Lewis uses the case to show how valuable HFT code is."],
+    ["Story", "What was Spread Networks?", "A near-straight fiber line, Chicago (CME) to New Jersey data centers, about $300M, cutting round trip from about 17 ms to about 13 ms."],
+    ["Story", "Why connect Chicago and New Jersey?", "Futures trade at CME near Chicago, stocks and ETFs trade in New Jersey. Whoever gets a price move from one to the other first can trade the stale side."],
+    ["Story", "What is IEX?", "Investors Exchange, founded by Katsuyama, Ryan and Schwall. Dark pool in 2013, SEC-approved national exchange in 2016."],
+    ["Story", "What is IEX's speed bump?", "About 350 µs of delay on inbound and outbound messages, from roughly 38 miles of coiled fiber."],
+    ["Story", "Why does the bump not slow the whole market?", "It is symmetric for participants and tiny in human terms. IEX's own market data is not delayed, so the venue can reprice before delayed orders arrive."],
+    ["Story", "What is Lewis's core thesis?", "Speed, fragmentation and rebates combine into a structural advantage for fast traders over slower investors. In his words the market is rigged."],
+    ["Story", "Main criticism of the book?", "Journalistic and one-sided. Studies find HFT tightened spreads. The latency race is a real cost, but 'front-running' here is not the legal kind."],
+    ["Market", "What is Reg NMS?", "SEC rules from 2005 (effective 2007): order protection (no trade-throughs), NBBO, access fee cap, sub-penny quoting limits."],
+    ["Market", "What is the NBBO?", "National Best Bid and Offer: the best displayed bid and ask across all protected exchanges."],
+    ["Market", "What is the order protection rule?", "A venue must not trade at a price worse than a better protected quote displayed elsewhere. It forces brokers to consider many venues."],
+    ["Market", "What did decimalization change?", "From 2001 the minimum tick became one cent, down from 1/16 of a dollar. Spreads shrank; market making became volume and speed."],
+    ["Market", "What is maker-taker pricing?", "Exchange pays a rebate to orders that add liquidity and charges a fee to those that remove it. Fee capped at $0.003 per share."],
+    ["Market", "What distortion can maker-taker create?", "Brokers may route to the highest rebate instead of the best execution. It also raises the value of queue position."],
+    ["Market", "What is payment for order flow?", "A wholesaler pays a broker to send it retail orders, then internalises them and earns the spread."],
+    ["Market", "What is a dark pool?", "A venue that does not display quotes before trades. Reduces market impact but can leak information to sophisticated participants."],
+    ["Market", "What is co-location?", "Renting servers inside the exchange's data center, with equal-length cables, for the shortest possible network path."],
+    ["Market", "What is market fragmentation?", "The same stock trades on many venues (about 13 exchanges plus dozens of dark pools in the book's era)."],
+    ["Market", "What is an intermarket sweep order (ISO)?", "An order that lets a venue trade through protected quotes because the sender is sweeping those quotes at the same time on other venues."],
+    ["Market", "What are flash orders?", "Orders shown briefly to selected participants before going public. Controversial and largely discontinued after 2009."],
+    ["Market", "What is spoofing?", "Placing orders you don't intend to execute to mislead others. Explicitly illegal under Dodd-Frank (2010)."],
+    ["Market", "Price-time priority?", "Best price first; among equal prices, earliest order first. This is why queue position matters."],
+    ["Market", "Latency arbitrage in one line?", "Trade against a quote that is stale because the quoter has not yet seen the news you already have."],
+    ["Tech", "Speed of light in fiber?", "About two thirds of c, roughly 200 km per millisecond (200 m per µs)."],
+    ["Tech", "Chicago–NJ fiber round trip?", "Straight path about 1,330 km gives about 13 ms round trip at best. The old route was about 17 ms."],
+    ["Tech", "Why does microwave beat fiber?", "Radio in air travels close to c, about 50% faster than light in glass, and the path is nearly a straight line."],
+    ["Tech", "1 ms = ? µs = ? ns", "1 ms = 1,000 µs = 1,000,000 ns."],
+    ["Tech", "What is tick-to-trade latency?", "Time from receiving a market data update to sending an order in response. Best systems: hundreds of nanoseconds to low microseconds."],
+    ["Tech", "What is an FPGA used for in trading?", "Hardware logic for parsing feeds and sending orders at nanosecond scale, faster than software on a CPU."],
+    ["Tech", "What is kernel bypass?", "Network I/O that skips the OS stack (for example DPDK or Onload) to cut latency and jitter."],
+    ["Tech", "Latency vs jitter?", "Latency is the average delay, jitter is its variation. Trading cares about the tail, since the slow message loses the race."],
+    ["Tech", "Why equalise cable length in colo?", "So no client gets a wire advantage inside the data center; competition is then on hardware and software."],
+    ["Tech", "How long is the IEX bump in distance?", "350 µs at 200 m per µs is about 70 km of fiber equivalent; IEX coils roughly 38 miles (61 km) per direction."],
+    ["Quant", "What is adverse selection?", "The risk that a trade against you happens because the counterparty knows more, so it tends to lose money after the fill."],
+    ["Quant", "Market maker profit decomposition?", "Spread captured + rebates − adverse selection − inventory risk − fees and costs."],
+    ["Quant", "Glosten–Milgrom in one line?", "Spread compensates the market maker for expected loss to informed traders; it widens with the probability of informed trading."],
+    ["Quant", "Kyle model in one line?", "One informed trader, noise traders, a market maker. Price impact is linear: Δp = λ × order flow."],
+    ["Quant", "Avellaneda–Stoikov idea?", "Reservation price = mid − q γ σ² (T − t). Skew quotes against inventory q, and widen with volatility and risk aversion."],
+    ["Quant", "Why does queue position matter?", "First in queue gets filled sooner and takes less adverse selection. Last in queue is filled mainly when price is about to move against the quote."],
+    ["Quant", "Frequent batch auctions?", "Proposal by Budish, Cramton and Shim (2015): uniform-price auctions in discrete time (for example every 100 ms) to end the speed race."],
+    ["Quant", "EV of a quote fill?", "Half-spread + rebate − P(informed) × adverse move. Break-even P = (spread + rebate) / adverse move."],
+    ["Quant", "What is signal decay / half-life?", "How fast a predictive signal loses value with time. If it decays in microseconds you need speed; if in minutes you need better models."],
+    ["Quant", "Latency-sensitive vs statistical strategies?", "Latency-sensitive: arbitrage, market making. Statistical: slower models on signals with longer half-lives. Speed costs are high, capacity is limited."],
+    ["Quant", "What is order-to-trade ratio?", "Orders sent divided by trades executed. HFT ratios are high because quotes are constantly updated or cancelled."],
+    ["Quant", "What is a 'crumbling quote'?", "IEX's signal that quotes across exchanges are about to change, so it temporarily lets its own quotes step back."],
+    ["Quant", "Why cancel instead of waiting for a fill?", "A resting quote is a free option to informed traders. When the fair price moves, cancelling costs nothing and being hit costs the move."],
+    ["Quant", "Is being fast the same as being informed?", "No. Speed lets you act on public information first; information is knowing something others don't. Latency arb is the former."],
+    ["Quant", "Two-sentence answer: is HFT good or bad?", "It reduced spreads and costs for small orders but created a speed race with little social value, and it can hurt slower institutional flow. Design changes like batch auctions or speed bumps target the second part."],
+    ["Quant", "How would you check if a signal survives latency?", "Measure signal return versus delay from the event: if the edge is gone by your tick-to-trade time or queue delay, you need faster infrastructure or a different signal."],
+    ["Quant", "Dark pool information leakage risk?", "Pinging with small orders can reveal large hidden ones, and participants with better tech can infer direction."],
+    ["Quant", "What is the 'winner takes all' feature of latency races?", "Only the first arrival gets the stale quote, so a small speed edge captures the whole profit. That is why firms pay hundreds of millions for milliseconds."]
+  ];
+  var TOPICS = ["All", "Story", "Market", "Tech", "Quant", "Weak"];
+  var boxes = {}; try { boxes = JSON.parse(store("fb.boxes") || "{}") || {}; } catch (e) { boxes = {}; }
+  var topic = "All", queue = [], curId = -1;
+  function box(id) { return boxes[id] || 0; }
+  function saveBoxes() { store("fb.boxes", JSON.stringify(boxes)); }
+  function pool() { return CARDS.map(function (_, i) { return i; }).filter(function (i) { return topic === "All" || (topic === "Weak" ? box(i) < 3 : CARDS[i][0] === topic); }); }
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function build() {
+    var p = shuffle(pool());
+    p.sort(function (a, b) { return box(a) - box(b); });
+    queue = p; showCard();
+  }
+  function stats() {
+    var m = CARDS.filter(function (_, i) { return box(i) >= 3; }).length;
+    $("#deckStat").textContent = m + " / " + CARDS.length + " mastered · " + queue.length + " left this session";
+    $("#deckBar").style.width = (m / CARDS.length * 100) + "%";
+  }
+  function showCard() {
+    var card = $("#card"); card.classList.remove("flipped");
+    if (!queue.length) {
+      curId = -1;
+      $("#cTopic").textContent = ""; $("#cQ").textContent = "Session complete."; $("#cA").textContent = "Press New session to go again. Weakest cards come first.";
+      $("#cTopic2").textContent = ""; $("#cDots").innerHTML = ""; stats(); return;
+    }
+    curId = queue[0]; var c = CARDS[curId];
+    $("#cTopic").textContent = c[0]; $("#cTopic2").textContent = c[0]; $("#cQ").textContent = c[1]; $("#cA").textContent = c[2];
+    var d = ""; for (var i = 0; i < 5; i++) d += '<i class="' + (i < box(curId) ? "on" : "") + '"></i>'; $("#cDots").innerHTML = d + " &nbsp;box " + box(curId);
+    stats();
+  }
+  function answer(got) {
+    if (curId < 0) return;
+    queue.shift();
+    if (got) boxes[curId] = Math.min(4, box(curId) + 1); else { boxes[curId] = 0; queue.splice(Math.min(3, queue.length), 0, curId); }
+    saveBoxes(); showCard();
+  }
+  function flip() { if (curId >= 0) $("#card").classList.toggle("flipped"); }
+  var tc = $("#topicChips");
+  TOPICS.forEach(function (t) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = t; b.setAttribute("aria-pressed", t === topic ? "true" : "false");
+    b.addEventListener("click", function () { topic = t; $$(".chip", tc).forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); build(); });
+    tc.appendChild(b);
+  });
+  $("#card").addEventListener("click", flip);
+  $("#btnFlip").addEventListener("click", flip);
+  $("#btnGot").addEventListener("click", function () { answer(true); });
+  $("#btnAgain").addEventListener("click", function () { answer(false); });
+  $("#btnShuffle").addEventListener("click", build);
+  document.addEventListener("keydown", function (e) {
+    if (activeTab !== "cards" || /input|textarea/i.test(e.target.tagName)) return;
+    if (e.key === " ") { e.preventDefault(); flip(); }
+    else if (e.key === "ArrowRight") answer(true);
+    else if (e.key === "ArrowLeft") answer(false);
+  });
+  build();
+
+  /* ---------- quiz ---------- */
+  var QZ = [
+    ["Why did Katsuyama's displayed liquidity vanish?", ["The exchanges were closed", "Fast traders saw the first fill and repriced the other venues before his slower legs arrived", "His broker cancelled the order", "Prices were rounded"], 1, "The orders reached the venues at different times. Co-located traders reacted to the first arrival."],
+    ["What does Thor do?", ["Speeds up the order", "Cancels quotes", "Delays the nearer legs so all legs arrive at the same time", "Routes only to dark pools"], 2, "Thor equalises arrival time across venues, which removes the window for repricing."],
+    ["Approximate Chicago–NJ round trip on the Spread Networks line?", ["1 ms", "13 ms", "130 ms", "1 s"], 1, "About 13 ms, down from about 17 ms. The physics limit for glass is about 13 ms for this distance."],
+    ["How long is IEX's speed bump?", ["35 ms", "350 µs", "3.5 µs", "350 ns"], 1, "About 350 microseconds, roughly the time light takes to cover 70 km in fiber."],
+    ["Why does the IEX bump not lose to a sniper?", ["IEX's own market data is not delayed, so quotes reprice first", "Snipers are banned", "Bump delays only buys", "IEX has no quotes"], 0, "The venue sees the news over a direct feed and reprices before the delayed order lands."],
+    ["What is the maker-taker fee cap under Reg NMS?", ["$0.03 per share", "$0.003 per share", "$0.30 per share", "No cap"], 1, "0.30 cents, or $0.003 a share."],
+    ["Which trade is a market maker's biggest risk?", ["Trading with a retail investor", "Being hit on a stale quote by an informed trader", "Earning a rebate", "Holding no inventory"], 1, "Adverse selection is the main cost of quoting."],
+    ["Speed of light in glass is about…", ["Same as c", "2/3 of c", "1/10 of c", "Twice c"], 1, "About 200 km per ms."],
+    ["Which explanation fits latency arbitrage?", ["Trading on inside information", "Acting on public data before quoters can update", "Spoofing orders", "Buying and holding for years"], 1, "It is speed, not secrecy: acting first on public data."],
+    ["What did decimalization change in 2001?", ["Tick fell to a penny", "Stocks became decimal pennies only after 2010", "Exchanges merged", "Dark pools were banned"], 0, "Ticks fell from 1/16 to $0.01, compressing spreads."],
+    ["Frequent batch auctions replace…", ["Order types", "Continuous matching with discrete uniform-price auctions", "Exchanges", "Tick sizes"], 1, "Discrete-time auctions make competition about price rather than speed."],
+    ["Who wants a larger rebate most?", ["A taker", "A market maker posting resting orders", "A long-term investor", "The SEC"], 1, "Makers receive the rebate for adding liquidity."],
+    ["Break-even P(informed) for a quote with 0.7¢ edge and 2.0¢ adverse move?", ["10%", "35%", "70%", "100%"], 1, "0.7 / 2.0 = 35%."],
+    ["Which is closest to the truth about Flash Boys?", ["Fully neutral academic study", "Journalistic narrative with a clear hero, later debated by academics", "A government report", "A code manual"], 1, "It is a Michael Lewis narrative. Use it as context and cite academic work for numbers."]
+  ];
+  var qi = 0, score = 0, answered = false, qb = $("#quizBox");
+  function renderQuiz() {
+    qb.innerHTML = "";
+    if (qi >= QZ.length) {
+      var d = document.createElement("div"); d.className = "box";
+      d.innerHTML = '<span class="eyebrow">Result</span><h2>' + score + ' / ' + QZ.length + '</h2><p>' + (score >= 12 ? "Strong. Move to the flashcards' weak deck." : "Review the animations, then flip the weak cards.") + '</p>';
+      var b = document.createElement("button"); b.className = "btn primary"; b.type = "button"; b.textContent = "Restart quiz"; b.addEventListener("click", function () { qi = 0; score = 0; renderQuiz(); }); d.appendChild(b); qb.appendChild(d); return;
+    }
+    var q = QZ[qi]; answered = false;
+    var h = document.createElement("div"); h.innerHTML = '<span class="eyebrow">Question ' + (qi + 1) + ' of ' + QZ.length + ' · score ' + score + '</span>'; qb.appendChild(h);
+    var t = document.createElement("h2"); t.textContent = q[0]; qb.appendChild(t);
+    var fb = document.createElement("p"); fb.className = "takeaway"; fb.hidden = true;
+    var opts = q[1].map(function (o, i) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.textContent = o;
+      b.addEventListener("click", function () {
+        if (answered) return; answered = true;
+        var ok = i === q[2]; if (ok) score++;
+        $$(".opt", qb).forEach(function (x, j) { x.disabled = true; if (j === q[2]) x.classList.add("right"); else if (j === i) x.classList.add("wrong"); });
+        fb.hidden = false; fb.textContent = (ok ? "Correct. " : "Not quite. ") + q[3]; nx.hidden = false; nx.textContent = qi === QZ.length - 1 ? "See result" : "Next question";
+      });
+      qb.appendChild(b); return b;
+    });
+    qb.appendChild(fb);
+    var nx = document.createElement("button"); nx.type = "button"; nx.className = "btn primary"; nx.hidden = true; nx.addEventListener("click", function () { qi++; renderQuiz(); }); qb.appendChild(nx);
+  }
+  renderQuiz();
+
+  /* ---------- glossary ---------- */
+  var GL = [
+    ["Adverse selection", "Trading against someone better informed, so fills tend to lose money after the fact."],
+    ["Arbitrage", "Profit from the same asset or linked assets priced differently in two places."],
+    ["Bid / Ask", "Best price someone will pay / accept. The gap is the spread."],
+    ["Co-location (colo)", "Servers placed inside the exchange data center for minimum network delay."],
+    ["Crumbling quote", "IEX signal that the national best quote is about to change, so IEX pulls back its own quotes."],
+    ["Dark pool", "Private venue with no pre-trade display. Trades reported afterward."],
+    ["Decimalization", "Move from fractional prices to cents (2001)."],
+    ["Dodd-Frank", "2010 law that made spoofing explicitly illegal in US markets."],
+    ["FPGA", "Programmable hardware chip used for nanosecond-level trading logic."],
+    ["Fragmentation", "One stock trading across many exchanges and pools."],
+    ["Front-running", "Trading ahead of a known client order. In the book, this means speed-based anticipation, not the illegal broker kind."],
+    ["Frequent batch auction", "Discrete uniform-price auctions in place of continuous trading. Proposed to end the speed race."],
+    ["HFT", "High-frequency trading: automated strategies holding positions for very short times, extremely latency sensitive."],
+    ["Internalisation", "Broker or wholesaler fills a client order against its own inventory instead of sending it to an exchange."],
+    ["ISO", "Intermarket sweep order that allows trading through a protected quote while sweeping others."],
+    ["Latency arbitrage", "Trading a stale quote before the quoter can update it."],
+    ["Maker-taker", "Rebate for adding liquidity, fee for removing it. Cap $0.003/share."],
+    ["Market maker", "Participant who posts both bids and asks and earns the spread while managing inventory."],
+    ["Microwave link", "Radio towers carrying data through air, faster than fiber over long distances."],
+    ["NBBO", "National Best Bid and Offer across protected venues."],
+    ["Order protection rule", "Reg NMS rule against trading through better displayed quotes on other venues."],
+    ["Payment for order flow", "Wholesaler pays a broker for retail orders."],
+    ["Price-time priority", "Best price first, then earliest arrival."],
+    ["Queue position", "Where your order sits among others at the same price."],
+    ["Reg NMS", "2005 SEC rulebook that shaped modern US equity market structure."],
+    ["Spoofing", "Illegal placement of non-bona-fide orders to mislead other traders."],
+    ["Spread", "Ask minus bid. Market makers' gross revenue per round trip."],
+    ["Thor", "RBC router that timed order legs to arrive simultaneously at every exchange."],
+    ["Tick-to-trade", "Delay between receiving market data and sending the responding order."],
+    ["Wholesaler", "Firm that buys retail order flow, fills it internally, and earns the spread."]
+  ];
+  function renderGloss() {
+    var q = $("#glossQ").value.trim().toLowerCase(), dl = $("#glossList"); dl.innerHTML = "";
+    GL.filter(function (g) { return !q || g[0].toLowerCase().indexOf(q) > -1 || g[1].toLowerCase().indexOf(q) > -1; }).forEach(function (g) {
+      var d = document.createElement("div"), t = document.createElement("dt"), e = document.createElement("dd");
+      t.textContent = g[0]; e.textContent = g[1]; d.appendChild(t); d.appendChild(e); dl.appendChild(d);
+    });
+    if (!dl.children.length) { var n = document.createElement("p"); n.className = "muted"; n.textContent = "No terms match. Try a shorter word."; dl.appendChild(n); }
+  }
+  $("#glossQ").addEventListener("input", renderGloss); renderGloss();
+
+  /* ---------- boot ---------- */
+  var startTab = (location.hash || "").replace("#", "") || store("fb.tab") || "story";
+  showTab(startTab);
+})();
+</script>
+
+</body>
+</html>
