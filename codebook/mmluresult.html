@@ -1,0 +1,848 @@
+<title>Multilingual CoT Fine-Tuning Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+<style>
+    :root {
+        --bg: #f9f9f7;
+        --surface: #fcfcfb;
+        --surface-raised: #ffffff;
+        --ink: #0b0b0b;
+        --ink-2: #52514e;
+        --muted: #898781;
+        --border: rgba(11, 11, 11, 0.10);
+        --grid: #e1e0d9;
+        --axis: #c3c2b7;
+        --accent: #2a78d6;
+        --accent-wash: rgba(42, 120, 214, 0.08);
+        --s1: #2a78d6;
+        --s2: #eb6834;
+        --s3: #1baf7a;
+        --s4: #eda100;
+        --good: #0ca30c;
+        --warn: #fab219;
+        --warn-ink: #7a5200;
+        --warn-bg: #fdf3de;
+        --warn-border: #f0d290;
+        --serif: "Newsreader", Georgia, "Times New Roman", serif;
+        --sans: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --bg: #0d0d0d;
+            --surface: #1a1a19;
+            --surface-raised: #212120;
+            --ink: #ffffff;
+            --ink-2: #c3c2b7;
+            --muted: #898781;
+            --border: rgba(255, 255, 255, 0.10);
+            --grid: #2c2c2a;
+            --axis: #383835;
+            --accent: #3987e5;
+            --accent-wash: rgba(57, 135, 229, 0.12);
+            --s1: #3987e5;
+            --s2: #d95926;
+            --s3: #199e70;
+            --s4: #c98500;
+            --good: #0ca30c;
+            --warn: #fab219;
+            --warn-ink: #f5d189;
+            --warn-bg: #332a12;
+            --warn-border: #5c4a1c;
+        }
+    }
+
+    :root[data-theme="dark"] {
+        --bg: #0d0d0d;
+        --surface: #1a1a19;
+        --surface-raised: #212120;
+        --ink: #ffffff;
+        --ink-2: #c3c2b7;
+        --muted: #898781;
+        --border: rgba(255, 255, 255, 0.10);
+        --grid: #2c2c2a;
+        --axis: #383835;
+        --accent: #3987e5;
+        --accent-wash: rgba(57, 135, 229, 0.12);
+        --s1: #3987e5;
+        --s2: #d95926;
+        --s3: #199e70;
+        --s4: #c98500;
+        --good: #0ca30c;
+        --warn: #fab219;
+        --warn-ink: #f5d189;
+        --warn-bg: #332a12;
+        --warn-border: #5c4a1c;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.6;
+        padding-inline: 20px;
+    }
+
+    .page {
+        max-width: 780px;
+        margin: 0 auto;
+        padding-block: 48px 80px;
+    }
+
+    .kicker {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 10px;
+    }
+
+    h1 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: clamp(28px, 4.2vw, 38px);
+        line-height: 1.15;
+        margin: 0 0 12px;
+        text-wrap: balance;
+        letter-spacing: -.01em;
+    }
+
+    .dek {
+        color: var(--ink-2);
+        font-size: 17px;
+        max-width: 62ch;
+        margin: 0 0 22px;
+    }
+
+    .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 22px;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        color: var(--muted);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding-block: 12px;
+        margin-bottom: 40px;
+    }
+
+    .meta b {
+        color: var(--ink-2);
+        font-weight: 500;
+    }
+
+    .rev {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: var(--muted);
+        margin: -30px 0 36px;
+    }
+
+    h2 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: 23px;
+        letter-spacing: -.005em;
+        margin: 52px 0 6px;
+        text-wrap: balance;
+    }
+
+    .h2-num {
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 14px;
+        margin-right: 8px;
+        letter-spacing: 0;
+    }
+
+    h3 {
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 15.5px;
+        margin: 26px 0 8px;
+    }
+
+    p {
+        margin: 0 0 15px;
+        max-width: 68ch;
+    }
+
+    p.lede {
+        color: var(--ink-2);
+    }
+
+    section>p:first-of-type {
+        margin-top: 2px;
+    }
+
+    code,
+    .mono {
+        font-family: var(--mono);
+        font-size: .92em;
+    }
+
+    .path {
+        font-family: var(--mono);
+        font-size: 13px;
+        background: var(--accent-wash);
+        color: var(--ink-2);
+        padding: 1px 6px;
+        border-radius: 4px;
+        word-break: break-all;
+    }
+
+    /* callouts */
+    .callout {
+        display: flex;
+        gap: 12px;
+        padding: 16px 18px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid var(--border);
+        background: var(--surface);
+    }
+
+    .callout.finding {
+        border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+        background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    }
+
+    .callout.watch {
+        background: var(--warn-bg);
+        border-color: var(--warn-border);
+    }
+
+    .callout .icon {
+        font-size: 18px;
+        line-height: 1.4;
+        flex: none;
+    }
+
+    .callout .body p {
+        margin: 0 0 6px;
+        max-width: 62ch;
+    }
+
+    .callout .body p:last-child {
+        margin-bottom: 0;
+    }
+
+    .callout .label {
+        font-family: var(--mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: var(--ink-2);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .callout.watch .label {
+        color: var(--warn-ink);
+    }
+
+    /* stat tiles */
+    .tiles {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 22px 0 10px;
+    }
+
+    .tile {
+        background: var(--surface);
+        padding: 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .tile .tlabel {
+        font-size: 12px;
+        color: var(--ink-2);
+    }
+
+    .tile .tvalue {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: 27px;
+        letter-spacing: -.01em;
+    }
+
+    .tile .tdelta {
+        font-size: 11.5px;
+        font-family: var(--mono);
+        color: var(--muted);
+    }
+
+    .tile .tdelta.up {
+        color: var(--good);
+    }
+
+    .swatch {
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        display: inline-block;
+        margin-right: 7px;
+        position: relative;
+        top: -1px;
+    }
+
+    /* chart */
+    .chartwrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px 20px 8px;
+        margin: 18px 0;
+    }
+
+    .chart-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 2px;
+    }
+
+    .chart-sub {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-bottom: 14px;
+    }
+
+    .legend {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 12.5px;
+        color: var(--ink-2);
+        margin-bottom: 6px;
+    }
+
+    .legend span {
+        display: flex;
+        align-items: center;
+    }
+
+    svg text {
+        font-family: var(--sans);
+        fill: var(--ink-2);
+    }
+
+    svg .axis-label {
+        fill: var(--muted);
+        font-size: 11px;
+    }
+
+    svg .grid {
+        stroke: var(--grid);
+        stroke-width: 1;
+    }
+
+    svg .baseline {
+        stroke: var(--axis);
+        stroke-width: 1;
+    }
+
+    .bar {
+        cursor: pointer;
+    }
+
+    .bar:hover {
+        filter: brightness(1.08);
+    }
+
+    #tooltip {
+        position: fixed;
+        pointer-events: none;
+        background: var(--ink);
+        color: var(--bg);
+        font-family: var(--mono);
+        font-size: 12px;
+        padding: 6px 9px;
+        border-radius: 6px;
+        opacity: 0;
+        transform: translate(-50%, -115%);
+        transition: opacity .1s;
+        white-space: nowrap;
+        z-index: 10;
+    }
+
+    :root:not([data-theme="light"]) #tooltip {
+        background: var(--ink);
+        color: #0d0d0d;
+    }
+
+    table.data {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin: 14px 0 8px;
+    }
+
+    table.data caption {
+        text-align: left;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 8px;
+        font-family: var(--mono);
+    }
+
+    table.data th,
+    table.data td {
+        text-align: right;
+        padding: 7px 9px;
+        border-bottom: 1px solid var(--border);
+        font-variant-numeric: tabular-nums;
+    }
+
+    table.data th:first-child,
+    table.data td:first-child {
+        text-align: left;
+        font-variant-numeric: normal;
+    }
+
+    table.data thead th {
+        color: var(--ink-2);
+        font-weight: 600;
+        font-size: 11.5px;
+    }
+
+    table.data tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    table.data tbody tr.overall td {
+        font-weight: 600;
+        border-top: 1px solid var(--border);
+    }
+
+    .tblwrap {
+        overflow-x: auto;
+    }
+
+    td.best,
+    th.best {
+        color: var(--s3);
+        font-weight: 600;
+    }
+
+    /* example cards */
+    .excard {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        background: var(--surface);
+    }
+
+    .excard .exhead {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 8px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .excard .extext {
+        font-size: 14px;
+        color: var(--ink-2);
+        line-height: 1.65;
+    }
+
+    .excard .extext .native {
+        color: var(--ink);
+    }
+
+    .excard .verdict {
+        font-family: var(--mono);
+        font-size: 12px;
+        margin-top: 8px;
+    }
+
+    .excard .verdict.ok {
+        color: var(--good);
+    }
+
+    .excard .verdict.no {
+        color: #d03b3b;
+    }
+
+    ul.checklist {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border-top: 1px solid var(--border);
+    }
+
+    ul.checklist li {
+        display: flex;
+        gap: 12px;
+        padding: 13px 2px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    ul.checklist .box {
+        width: 16px;
+        height: 16px;
+        border: 1.5px solid var(--muted);
+        border-radius: 4px;
+        flex: none;
+        margin-top: 2px;
+    }
+
+    ul.checklist .txt b {
+        display: block;
+        font-size: 14.5px;
+        margin-bottom: 2px;
+    }
+
+    ul.checklist .txt span {
+        color: var(--ink-2);
+        font-size: 13.5px;
+    }
+
+    footer {
+        margin-top: 60px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+        font-size: 12.5px;
+        color: var(--muted);
+        font-family: var(--mono);
+    }
+
+    @media (max-width:620px) {
+        .tiles {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width:420px) {
+        .tiles {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page">
+
+    <p class="kicker">Multi-Reason &middot; Research Memo &middot; Revision 2</p>
+    <h1>Multilingual chain-of-thought fine-tuning: results and status</h1>
+    <p class="dek">LoRA fine-tuning of DeepSeek-R1-Distill-Qwen-7B on Hindi, English, Punjabi, and Marathi reasoning
+        chains for multiple-choice QA &mdash; what changed, what the full four-way comparison actually shows, and what's
+        still open.</p>
+    <div class="meta">
+        <span><b>Base model</b> DeepSeek-R1-Distill-Qwen-7B</span>
+        <span><b>Method</b> LoRA (r=16, &alpha;=16)</span>
+        <span><b>Languages</b> Hindi &middot; English &middot; Punjabi &middot; Marathi</span>
+        <span><b>Test set</b> 644 held-out questions</span>
+    </div>
+
+    <h2><span class="h2-num">01</span>Objective</h2>
+    <p>Test whether supervising a reasoning model on explicit chain-of-thought (CoT) traces improves its multiple-choice
+        QA accuracy across four languages, relative to the model's out-of-box behavior &mdash; and quantify what that
+        supervision is actually worth.</p>
+
+    <h2><span class="h2-num">02</span>A defect, found and then re-examined</h2>
+    <p>The first fine-tuning attempt (<span class="mono">v1</span>) trained cleanly by every visible metric, but
+        evaluation under <b>self-consistency sampling</b> (multiple independent reasoning chains per question, majority
+        vote) surfaced a defect: the training script had forced Qwen's ChatML chat template onto a model that is
+        actually DeepSeek-R1-Distill-Qwen-7B, which ships its own template and end-of-sequence token. The mismatch meant
+        the model's real stop token was never reinforced during training.</p>
+    <div class="callout watch">
+        <div class="icon">&#9888;</div>
+        <div class="body">
+            <span class="label">Defect found under self-consistency sampling</span>
+            <p><b>66.5%</b> of v1's self-consistency generations fell into repetition loops &mdash; correct-looking
+                reasoning that never terminated, because the model's actual EOS token was masked by the wrong template
+                throughout training.</p>
+        </div>
+    </div>
+    <p>A second run (<span class="mono">v2</span>) retrained the same data with the model's native template used as-is.
+        The expectation going in was that v2 would simply be better. Section 4 below shows that isn't quite what the
+        full evaluation found.</p>
+
+    <h2><span class="h2-num">03</span>Method</h2>
+    <p><b>Training.</b> LoRA adapters (rank 16, &alpha;=16) on the attention and MLP projections, 3 epochs over 5,124
+        training examples (1,310 Hindi &middot; 1,310 Punjabi &middot; 1,292 English &middot; 1,212 Marathi), evaluated
+        every 50 steps against a 645-row validation split.</p>
+    <p><b>Evaluation (this report).</b> <b>Single-chain</b> generation &mdash; one reasoning trace per question, no
+        self-consistency voting &mdash; against a 644-row held-out test set, disjoint from training. Answers were
+        extracted from generated text with a multi-stage parser (<span class="mono">&lt;answer&gt;</span> tag &rarr;
+        concluding phrase &rarr; bare-label fallback) and scored against ground truth. This is a different decoding
+        regime from the one that found the v1 defect, which matters for how to read Section 4.</p>
+
+    <h2><span class="h2-num">04</span>Results: four checkpoints, one test set</h2>
+    <p>Four checkpoints were evaluated on the identical 644-row test set: the untrained base model, the original buggy
+        run (v1), an interim v2 checkpoint (step 1,000 of 3,843), and the final v2 checkpoint (step 3,843).</p>
+
+    <div class="tiles">
+        <div class="tile">
+            <span class="tlabel"><span class="swatch" style="background:var(--s1)"></span>Base</span>
+            <span class="tvalue">30.9%</span>
+            <span class="tdelta">reference</span>
+        </div>
+        <div class="tile">
+            <span class="tlabel"><span class="swatch" style="background:var(--s2)"></span>v1 (buggy)</span>
+            <span class="tvalue">46.3%</span>
+            <span class="tdelta up">&#9650; 15.4&nbsp;pts</span>
+        </div>
+        <div class="tile">
+            <span class="tlabel"><span class="swatch" style="background:var(--s3)"></span>v2 ckpt&nbsp;1,000</span>
+            <span class="tvalue">39.3%</span>
+            <span class="tdelta up">&#9650; 8.4&nbsp;pts</span>
+        </div>
+        <div class="tile">
+            <span class="tlabel"><span class="swatch" style="background:var(--s4)"></span>v2 ckpt&nbsp;3,843</span>
+            <span class="tvalue">45.8%</span>
+            <span class="tdelta up">&#9650; 14.9&nbsp;pts</span>
+        </div>
+    </div>
+
+    <div class="callout finding">
+        <div class="icon">&#128161;</div>
+        <div class="body">
+            <span class="label">The headline surprise</span>
+            <p>Under single-chain decoding, <b>v1 edges out v2's final checkpoint overall</b> (46.3% vs 45.8%) and is
+                <b>not</b> showing the repetition-loop pathology that single-chain eval would reveal as a formatting
+                failure (0&ndash;1 unparseable outputs out of 644, same as v2). The defect's measured cost &mdash; the
+                66.5% repetition-loop rate &mdash; came specifically from self-consistency sampling, not from this
+                decoding regime. v2's fix has not yet been shown to help single-chain use; it may matter specifically
+                for self-consistency use, where v1 is known to fail. That comparison (self-consistency on v1 vs v2)
+                hasn't been run yet &mdash; see Section 6.
+            </p>
+        </div>
+    </div>
+
+    <div class="chartwrap">
+        <div class="chart-title">Accuracy by language, all four checkpoints</div>
+        <div class="chart-sub">644-question held-out test set, single-chain generation</div>
+        <div class="legend">
+            <span><span class="swatch" style="background:var(--s1)"></span>Base</span>
+            <span><span class="swatch" style="background:var(--s2)"></span>v1 (buggy)</span>
+            <span><span class="swatch" style="background:var(--s3)"></span>v2 checkpoint&nbsp;1,000</span>
+            <span><span class="swatch" style="background:var(--s4)"></span>v2 checkpoint&nbsp;3,843</span>
+        </div>
+        <svg viewBox="0 0 720 320" role="img"
+            aria-label="Grouped bar chart of accuracy by language across four checkpoints">
+            <line class="grid" x1="60" y1="270" x2="690" y2="270" />
+            <line class="grid" x1="60" y1="195.71" x2="690" y2="195.71" />
+            <line class="grid" x1="60" y1="121.43" x2="690" y2="121.43" />
+            <line class="grid" x1="60" y1="47.14" x2="690" y2="47.14" />
+            <text class="axis-label" x="50" y="273.5" text-anchor="end">0%</text>
+            <text class="axis-label" x="50" y="199.2" text-anchor="end">20%</text>
+            <text class="axis-label" x="50" y="124.9" text-anchor="end">40%</text>
+            <text class="axis-label" x="50" y="50.6" text-anchor="end">60%</text>
+            <line class="baseline" x1="60" y1="270" x2="690" y2="270" />
+
+            <!-- English -->
+            <rect class="bar" x="87.75" y="103.97" width="24" height="166.03" rx="4" ry="4" fill="var(--s1)"
+                data-label="Base &middot; English" data-value="44.7%" />
+            <rect class="bar" x="113.75" y="32.29" width="24" height="237.71" rx="4" ry="4" fill="var(--s2)"
+                data-label="v1 &middot; English" data-value="64.0%" />
+            <rect class="bar" x="139.75" y="71.65" width="24" height="198.35" rx="4" ry="4" fill="var(--s3)"
+                data-label="v2 checkpoint 1,000 &middot; English" data-value="53.4%" />
+            <rect class="bar" x="165.75" y="30.06" width="24" height="239.94" rx="4" ry="4" fill="var(--s4)"
+                data-label="v2 checkpoint 3,843 &middot; English" data-value="64.6%" />
+            <text class="axis-label" x="138.75" y="290" text-anchor="middle">English</text>
+
+            <!-- Hindi -->
+            <rect class="bar" x="245.25" y="168.23" width="24" height="101.77" rx="4" ry="4" fill="var(--s1)"
+                data-label="Base &middot; Hindi" data-value="27.4%" />
+            <rect class="bar" x="271.25" y="98.05" width="24" height="171.95" rx="4" ry="4" fill="var(--s2)"
+                data-label="v1 &middot; Hindi" data-value="46.3%" />
+            <rect class="bar" x="297.25" y="115.86" width="24" height="154.14" rx="4" ry="4" fill="var(--s3)"
+                data-label="v2 checkpoint 1,000 &middot; Hindi" data-value="41.5%" />
+            <rect class="bar" x="323.25" y="90.97" width="24" height="179.03" rx="4" ry="4" fill="var(--s4)"
+                data-label="v2 checkpoint 3,843 &middot; Hindi" data-value="48.2%" />
+            <text class="axis-label" x="296.25" y="290" text-anchor="middle">Hindi</text>
+
+            <!-- Punjabi -->
+            <rect class="bar" x="402.75" y="181.60" width="24" height="88.40" rx="4" ry="4" fill="var(--s1)"
+                data-label="Base &middot; Punjabi" data-value="23.8%" />
+            <rect class="bar" x="428.75" y="125.14" width="24" height="144.86" rx="4" ry="4" fill="var(--s2)"
+                data-label="v1 &middot; Punjabi" data-value="39.0%" />
+            <rect class="bar" x="454.75" y="147.82" width="24" height="122.18" rx="4" ry="4" fill="var(--s3)"
+                data-label="v2 checkpoint 1,000 &middot; Punjabi" data-value="32.9%" />
+            <rect class="bar" x="480.75" y="129.60" width="24" height="140.40" rx="4" ry="4" fill="var(--s4)"
+                data-label="v2 checkpoint 3,843 &middot; Punjabi" data-value="37.8%" />
+            <text class="axis-label" x="453.75" y="290" text-anchor="middle">Punjabi</text>
+
+            <!-- Marathi -->
+            <rect class="bar" x="560.25" y="167.14" width="24" height="102.86" rx="4" ry="4" fill="var(--s1)"
+                data-label="Base &middot; Marathi" data-value="27.7%" />
+            <rect class="bar" x="586.25" y="138.14" width="24" height="131.86" rx="4" ry="4" fill="var(--s2)"
+                data-label="v1 &middot; Marathi" data-value="35.5%" />
+            <rect class="bar" x="612.25" y="162.29" width="24" height="107.71" rx="4" ry="4" fill="var(--s3)"
+                data-label="v2 checkpoint 1,000 &middot; Marathi" data-value="29.0%" />
+            <rect class="bar" x="638.25" y="150.03" width="24" height="119.97" rx="4" ry="4" fill="var(--s4)"
+                data-label="v2 checkpoint 3,843 &middot; Marathi" data-value="32.3%" />
+            <text class="axis-label" x="611.25" y="290" text-anchor="middle">Marathi</text>
+        </svg>
+
+        <div class="tblwrap">
+            <table class="data">
+                <caption>Table view &middot; accuracy by language (%) &mdash; bold = best per language</caption>
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>n</th>
+                        <th>Base</th>
+                        <th>v1 (buggy)</th>
+                        <th>v2 ckpt&nbsp;1,000</th>
+                        <th>v2 ckpt&nbsp;3,843</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>English</td>
+                        <td>161</td>
+                        <td>44.7</td>
+                        <td>64.0</td>
+                        <td>53.4</td>
+                        <td class="best">64.6</td>
+                    </tr>
+                    <tr>
+                        <td>Hindi</td>
+                        <td>164</td>
+                        <td>27.4</td>
+                        <td>46.3</td>
+                        <td>41.5</td>
+                        <td class="best">48.2</td>
+                    </tr>
+                    <tr>
+                        <td>Punjabi</td>
+                        <td>164</td>
+                        <td>23.8</td>
+                        <td class="best">39.0</td>
+                        <td>32.9</td>
+                        <td>37.8</td>
+                    </tr>
+                    <tr>
+                        <td>Marathi</td>
+                        <td>155</td>
+                        <td>27.7</td>
+                        <td class="best">35.5</td>
+                        <td>29.0</td>
+                        <td>32.3</td>
+                    </tr>
+                    <tr class="overall">
+                        <td>Overall</td>
+                        <td>644</td>
+                        <td>30.9</td>
+                        <td class="best">46.3</td>
+                        <td>39.3</td>
+                        <td>45.8</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="lede">v2's final checkpoint wins English and Hindi by a narrow margin. v1 wins Punjabi and Marathi
+        outright, and that's enough to win overall. There is no single-chain checkpoint that is simply "the best"
+        &mdash; the honest read is that the two runs trade off by language.</p>
+
+    <h2><span class="h2-num">05</span>Why the loss curve wasn't the right guide either</h2>
+    <div class="callout finding">
+        <div class="icon">&#128161;</div>
+        <div class="body">
+            <span class="label">Eval loss was not a reliable proxy for accuracy, within v2</span>
+            <p>v2's validation loss reached its minimum (0.723) around epoch 1.76, then rose to 0.757 by the final
+                checkpoint &mdash; the classic shape of overfitting, and reason enough to suspect the final checkpoint
+                had passed its useful point. It hadn't: on held-out QA accuracy, the final checkpoint (45.8%) clearly
+                beats the lower-loss interim checkpoint (39.3%). Loss on next-token prediction and accuracy on
+                downstream answer-selection measured different things here.</p>
+        </div>
+    </div>
+
+    <h2><span class="h2-num">06</span>A closer look at the reasoning itself</h2>
+    <p>Reading the raw chains (not just the parsed answer) shows the model's failures are not formatting failures. In
+        every incorrect example inspected, the parser correctly extracted what the model actually concluded &mdash; the
+        model reasoned fluently, on-topic, and in full sentences, right up to a specific logical misstep.</p>
+
+    <div class="excard">
+        <div class="exhead"><span>v2 checkpoint 3,843 &middot; Punjabi &middot; incorrect</span><span>ground truth:
+                C</span></div>
+        <div class="extext"><span class="native">&hellip;ਜੋ ਠੰਡਾ&zwj;-ਗਰਮ ਰੂਪ ਧਾਰਨ ਕਰਦੇ ਹਨ। ਇਹ ਵਰਣਨ ਵਿਕਲਪ B ਵਿੱਚ ਦਿੱਤਾ
+                ਗਿਆ ਹੈ:</span> &ldquo;(a) ਜਿਵੇਂ ਹੈ, ਪਰ ਠੰਡੀ ਤਾਪਮਾਨ (33&deg;C) ਦੀ ਵਰਤੋਂ&hellip;&rdquo; <span
+                class="native">ਇਸ ਲਈ ਸਹੀ ਉੱਤਰ B ਹੈ।</span></div>
+        <div class="verdict no">&#10007; parsed as B &mdash; the model's own stated conclusion, correctly extracted,
+            simply wrong</div>
+    </div>
+
+    <div class="callout watch">
+        <div class="icon">&#9888;</div>
+        <div class="body">
+            <span class="label">A pattern worth testing: English code-switching mid-chain</span>
+            <p>Both Punjabi and Marathi reasoning chains repeatedly switch into English terminology mid-thought, even
+                while concluding in the native script &mdash; as above, where the decisive logical move is quoted in
+                English before the Punjabi conclusion. Punjabi and Marathi are also the two lowest-share languages in
+                the training data (1,310 and 1,212 of 5,124 rows) and the two with the smallest accuracy gains from
+                fine-tuning. One plausible explanation: the model's underlying reasoning leans on English-language
+                patterns in these two languages, with native script used only for surface output rather than the
+                reasoning itself. This is a hypothesis from manual inspection, not yet measured at scale &mdash; see
+                below.</p>
+        </div>
+    </div>
+
+    <h2><span class="h2-num">07</span>What's left</h2>
+    <ul class="checklist">
+        <li>
+            <div class="box"></div>
+            <div class="txt"><b>Self-consistency evaluation, v1 vs v2</b><span>This is now the decisive open question,
+                    not a nice-to-have: the v1 defect was measured under self-consistency sampling, and that comparison
+                    has never been run on v2. Until it is, we don't actually know whether v2's fix improves anything
+                    &mdash; single-chain shows it doesn't, clearly.</span></div>
+        </li>
+        <li>
+            <div class="box"></div>
+            <div class="txt"><b>Quantify the code-switching hypothesis</b><span>Tag a larger sample of Punjabi and
+                    Marathi chains (correct and incorrect) for English code-switching and check whether it correlates
+                    with errors, rather than relying on the two examples inspected manually above.</span></div>
+        </li>
+    </ul>
+
+    <footer>
+        Model: <span class="path">deepseek-ai/DeepSeek-R1-Distill-Qwen-7B</span> &middot; Checkpoints: <span
+            class="path">finetune_multilingual_results{,_v2}/checkpoint-{3843,1000,3843}</span> &middot; Test set: <span
+            class="path">sft_test.csv</span> (n=644)
+    </footer>
+
+</div>
+
+<div id="tooltip"></div>
+<script>
+    const tip = document.getElementById('tooltip');
+    document.querySelectorAll('.bar').forEach(bar => {
+        bar.addEventListener('mousemove', e => {
+            tip.textContent = bar.dataset.label + ': ' + bar.dataset.value;
+            tip.style.left = e.clientX + 'px';
+            tip.style.top = e.clientY + 'px';
+            tip.style.opacity = 1;
+        });
+        bar.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
+    });
+</script>
