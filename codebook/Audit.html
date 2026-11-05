@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Multi-Reason — Session Audit</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --card: #fff;
+            --text: #1c2330;
+            --muted: #5d6878;
+            --line: #e2e6ec;
+            --accent: #2f5fd0;
+            --ok: #1a7f4b;
+            --okbg: #e3f5ec;
+            --warn: #9a6700;
+            --warnbg: #fff3d6;
+            --bad: #b42318;
+            --badbg: #fde8e6;
+            --info: #2f5fd0;
+            --infobg: #e8eefc;
+            --codebg: #eef1f5;
+        }
+
+        @media (prefers-color-scheme:dark) {
+            :root {
+                --bg: #10141b;
+                --card: #171c26;
+                --text: #e6e9ef;
+                --muted: #9aa5b5;
+                --line: #2a3140;
+                --accent: #7aa2ff;
+                --ok: #5fd39a;
+                --okbg: #14301f;
+                --warn: #f0c15a;
+                --warnbg: #35290d;
+                --bad: #ff8f84;
+                --badbg: #3a1714;
+                --info: #7aa2ff;
+                --infobg: #18274a;
+                --codebg: #212838;
+            }
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font: 15px/1.55 system-ui, -apple-system, Segoe UI, Roboto, sans-serif
+        }
+
+        header {
+            padding: 28px 32px 18px;
+            border-bottom: 1px solid var(--line);
+            background: var(--card)
+        }
+
+        header h1 {
+            margin: 0 0 6px;
+            font-size: 24px
+        }
+
+        header p {
+            margin: 2px 0;
+            color: var(--muted)
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: var(--card);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 4px;
+            padding: 0 24px;
+            overflow-x: auto
+        }
+
+        nav button {
+            background: none;
+            border: 0;
+            border-bottom: 3px solid transparent;
+            color: var(--muted);
+            padding: 12px 14px;
+            font: inherit;
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+        nav button.on {
+            color: var(--accent);
+            border-color: var(--accent);
+            font-weight: 600
+        }
+
+        main {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 24px 20px 60px
+        }
+
+        section {
+            display: none
+        }
+
+        section.on {
+            display: block
+        }
+
+        h2 {
+            margin: 26px 0 10px;
+            font-size: 19px
+        }
+
+        h3 {
+            margin: 20px 0 8px;
+            font-size: 16px
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr))
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 14px 16px
+        }
+
+        .card .k {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .05em
+        }
+
+        .card .v {
+            font-size: 26px;
+            font-weight: 700;
+            margin-top: 2px
+        }
+
+        .card .s {
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        code {
+            background: var(--codebg);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font: 12.5px ui-monospace, Menlo, Consolas, monospace;
+            word-break: break-word
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: 14px
+        }
+
+        th,
+        td {
+            text-align: left;
+            vertical-align: top;
+            padding: 9px 11px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        th {
+            background: var(--codebg);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--muted)
+        }
+
+        tr:last-child td {
+            border-bottom: 0
+        }
+
+        .tw {
+            overflow-x: auto;
+            border-radius: 10px
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap
+        }
+
+        .b-ok {
+            background: var(--okbg);
+            color: var(--ok)
+        }
+
+        .b-warn {
+            background: var(--warnbg);
+            color: var(--warn)
+        }
+
+        .b-bad {
+            background: var(--badbg);
+            color: var(--bad)
+        }
+
+        .b-info {
+            background: var(--infobg);
+            color: var(--info)
+        }
+
+        .note {
+            border-left: 4px solid var(--warn);
+            background: var(--warnbg);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0
+        }
+
+        .note.bad {
+            border-color: var(--bad);
+            background: var(--badbg)
+        }
+
+        .note.ok {
+            border-color: var(--ok);
+            background: var(--okbg)
+        }
+
+        ul {
+            padding-left: 20px
+        }
+
+        li {
+            margin: 4px 0
+        }
+
+        input[type=search] {
+            width: 100%;
+            max-width: 420px;
+            padding: 9px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--text);
+            font: inherit;
+            margin-bottom: 12px
+        }
+
+        .bar {
+            height: 22px;
+            border-radius: 5px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 12px;
+            padding: 0 8px;
+            line-height: 22px;
+            white-space: nowrap
+        }
+
+        .barrow {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 10px;
+            align-items: center;
+            margin: 6px 0
+        }
+
+        .gpu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px
+        }
+
+        .gpu .card {
+            padding: 10px 12px
+        }
+
+        pre {
+            background: var(--codebg);
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font: 12.5px ui-monospace, Menlo, Consolas, monospace
+        }
+
+        footer {
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+            padding: 20px
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Multi-Reason — Session Audit</h1>
+        <p>Project <code>/Data/deeksha/shubham/multi-reason/multi-reason</code></p>
+        <p>Active model: DeepSeek-R1-Distill-Qwen-7B (LoRA) &middot; Edit policy: plan and get a go-ahead before
+            changing script logic &middot; Source: <code>SESSION_AUDIT.md</code></p>
+    </header>
+    <nav id="nav"></nav>
+    <main>
+
+        <section id="overview">
+            <div class="grid">
+                <div class="card">
+                    <div class="k">Synthesis processes</div>
+                    <div class="v">3</div>
+                    <div class="s">Gemini loop · multilingual · self-consistency</div>
+                </div>
+                <div class="card">
+                    <div class="k">Chain variants</div>
+                    <div class="v">7</div>
+                    <div class="s">only 4 have their own training format</div>
+                </div>
+                <div class="card">
+                    <div class="k">Baseline (multi-chain)</div>
+                    <div class="v">45.1%</div>
+                    <div class="s">656-row MMLU test</div>
+                </div>
+                <div class="card">
+                    <div class="k">Code files changed</div>
+                    <div class="v">1</div>
+                    <div class="s"><code>finetune_llama.py</code> (C1–C5, backed up)</div>
+                </div>
+            </div>
+
+            <h2>Training runs</h2>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>GPU</th>
+                            <th>Run</th>
+                            <th>Script</th>
+                            <th>Status</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody id="runs"></tbody>
+                </table>
+            </div>
+            <p class="s" style="color:var(--muted);font-size:13px">Status is a snapshot from the last check in this
+                session (multi-chain ≈ step 192 / 6555, ~15 h left). It does not update live.</p>
+
+            <h2>Reported results (<code>evaluation/RESULTS_SUMMARY.md</code>)</h2>
+            <div id="bars"></div>
+            <div class="note">Not a controlled comparison: token caps differ (4096 vs 1024) and the checkpoints differ.
+            </div>
+        </section>
+
+        <section id="context">
+            <h2>Three data-synthesis processes</h2>
+            <div class="tw">
+                <table id="t-synth"></table>
+            </div>
+            <h2>Seven reasoning-chain variants</h2>
+            <div class="tw">
+                <table id="t-chains"></table>
+            </div>
+            <p>Stored chains per question: 1–4, sequential (never parallel). About 80% of rows have a single chain.</p>
+            <h2>Multi-chain "Wait" format</h2>
+            <pre>chain1 + " Wait " + chain2 + " Wait " + chain3 + " Finally" + final_correct_chain      (final_data_dump.py:72-82)</pre>
+            <h2>Artifacts produced</h2>
+            <ul id="artifacts"></ul>
+        </section>
+
+        <section id="issues">
+            <h2>Known issues and flags</h2>
+            <div id="issue-list"></div>
+        </section>
+
+        <section id="audit">
+            <h2>Audit log</h2>
+            <input type="search" id="q" placeholder="Filter requests, actions, files...">
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Request</th>
+                            <th>Action taken</th>
+                            <th>Files changed</th>
+                            <th>Outcome</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="changes">
+            <h2>Change log (for reverting)</h2>
+            <p>Every code edit is logged with old and new value before it is made.</p>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Status</th>
+                            <th>File : line</th>
+                            <th>Old</th>
+                            <th>New</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chg"></tbody>
+                </table>
+            </div>
+            <h3>Pending (not applied, awaiting approval)</h3>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>File : line</th>
+                            <th>Change</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>C6</td>
+                            <td><code>finetune_qwen_single_cot.py</code></td>
+                            <td>Add <code>train_on_responses_only(...)</code> with Qwen markers
+                                <code>&lt;|im_start|&gt;user\n</code> / <code>&lt;|im_start|&gt;assistant\n</code>
+                            </td>
+                            <td>Batches have no <code>labels</code>, so training crashes at step 0</td>
+                        </tr>
+                        <tr>
+                            <td>C7</td>
+                            <td><code>finetune_llama_no_cot.py</code>:139</td>
+                            <td>Uncomment <code>train_on_responses_only</code>, with llama-3.1 header markers</td>
+                            <td>Same crash</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Revert procedure</h3>
+            <ol>
+                <li>Original saved at <code>backups/finetune_llama.py.orig</code> (taken before any edit).</li>
+                <li>Revert everything:
+                    <pre>cp backups/finetune_llama.py.orig finetune_llama.py</pre>
+                </li>
+                <li>Revert one change: restore the "Old" value from the table above.</li>
+                <li>New checkpoints go to <code>qwenModel/multichain_full_run</code>, so reverting never touches earlier
+                    results.</li>
+                <li>Mark the row <code>REVERTED</code> and note why.</li>
+            </ol>
+            <div class="note ok">Baseline to beat: multi-chain SFT <b>45.1%</b> on the 656-row test set.</div>
+        </section>
+
+    </main>
+    <footer>Generated from SESSION_AUDIT.md &middot; rows regrouped into one ordered table</footer>
+
+    <script>
+        const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const md = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+        const badge = (t, c) => `<span class="badge b-${c}">${esc(t)}</span>`;
+        const $ = id => document.getElementById(id);
+
+        /* ---------- navigation ---------- */
+        const tabs = [['overview', 'Overview'], ['context', 'Project context'], ['issues', 'Issues'], ['audit', 'Audit log'], ['changes', 'Change log']];
+        $('nav').innerHTML = tabs.map(([id, l]) => `<button data-id="${id}">${l}</button>`).join('');
+        function show(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.toggle('on', s.id === id));
+            document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.id === id));
+            history.replaceState(null, '', '#' + id);
+        }
+        $('nav').addEventListener('click', e => { if (e.target.dataset.id) show(e.target.dataset.id); });
+
+        /* ---------- data ---------- */
+        const runs = [
+            ['1', 'Multi-chain', 'finetune_llama.py', badge('Running', 'ok'), '16k ctx · 5 epochs · 6555 steps · out <code>qwenModel/multichain_full_run</code> · log <code>logs_multichain_full_run.txt</code>'],
+            ['2', 'Single-CoT', 'finetune_qwen_single_cot.py', badge('Crashed at step 0', 'bad'), '<code>labels</code> is None — no <code>train_on_responses_only</code>. Fix C6 pending approval'],
+            ['3', 'No-CoT', 'finetune_llama_no_cot.py', badge('Crashed at step 0', 'bad'), 'Same cause (call commented at line 139). Fix C7 pending approval'],
+            ['4–6', '—', '—', badge('Idle', 'info'), 'Reserved for sharded test inference after training'],
+            ['0', '—', '—', badge('Other user', 'warn'), 'Another user\'s job (~2.2 GB); not touched']
+        ];
+        $('runs').innerHTML = runs.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td><code>${r[2]}</code></td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('');
+
+        const results = [['Base (no fine-tune)', 30.9], ['Multi-chain SFT', 45.1], ['Single-CoT + SC (n=5)', 50.8], ['Single-CoT SFT', 57.8]];
+        $('bars').innerHTML = results.map(([n, v]) => `<div class="barrow"><div>${esc(n)}</div><div><div class="bar" style="width:${v}%">${v}%</div></div></div>`).join('');
+
+        function table(id, head, rows) {
+            $(id).innerHTML = `<thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${md(c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+        }
+        table('t-synth', ['#', 'Process', 'Scripts', 'Model', 'What it does'], [
+            ['1', 'Gemini generate-and-correct loop', '`cot_mmlu_gemini.py`, `..._1st_round_incorrect.py`, `..._2nd_round_incorrect.py`, `..._last_step.py`', 'gemini-2.5-flash', 'Round 1 answers each Hindi question with English `<think>` reasoning. Rounds 2–4 re-prompt only still-wrong questions, showing earlier failed chains and asking for `<summary>`, `<expl>`, `<think>`, `<answer>`. Only round 4 reveals the gold answer. Outputs `1st_cycle.csv` … `4th_cycle.csv`.'],
+            ['2', 'Multilingual single-pass generation', '`extract_*_questions.py`, `generate_reasoning_chains.py`, `translate_gemini.py`, `pilot_multilingual_reasoning.py`', 'gpt-oss:120b-cloud (Ollama)', 'One call per question for Marathi / Punjabi / English; reasoning in the target language; no self-correction, no correctness filter. Punjabi questions are machine-translated from Hindi.'],
+            ['3', 'Self-consistency sampling (inference time)', '`self_consistency_eval.py`, `self_consistency_multilingual.py`, `merge_shards.py`, `gpu_queue_runner.sh`', 'fine-tuned DeepSeek-R1-Distill-Qwen-7B', '5 chains per test question, T=0.7, top_p=0.95, majority vote.']
+        ]);
+        table('t-chains', ['#', 'Variant', 'Notes'], [
+            ['1', 'Multi-chain "Wait"', '`chain1 Wait chain2 Wait chain3 Finally final_correct_chain` (`final_data_dump.py:72-82`)'],
+            ['2', 'Single-CoT', 'Final chain only (`final_data_dump_single_cot.py:74-78`)'],
+            ['3', 'No-CoT', 'Answer tag only (`finetune_llama_no_cot.py`)'],
+            ['4', 'Last-step', '4th Gemini cycle — data step only, not its own training format'],
+            ['5', 'English self-consistency', 'Inference-time voting'],
+            ['6', 'Multilingual single-pass', 'Target-language chain from gpt-oss'],
+            ['7', 'Multilingual self-consistency', 'No output on disk']
+        ]);
+        $('artifacts').innerHTML = [
+            '`research_notes/Data synthesis and reasoning chains/` (3 note files)',
+            '`reports/Data synthesis and reasoning chains.md` (full report)',
+            '`SESSION_AUDIT.md` and this page, `SESSION_AUDIT.html`',
+            '`backups/finetune_llama.py.orig`'
+        ].map(s => `<li>${md(s)}</li>`).join('');
+
+        const issues = [
+            ['bad', 'Hardcoded API key', '`wait_then_run_pa_reasoning.sh` line 8 contains an Ollama API key in plain text — rotate it.'],
+            ['bad', 'Data leakage', '"English/Marathi/Punjabi" legacy training CSVs are byte-identical copies of the Hindi file; 648 of 656 test questions also appear in train.'],
+            ['bad', 'Training crash (new)', '`finetune_qwen_single_cot.py` and `finetune_llama_no_cot.py` crash at step 0: no `train_on_responses_only`, so `labels` is None. Fix pending approval (C6, C7).'],
+            ['warn', 'Template mismatch', 'SC script forces `qwen-2.5` onto a DeepSeek model; chains ~37K chars, only 79% contain `</answer>`. Its "Single-CoT + SC" label may be wrong (it loads the multi-chain checkpoint and test split). No-CoT script uses `llama-3.1` on a Qwen model.'],
+            ['warn', 'Unidentified checkpoint', '`checkpoint-6555` came from an unidentified config; `finetune_llama.py` had been a debug config (`head(50)`, 3 epochs) before change C1–C5.'],
+            ['warn', 'Empty rows', '38 Punjabi train rows have empty reasoning; `finetune_multilingual.py:58` does not drop them.'],
+            ['info', 'Missing data', 'MMLU stage files, per-language results for mr/pa/en on the full test set, multilingual SC outputs.']
+        ];
+        $('issue-list').innerHTML = issues.map(([c, t, d]) => `<div class="note ${c === 'bad' ? 'bad' : c === 'info' ? 'ok' : ''}"><b>${esc(t)}</b> ${badge(c === 'bad' ? 'high' : c === 'warn' ? 'medium' : 'info', c)}<br>${md(d)}</div>`).join('');
+
+        const audit = [
+            ['1', 'Explain and differentiate the data synthesis processes, how many reasoning chains, how they differ (/deep-research)', 'Created research folders; ran 3 research subagents (English Gemini pipeline, multilingual pipeline, self-consistency and variants) and a report writer', '`research_notes/...`, `reports/Data synthesis and reasoning chains.md`', '3 processes, 7 chain variants; issues flagged', 'ok'],
+            ['2', 'Explain the multi-chain "Wait" generation step by step', 'Answered from the research notes', 'none', '7-step explanation', 'ok'],
+            ['3', 'What is "gold"; what does `final_data_dump.py` prepare; what does `evaluation.py` do and how does it score', 'Read both files and explained', 'none', 'Gold = ground-truth `answer`; dump builds SFT splits; evaluation extracts a letter via a 6-stage fallback and computes exact-match accuracy', 'ok'],
+            ['4', 'Compare old vs new `evaluation.py`', 'File had no commented block and git has no commits', 'none', 'Reported file unchanged on disk (unsaved edit)', 'warn'],
+            ['5', '"Can you check now?"', 'Re-read file; compared commented old (6-stage extractor, 4 Linux paths, truncation stats) vs new (4-stage extractor, 10 Windows paths, no NO_MATCH column)', 'none', 'Differences tabulated; flagged Windows paths, unvalidated "Answer Index" branch, raw gold not normalised', 'ok'],
+            ['6', 'Create the audit .md; then run the multi-chain fine-tune', 'Wrote `SESSION_AUDIT.md`; inspected scripts and GPUs; asked run scope', '`SESSION_AUDIT.md`', 'Full run via `finetune_llama.py`, exact diff first', 'ok'],
+            ['6a', 'Follow-up: user chose full run, diff first', 'Drafted diff (remove head(50), 5 epochs, eval/save 500, new output_dir)', '`SESSION_AUDIT.md`', 'Diff posted; nothing edited yet', 'info'],
+            ['7', 'Every code change must be recorded so it can be reverted if results do not improve', 'Created `backups/finetune_llama.py.orig` (sha256 verified); added change log and revert procedure', '`backups/finetune_llama.py.orig`, `SESSION_AUDIT.md`', 'Safeguard in place', 'ok'],
+            ['8', '"ok goahead"', 'Applied C1–C5 to `finetune_llama.py` (diff verified); launched on GPU 1 with the `finetune` conda env (repo `.venv` is a Windows venv)', '`finetune_llama.py`, `logs_multichain_full_run.txt`', 'Training running', 'ok'],
+            ['8a', 'Show GPU status (`gpustat`) / can idle GPUs be used', 'GPU 1 at 100%, 9.1 GB; explained data-parallel vs parallel-experiment options', 'none', 'Offered 3 options', 'info'],
+            ['9', '"use 2 to 6 other gpus as well"', 'Launched single-CoT on GPU 2 and no-CoT on GPU 3 unchanged; GPUs 4–6 held for sharded inference', '`logs_singlecot_full_run.txt`, `logs_nocot_full_run.txt`', 'Both started', 'warn'],
+            ['9a', 'Automatic monitor event', 'Single-CoT and no-CoT crashed at step 0: `labels` is None (no `train_on_responses_only`). Multi-chain unaffected', 'none', 'GPUs 2, 3 idle; fix C6/C7 awaiting approval', 'bad'],
+            ['10', 'Make a UI HTML of SESSION_AUDIT.md', 'Built this self-contained page; regrouped scattered audit rows into one ordered table', '`SESSION_AUDIT.html`', 'Done', 'ok']
+        ];
+        const tone = { ok: 'done', warn: 'attention', bad: 'failed', info: 'info' };
+        function renderAudit(f = '') {
+            const q = f.toLowerCase();
+            $('audit-body').innerHTML = audit.filter(r => r.slice(0, 5).join(' ').toLowerCase().includes(q))
+                .map(r => `<tr><td><b>${esc(r[0])}</b></td><td>${md(r[1])}</td><td>${md(r[2])}</td><td>${md(r[3])}</td><td>${badge(tone[r[5]], r[5])} ${md(r[4])}</td></tr>`).join('')
+                || '<tr><td colspan="5">No matches.</td></tr>';
+        }
+        $('q').addEventListener('input', e => renderAudit(e.target.value));
+        renderAudit();
+
+        const chg = [
+            ['C1', 'finetune_llama.py:58-59', '`train_df.head(50)`, `val_df.head(10)`', 'removed', 'full run'],
+            ['C2', 'finetune_llama.py:130', '`num_train_epochs = 3`', '`5`', 'match checkpoint-6555'],
+            ['C3', 'finetune_llama.py:134', '`eval_steps = 5`', '`500`', '16k-context eval too slow'],
+            ['C4', 'finetune_llama.py:137', '`save_steps = 10`', '`500`', 'avoid hundreds of checkpoints'],
+            ['C5', 'finetune_llama.py:146', '`.../qwenModel/new_finetune_llama_results`', '`.../qwenModel/multichain_full_run`', 'keep old checkpoints']
+        ];
+        $('chg').innerHTML = chg.map(r => `<tr><td><b>${r[0]}</b></td><td>${badge('APPLIED', 'ok')}</td><td>${md('`' + r[1] + '`')}</td><td>${md(r[2])}</td><td>${md(r[3])}</td><td>${md(r[4])}</td></tr>`).join('');
+
+        show((location.hash || '#overview').slice(1).replace(/[^a-z]/g, '') || 'overview');
+        if (!document.querySelector('section.on')) show('overview');
+    </script>
+</body>
+
+</html>
