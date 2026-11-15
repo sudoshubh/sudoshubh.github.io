@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multi-Reason Project Handover</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single readable column with a sticky contents rail on wide screens; sections read top to bottom like a handover meeting. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#1c2430; --muted:#5b6676; --line:#dde2e9;
+  --accent:#0f6e6a; --accent-soft:#e2f1ef; --warn:#9a5b00; --warn-soft:#fbf0dc;
+  --bad:#a3322a; --bad-soft:#fbe7e4; --good:#2c7a3f; --good-soft:#e5f3e8;
+  --code-bg:#eef1f5;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --surface:#19202a; --ink:#e4e9f0; --muted:#9aa6b5; --line:#2a3442;
+  --accent:#5cc4bc; --accent-soft:#163331; --warn:#e9b765; --warn-soft:#33281a;
+  --bad:#f08a80; --bad-soft:#3a1f1d; --good:#7fcf92; --good-soft:#1b3222; --code-bg:#202936; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --surface:#19202a; --ink:#e4e9f0; --muted:#9aa6b5; --line:#2a3442;
+  --accent:#5cc4bc; --accent-soft:#163331; --warn:#e9b765; --warn-soft:#33281a;
+  --bad:#f08a80; --bad-soft:#3a1f1d; --good:#7fcf92; --good-soft:#1b3222; --code-bg:#202936; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:210px minmax(0,1fr);gap:48px;padding-block:40px 80px}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 24px);align-self:start;font-size:14px}
+nav.toc p{font-family:var(--f-display);font-weight:700;margin:0 0 8px;letter-spacing:.06em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.toc a{display:block;padding:5px 10px;border-radius:6px;color:var(--ink);text-decoration:none}
+nav.toc a:hover{background:var(--accent-soft);color:var(--accent)}
+main{min-width:0;display:grid;gap:56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(30px,5vw,44px);font-weight:700}
+h2{font-size:28px;font-weight:700;padding-bottom:10px;border-bottom:1px solid var(--line)}
+h3{font-size:19px;font-weight:700}
+p{margin:0;max-width:68ch}
+section{display:grid;gap:18px;scroll-margin-top:24px}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lede{font-size:19px;color:var(--muted);max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:700}
+header.top{display:grid;gap:14px}
+code,kbd{font-family:var(--f-mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+pre{font-family:var(--f-mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:0;overflow-x:auto;white-space:pre}
+pre .c{color:var(--muted)}
+ul.plain{margin:0;padding-left:20px;display:grid;gap:6px;max-width:68ch}
+
+/* summary strip */
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.facts div{background:var(--surface);padding:16px;display:grid;gap:4px;min-width:0}
+.facts .n{font-family:var(--f-display);font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+.facts .l{font-size:13.5px;color:var(--muted);line-height:1.35}
+
+/* pipeline */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;counter-reset:step}
+.flow .step{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:6px;align-content:start;min-width:0;position:relative}
+.flow .step::before{counter-increment:step;content:"Step " counter(step);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.flow .step p{font-size:15px;color:var(--muted)}
+.flow .step code{font-size:12.5px}
+
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;white-space:nowrap}
+tr.hl td{background:var(--accent-soft)}
+.note{font-size:14px;color:var(--muted)}
+
+/* bars */
+.bars{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.bar-row{display:grid;grid-template-columns:90px minmax(0,1fr) 120px;gap:12px;align-items:center;font-size:15px}
+.track{position:relative;height:22px;background:var(--code-bg);border-radius:4px;overflow:hidden}
+.track .base{position:absolute;inset:0 auto 0 0;background:var(--line)}
+.track .ft{position:absolute;inset:0 auto 0 0;background:var(--accent);opacity:.85}
+.track .base{z-index:1;background:var(--muted);opacity:.55;height:8px;top:7px;border-radius:2px}
+.bar-row .v{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted)}
+.bar-row .v b{color:var(--ink)}
+.legend{display:flex;gap:18px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+/* done timeline */
+.timeline{display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.tl{display:grid;gap:6px;padding:0 0 22px 22px;position:relative}
+.tl::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.tl:last-child{padding-bottom:0}
+.tl p{font-size:16px}
+
+/* cards for warnings and todo */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:grid;gap:8px;align-content:start;min-width:0}
+.card p{font-size:15.5px}
+.card.warn{border-left:4px solid var(--warn)}
+.card.bad{border-left:4px solid var(--bad)}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;justify-self:start}
+.tag.p1{background:var(--bad-soft);color:var(--bad)}
+.tag.p2{background:var(--warn-soft);color:var(--warn)}
+.tag.p3{background:var(--accent-soft);color:var(--accent)}
+.tag.ok{background:var(--good-soft);color:var(--good)}
+.todo{display:grid;gap:12px}
+.todo .card{grid-template-columns:auto minmax(0,1fr);column-gap:14px;align-items:start}
+.todo .card .tag{grid-row:span 3;margin-top:3px}
+.todo .card .how{font-size:14.5px;color:var(--muted)}
+
+/* glossary */
+dl.gloss{display:grid;grid-template-columns:200px minmax(0,1fr);gap:10px 20px;margin:0;max-width:820px}
+dl.gloss dt{font-weight:700}
+dl.gloss dd{margin:0;color:var(--muted);font-size:15.5px}
+
+.callout{background:var(--accent-soft);border-radius:10px;padding:16px 18px;display:grid;gap:6px}
+.callout p{font-size:16px}
+footer{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:24px 56px}
+  nav.toc{position:static}
+  nav.toc ol{display:flex;flex-wrap:wrap;gap:6px}
+  nav.toc a{border:1px solid var(--line);background:var(--surface);padding:4px 10px}
+  .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .flow,.cards{grid-template-columns:minmax(0,1fr)}
+  dl.gloss{grid-template-columns:minmax(0,1fr);gap:2px}
+  dl.gloss dd{margin-bottom:10px}
+  .bar-row{grid-template-columns:70px minmax(0,1fr);}
+  .bar-row .v{grid-column:2;text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <p>Contents</p>
+  <ol>
+    <li><a href="#about">What this project is</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#setup">Getting started</a></li>
+    <li><a href="#done">What is done</a></li>
+    <li><a href="#results">Results so far</a></li>
+    <li><a href="#careful">Things to be careful about</a></li>
+    <li><a href="#todo">What is left to do</a></li>
+    <li><a href="#future">Future scope</a></li>
+    <li><a href="#files">File map</a></li>
+    <li><a href="#words">Word list</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="top">
+  <span class="eyebrow">Project handover · M.Tech thesis, IIT Jodhpur</span>
+  <h1>Multi-Reason: teaching an AI model to reason in Indian languages</h1>
+  <p class="lede">This page explains the project to the student taking it over: what it is, what has been finished, what is still open, and where to go next. Read it top to bottom once, then use it as a reference.</p>
+  <div class="meta">
+    <span>Handed over by <b>Shubham Sharma (M25AI2024)</b></span>
+    <span>Supervisor <b>Dr. Deeksha Varshney</b></span>
+    <span>Status as of <b>16 Nov 2026</b></span>
+  </div>
+</header>
+
+<section id="about">
+  <h2>What this project is</h2>
+  <p>Most AI language models are good at English and much weaker in languages like Hindi, Punjabi and Marathi. One reason is that there is very little training data in these languages that shows <em>how</em> to solve a problem step by step.</p>
+  <p>In this project we did three things:</p>
+  <ul class="plain">
+    <li><b>Made the data.</b> We used bigger AI models (Google Gemini and gpt-oss-120b) to write step-by-step solutions for multiple-choice exam questions, in four languages: Hindi, English, Punjabi and Marathi.</li>
+    <li><b>Trained a smaller model on it.</b> We took an open 7-billion-parameter model (DeepSeek-R1-Distill-Qwen-7B) and taught it, using a cheap training method called LoRA, to write its reasoning and then give the answer.</li>
+    <li><b>Tested it.</b> We checked how often the trained model picks the right answer, on our own held-out questions and on the official MMLU-Hindi benchmark that other research groups use.</li>
+  </ul>
+  <div class="facts" role="list">
+    <div role="listitem"><span class="n">4</span><span class="l">languages: Hindi, English, Punjabi, Marathi</span></div>
+    <div role="listitem"><span class="n">5,124</span><span class="l">training examples, each with written reasoning</span></div>
+    <div role="listitem"><span class="n">30.9 → 45.8%</span><span class="l">accuracy before and after training, on 644 unseen questions</span></div>
+    <div role="listitem"><span class="n">45.52%</span><span class="l">on the full official MMLU-Hindi test (5,661 of 12,437 right)</span></div>
+  </div>
+</section>
+
+<section id="how">
+  <h2>How it works, start to end</h2>
+  <p>The whole project is a chain of four steps. Each step has its own script, and each step's output is the next step's input.</p>
+  <div class="flow">
+    <div class="step"><h3>Make reasoning data</h3><p>A big model reads each question and writes its thinking inside <code>&lt;think&gt;</code> and the final letter inside <code>&lt;answer&gt;</code>.</p><p><code>cot_mmlu_gemini*.py</code>, <code>generate_reasoning_chains.py</code></p></div>
+    <div class="step"><h3>Split the data</h3><p>Divide into train, validation and test. Test questions must never appear in training.</p><p><code>generated_data/mmlu/data/data_split_multilingual/</code></p></div>
+    <div class="step"><h3>Fine-tune the model</h3><p>Train the 7B model with LoRA on the training split. Takes about 10 to 25 hours on one 11 GB GPU.</p><p><code>finetune_multilingual.py</code></p></div>
+    <div class="step"><h3>Test and score</h3><p>The model answers each test question. A parser pulls out the letter and compares it with the correct one.</p><p><code>test_multilingual.py</code>, <code>evaluation.py</code></p></div>
+  </div>
+  <h3>How the Hindi reasoning data was made (the "4-cycle" method)</h3>
+  <ul class="plain">
+    <li><b>Cycle 1:</b> Gemini answers each Hindi question and explains its thinking. It is not shown the correct answer. 92% of questions were solved here.</li>
+    <li><b>Cycles 2 and 3:</b> Only the questions it got wrong are asked again. This time Gemini sees its own earlier wrong attempt and tries again, still without the answer.</li>
+    <li><b>Cycle 4:</b> For the few still wrong, Gemini is given the correct answer and writes an explanation for it.</li>
+    <li>The wrong attempts plus the final right one, joined by the word "Wait", make the <b>multi-chain</b> data. Only the final right attempt makes the <b>single-chain</b> data.</li>
+  </ul>
+  <p>English, Marathi and Punjabi reasoning was written in one pass by gpt-oss-120b, with no correction cycles.</p>
+</section>
+
+<section id="setup">
+  <h2>Getting started</h2>
+  <div class="callout">
+    <p><b>Server:</b> shared lab machine with 7 GPUs (NVIDIA RTX 2080 Ti, 11 GB each). Other students use it too, so always check which GPUs are free with <code>nvidia-smi</code> before starting a job.</p>
+    <p><b>Project folder:</b> <code>/Data/deeksha/shubham/multi-reason/multi-reason</code></p>
+    <p><b>Python environment:</b> the conda env called <code>finetune</code> (it has Unsloth, TRL and PyTorch with CUDA). The <code>.venv</code> folder inside the repo is a Windows environment and will not work here.</p>
+  </div>
+  <h3>Train the model</h3>
+<pre><span class="c"># pick a free GPU number, here GPU 1</span>
+CUDA_VISIBLE_DEVICES=1 /Data/deeksha/miniconda3/envs/finetune/bin/python \
+    finetune_multilingual.py &gt; logs_my_run.txt 2&gt;&amp;1 &amp;
+
+<span class="c"># watch progress</span>
+tail -f logs_my_run.txt</pre>
+  <p class="note">Checkpoints are saved inside <code>qwenModel/finetune_multilingual_results_v2/</code>. Change <code>output_dir</code> in the script before a new run so you do not overwrite the old ones.</p>
+  <h3>Test the model (split across GPUs to go faster)</h3>
+<pre><span class="c"># each GPU takes a slice of the 644 test questions</span>
+CUDA_VISIBLE_DEVICES=1 python test_multilingual.py --model_path &lt;checkpoint&gt; \
+    --start 0   --end 322 --output evaluation/my_run_0_322.csv &amp;
+CUDA_VISIBLE_DEVICES=5 python test_multilingual.py --model_path &lt;checkpoint&gt; \
+    --start 322 --end 644 --output evaluation/my_run_322_644.csv &amp;
+
+<span class="c"># join the slices back into one file</span>
+python merge_shards.py evaluation/my_run_0_322.csv evaluation/my_run_322_644.csv \
+    --output evaluation/my_run_merged.csv</pre>
+  <h3>Score the answers</h3>
+  <p>Open <code>evaluation.py</code>, put your merged CSV in the <code>FILES</code> list near line 127, and run it. It prints the accuracy and writes two extra files ending in <code>_correct.csv</code> and <code>_incorrect.csv</code> so you can read the mistakes.</p>
+  <h3>Run on the official benchmark</h3>
+<pre>CUDA_VISIBLE_DEVICES=&lt;n&gt; python benchmark_generative.py \
+    --model_path &lt;checkpoint&gt; --dataset mmlu --limit 15 --verbose   <span class="c"># quick check first</span>
+CUDA_VISIBLE_DEVICES=&lt;n&gt; python benchmark_generative.py \
+    --model_path &lt;checkpoint&gt; --dataset arc --start 0 --end 600 \
+    --output evaluation/gen_v2_arc_shard0.csv</pre>
+  <p class="note">The full MMLU-Hindi run (12,437 questions) took several days split over 3 GPUs. <code>score_gen_mmlu.py</code> merges and scores those shards.</p>
+</section>
+
+<section id="done">
+  <h2>What is done</h2>
+  <div class="timeline">
+    <div class="tl"><h3>Reasoning dataset in four languages</h3><p>1,638 Hindi questions with checked reasoning from the 4-cycle method, plus Punjabi, English and Marathi versions. Split into 5,124 train, 645 validation and 644 test rows. We checked that none of the 644 test questions appear in training.</p></div>
+    <div class="tl"><h3>First training run (v1)</h3><p>Accuracy went from 30.9% to 46.3%. Later we found a bug: the script used the wrong "chat template" (the text format the model expects). The model never properly learned when to stop writing.</p></div>
+    <div class="tl"><h3>Fixed training run (v2)</h3><p>Retrained using the model's own format. We also found that a library function, <code>apply_chat_template()</code>, quietly deletes the reasoning part from training text, so we build the text by hand instead. Final accuracy 45.8%, about the same as v1.</p></div>
+    <div class="tl"><h3>Comparing training styles</h3><p>Compared "answer only", "single reasoning chain" and "multi-chain with Wait" training, on both Llama-3.1-8B and the DeepSeek 7B model. Reasoning helped Llama by about 9 points on Hindi.</p></div>
+    <div class="tl"><h3>Data leakage check</h3><p>Found that in an older test set, 648 of 656 test questions were also in the training data, so those older scores are too high. Built a new clean multi-chain dataset (4,615 train rows) with zero overlap and retrained on it. It scored 39.8%, lower than v2, mainly because long answers ran out of space before reaching the answer.</p></div>
+    <div class="tl"><h3>Official MMLU-Hindi benchmark</h3><p>Ran v2 on all 12,437 questions, letting it write its reasoning first. It got 5,661 right: <b>45.52%</b> (±0.88). That is almost the same as our own 644-question test (45.8%), so the result holds at full scale. Only 33 answers (0.3%) had no readable letter. It beats every published baseline we compare against except Gemma-2-9B (47.16%). Results are in <code>evaluation/gen_v2_mmlu_full_merged.csv</code>.</p></div>
+    <div class="tl"><h3>Final evaluation slides</h3><p><code>MTP_Final_Evaluation_M25AI2024.pptx</code> has 17 slides covering everything above. The full day-by-day work log is in <code>SESSION_AUDIT.md</code>.</p></div>
+  </div>
+</section>
+
+<section id="results">
+  <h2>Results so far</h2>
+  <p>These are all on the <b>clean 644-question test set</b> unless noted. With this many questions, a difference smaller than about 4 points could be luck, so treat small gaps as "about the same".</p>
+  <div class="bars" aria-label="Accuracy by language, base model vs trained v2">
+    <div class="legend"><span><i style="background:var(--accent)"></i>After training (v2)</span><span><i style="background:var(--muted);opacity:.55"></i>Before training</span></div>
+    <div class="bar-row"><span>English</span><div class="track"><div class="ft" style="width:64.6%"></div><div class="base" style="width:44.7%"></div></div><span class="v">44.7 → <b>64.6%</b></span></div>
+    <div class="bar-row"><span>Hindi</span><div class="track"><div class="ft" style="width:48.2%"></div><div class="base" style="width:27.4%"></div></div><span class="v">27.4 → <b>48.2%</b></span></div>
+    <div class="bar-row"><span>Punjabi</span><div class="track"><div class="ft" style="width:37.8%"></div><div class="base" style="width:23.8%"></div></div><span class="v">23.8 → <b>37.8%</b></span></div>
+    <div class="bar-row"><span>Marathi</span><div class="track"><div class="ft" style="width:32.3%"></div><div class="base" style="width:27.7%"></div></div><span class="v">27.7 → <b>32.3%</b></span></div>
+    <p class="note">Bar length is accuracy out of 100%. Punjabi and Marathi improve the least; they also have the least training data.</p>
+  </div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Model version</th><th>What changed</th><th class="num">Questions</th><th class="num">Accuracy</th></tr></thead>
+    <tbody>
+      <tr><td>Base model</td><td>No training</td><td class="num">644</td><td class="num">30.9%</td></tr>
+      <tr><td>v1</td><td>Trained, wrong template</td><td class="num">644</td><td class="num">46.3%</td></tr>
+      <tr><td>v2, step 1,000</td><td>Fixed template, early checkpoint</td><td class="num">644</td><td class="num">39.3%</td></tr>
+      <tr class="hl"><td><b>v2, final</b></td><td><b>Fixed template, fully trained. Current best model.</b></td><td class="num">644</td><td class="num"><b>45.8%</b></td></tr>
+      <tr><td>Multi-chain retrain</td><td>Clean multi-chain data</td><td class="num">644</td><td class="num">39.8%</td></tr>
+      <tr class="hl"><td><b>v2, final</b></td><td><b>Official MMLU-Hindi, with reasoning</b></td><td class="num">12,437</td><td class="num"><b>45.52%</b></td></tr>
+      <tr><td>v2, final</td><td>Official MMLU-Hindi, old scoring (no reasoning)</td><td class="num">12,437</td><td class="num">27.5%</td></tr>
+      <tr><td>v2, final</td><td>Official ARC-Hindi, old scoring (no reasoning)</td><td class="num">1,168</td><td class="num">25.2%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3>Official MMLU-Hindi benchmark: the full result</h3>
+  <div class="facts" role="list">
+    <div role="listitem"><span class="n">45.52%</span><span class="l">accuracy with reasoning</span></div>
+    <div role="listitem"><span class="n">5,661</span><span class="l">correct out of 12,437 questions</span></div>
+    <div role="listitem"><span class="n">±0.88</span><span class="l">points of possible error (95% confidence)</span></div>
+    <div role="listitem"><span class="n">33</span><span class="l">answers with no readable letter (0.3%)</span></div>
+  </div>
+  <p>Our own 644-question test gave 45.8%, and the full official test gives 45.52%. The two agree, so the result is real and not just a product of our own question set.</p>
+  <h3>How we compare with published models on MMLU-Hindi</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Model</th><th class="num">Size</th><th class="num">MMLU-Hindi</th></tr></thead>
+    <tbody>
+      <tr><td>Gemma-2-9B</td><td class="num">9B</td><td class="num">47.16%</td></tr>
+      <tr class="hl"><td><b>Ours (v2, with reasoning)</b></td><td class="num">7B</td><td class="num"><b>45.52%</b></td></tr>
+      <tr><td>Llama-3-Nanda-10B-Chat</td><td class="num">10B</td><td class="num">42.99%</td></tr>
+      <tr><td>Nemotron-4-Mini-Hindi</td><td class="num">4B</td><td class="num">42.94%</td></tr>
+      <tr><td>Llama-3.1-8B-Instruct</td><td class="num">8B</td><td class="num">42.9%</td></tr>
+      <tr><td>Aya-23-8B</td><td class="num">8B</td><td class="num">33.5%</td></tr>
+      <tr><td>Airavata</td><td class="num">7B</td><td class="num">30.44%</td></tr>
+      <tr><td>sarvam-2b</td><td class="num">2B</td><td class="num">24.68%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">The other models were mostly scored by a different method (log-likelihood, which picks the option the model finds most likely, without letting it write reasoning). We let our model write its reasoning first. When we scored ours the other way, it got only 27.5%, because that method cannot give credit for reasoning. Mention this difference whenever you show this comparison.</p>
+</section>
+
+<section id="careful">
+  <h2>Things to be careful about</h2>
+  <p>These cost us days of work. Please read them before changing any script.</p>
+  <div class="cards">
+    <div class="card bad"><h3>The model is not "Qwen2.5-1.5B"</h3><p>Many file names say Qwen2.5-1.5B, but the model in <code>qwenModel/</code> is really <b>DeepSeek-R1-Distill-Qwen-7B</b>. Check <code>qwenModel/config.json</code>. The <code>models/</code> folder with Llama is old and not used any more.</p></div>
+    <div class="card bad"><h3>Use the model's own chat template</h3><p>Older scripts call <code>get_chat_template(..., "qwen-2.5")</code>. That is wrong for this model and caused v1's bug. The correct markers are <code>&lt;｜User｜&gt;</code>, <code>&lt;｜Assistant｜&gt;</code> and the stop token <code>&lt;｜end▁of▁sentence｜&gt;</code>.</p></div>
+    <div class="card bad"><h3>Reasoning silently disappears in training</h3><p><code>tokenizer.apply_chat_template()</code> removes everything inside <code>&lt;think&gt;</code> from the answer. If you use it for training text, the model learns no reasoning at all, with no error shown. Build the text by hand, as in <code>finetune_multilingual.py</code>.</p></div>
+    <div class="card bad"><h3>Check for leaked test questions</h3><p>The older <code>data_split_wait</code> and <code>data_split_single_cot</code> folders have test questions that are also in training. Scores on those (like the 90.7% "answer only" result) mean memorising, not learning. Use <code>data_split_multilingual</code> for honest numbers.</p></div>
+    <div class="card warn"><h3>Lower loss does not mean better</h3><p>v2's step 1,000 had lower validation loss but scored 39.3%, while the final checkpoint scored 45.8%. Pick checkpoints by running the test, not by looking at loss.</p></div>
+    <div class="card warn"><h3>Shared GPUs and disk</h3><p>Another user's job can take a GPU you thought was free, and the shard will crash with "dispatched on the CPU or the disk". A full disk once crashed training at step 600. Keep <code>save_total_limit=2</code> in training and check <code>df -h</code>.</p></div>
+    <div class="card warn"><h3>Secret keys in code</h3><p><code>model_download.py</code>, <code>test_llama_generic.py</code> and <code>wait_then_run_pa_reasoning.sh</code> have API keys written inside them. Move these to environment variables and ask for new keys. Never push these files to a public place.</p></div>
+    <div class="card warn"><h3>Some result files are broken</h3><p><code>multi_llama3.1_1B_*.csv</code> is corrupted and <code>multi_llama3.2_3B_*.csv</code> is incomplete (1 of 656 rows). Do not use them. Also, 38 Punjabi training rows have empty reasoning and are not removed by the training script.</p></div>
+  </div>
+</section>
+
+<section id="todo">
+  <h2>What is left to do</h2>
+  <p>In order of importance. The first two are needed to complete the thesis results.</p>
+  <div class="todo">
+    <div class="card"><span class="tag p1">Do first</span><h3>ARC-Hindi benchmark with reasoning</h3><p>MMLU-Hindi is done. ARC-Hindi (1,168 questions) has only been scored the old way (25.2%). Run <code>benchmark_generative.py --dataset arc</code> on the v2 final checkpoint.</p><p class="how">Should take about a day on 2 to 3 GPUs. Merge and score the same way as <code>score_gen_mmlu.py</code>. Then add the "Ours" numbers to the results sheet in <code>evaluation/MultiCot.xlsx</code>, where that row is still empty.</p></div>
+    <div class="card"><span class="tag p1">Do first</span><h3>Self-consistency test: v1 vs v2</h3><p>Self-consistency means asking the model 5 times and taking the most common answer. v1's bug showed up mostly in this setting (66.5% of answers got stuck repeating). We have never run v1 and v2 side by side this way, so we cannot yet say the fix helps.</p><p class="how">Scripts exist: <code>self_consistency_multilingual.py</code>. Check that it uses the model's own template before running.</p></div>
+    <div class="card"><span class="tag p2">Next</span><h3>Re-test the multi-chain model with more room</h3><p>The clean multi-chain model scored 39.8%, but 62 of 644 answers ran out of space (4,096 tokens) before giving an answer. Re-test with a bigger limit, for example 8,192, and see if it overtakes v2.</p><p class="how">Checkpoint: <code>qwenModel/finetune_multichain_results/checkpoint-3462</code>.</p></div>
+    <div class="card"><span class="tag p2">Next</span><h3>Measure language mixing in Punjabi and Marathi</h3><p>In some answers the model starts reasoning in Punjabi or Marathi and switches to English halfway. We saw this in examples but never counted it. Write a small script that checks what share of each answer is in the right script (Gurmukhi or Devanagari).</p><p class="how">Use the <code>_incorrect.csv</code> and <code>_correct.csv</code> files from v2 final.</p></div>
+    <div class="card"><span class="tag p3">If time allows</span><h3>Explain why self-consistency scored lower</h3><p>On the older test set, 5-vote majority (50.8%) scored below a single answer (57.8%). Only 79% of those answers closed the answer tag. The cause is not known yet, and the old script may have used the wrong template and checkpoint.</p></div>
+    <div class="card"><span class="tag p3">If time allows</span><h3>Clean up the repository</h3><p>Add a <code>requirements.txt</code>, remove secret keys, move old Llama scripts into an <code>old/</code> folder, and fix Windows paths still present in parts of <code>evaluation.py</code>.</p></div>
+  </div>
+</section>
+
+<section id="future">
+  <h2>Future scope</h2>
+  <ul class="plain">
+    <li><b>More data for Punjabi and Marathi.</b> These two improve the least and have the least data. Running the same 4-cycle correction method for them, instead of one pass, may help.</li>
+    <li><b>Keep reasoning in the same language.</b> Add a check that removes training examples which switch to English, or reward the model for staying in one language.</li>
+    <li><b>Shorter reasoning.</b> Very long answers hit the length limit and lose the answer. Training on shorter, cleaner chains could fix this and also make the model faster.</li>
+    <li><b>More languages.</b> Bengali data already exists in the multi-chain set. Tamil, Telugu and Gujarati are natural next steps, and the pipeline can be reused as is.</li>
+    <li><b>Reinforcement learning.</b> Instead of only copying good examples, reward the model when its final answer is right (methods like GRPO). This is how many recent reasoning models were trained.</li>
+    <li><b>Other benchmarks.</b> Try IndicMMLU-Pro and other Indian-language tests to show the model works beyond MMLU and ARC.</li>
+    <li><b>Fair comparison with Nanda.</b> Llama-3-Nanda-10B was scored with a different method. Scoring both models the same way would make the comparison fully fair.</li>
+  </ul>
+</section>
+
+<section id="files">
+  <h2>File map</h2>
+  <p>The repository has many old and experimental scripts. These are the ones that matter now.</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Path</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><code>finetune_multilingual.py</code></td><td>Training script for v2, the current best model</td></tr>
+      <tr><td><code>finetune_multichain.py</code></td><td>Training on the clean multi-chain data (copy of the v2 script with different data)</td></tr>
+      <tr><td><code>build_multichain_data.py</code></td><td>Builds the clean multi-chain dataset and repairs missing tags</td></tr>
+      <tr><td><code>test_multilingual.py</code></td><td>Makes the model answer the 644 test questions</td></tr>
+      <tr><td><code>evaluation.py</code></td><td>Pulls the answer letter out of the model's text and scores it</td></tr>
+      <tr><td><code>merge_shards.py</code></td><td>Joins test results from several GPUs into one file</td></tr>
+      <tr><td><code>benchmark_generative.py</code></td><td>Runs the official MMLU-Hindi or ARC-Hindi test, with reasoning</td></tr>
+      <tr><td><code>benchmark_loglik.py</code></td><td>Same tests, old scoring method (no reasoning)</td></tr>
+      <tr><td><code>score_gen_mmlu.py</code></td><td>Merges and scores the official MMLU-Hindi run</td></tr>
+      <tr><td><code>self_consistency_multilingual.py</code></td><td>Asks 5 times and takes a vote (still to be run for v1 vs v2)</td></tr>
+      <tr><td><code>cot_mmlu_gemini*.py</code></td><td>The 4-cycle Gemini data-making scripts</td></tr>
+      <tr><td><code>generated_data/mmlu/data/data_split_multilingual/</code></td><td>Clean train, validation and test CSVs (use these)</td></tr>
+      <tr><td><code>generated_data/mmlu/data/data_split_multichain/</code></td><td>Clean multi-chain train and validation CSVs</td></tr>
+      <tr><td><code>qwenModel/</code></td><td>Base model weights (about 15 GB) and all trained checkpoints</td></tr>
+      <tr><td><code>qwenModel/finetune_multilingual_results_v2/checkpoint-3843</code></td><td>The v2 final model. Start here.</td></tr>
+      <tr><td><code>qwenModel/finetune_multilingual_results/checkpoint-3843</code></td><td>The v1 model (wrong template)</td></tr>
+      <tr><td><code>evaluation/</code></td><td>All result CSVs. Main ones: <code>full_*_merged.csv</code>, <code>gen_v2_mmlu_full_merged.csv</code></td></tr>
+      <tr><td><code>evaluation/MultiCot.xlsx</code></td><td>Supervisor's spreadsheet with the multi-chain data and published baselines</td></tr>
+      <tr><td><code>PROJECT_CONTEXT.md</code>, <code>SESSION_AUDIT.md</code></td><td>Detailed notes and a log of every change made to scripts</td></tr>
+      <tr><td><code>backups/</code></td><td>Original copies of scripts from before they were edited</td></tr>
+      <tr><td><code>MTP_Final_Evaluation_M25AI2024.pptx</code></td><td>Final evaluation slides</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="words">
+  <h2>Word list</h2>
+  <dl class="gloss">
+    <dt>Chain of thought (CoT)</dt><dd>The model writes its step-by-step thinking before giving the answer.</dd>
+    <dt>Reasoning chain</dt><dd>One written attempt at solving a question, from start to answer.</dd>
+    <dt>Multi-chain / "Wait"</dt><dd>Training text with earlier wrong attempts, then "Wait", then the right attempt. It teaches the model to correct itself.</dd>
+    <dt>Fine-tuning</dt><dd>Training an existing model a bit more on our own data.</dd>
+    <dt>LoRA</dt><dd>A cheap way to fine-tune: only a small add-on (about 0.5% of the model) is trained, so it fits on an 11 GB GPU.</dd>
+    <dt>4-bit loading</dt><dd>Storing the model in a compressed form to save GPU memory.</dd>
+    <dt>Checkpoint</dt><dd>A saved copy of the model at some point during training.</dd>
+    <dt>Chat template</dt><dd>The exact text format the model expects, with special markers for "user", "assistant" and "stop".</dd>
+    <dt>Token</dt><dd>A small piece of text, roughly a word or part of a word. Length limits are counted in tokens.</dd>
+    <dt>Validation loss</dt><dd>A number training reports to show how well the model fits unseen data. Lower is usually better, but not always, as we found.</dd>
+    <dt>Data leakage</dt><dd>When test questions are also in the training data, so the test score is too high.</dd>
+    <dt>Shard</dt><dd>A slice of the test set run on one GPU, so many GPUs can work at the same time.</dd>
+    <dt>Self-consistency</dt><dd>Asking the model the same question several times and taking the most common answer.</dd>
+    <dt>Code-switching</dt><dd>When the model changes language in the middle of its answer.</dd>
+    <dt>MMLU / ARC</dt><dd>Well-known multiple-choice exam benchmarks. We use their Hindi versions from <code>alexandrainst/m_mmlu</code> and <code>alexandrainst/m_arc</code>.</dd>
+    <dt>NO_MATCH</dt><dd>The scorer could not find any answer letter in the model's output.</dd>
+  </dl>
+</section>
+
+<footer>Prepared by Shubham Sharma for the student continuing the Multi-Reason project. Numbers come from the result files in <code>evaluation/</code> and the final evaluation slides. For anything not covered here, see <code>PROJECT_CONTEXT.md</code> and <code>SESSION_AUDIT.md</code> in the project folder.</footer>
+</main>
+</div>
+</body>
+</html>
