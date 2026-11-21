@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shubham Sharma - Resume - AI Engineer, LLM Fine-Tuning and Evaluation</title>
+    <meta name="description"
+        content="ATS-friendly resume of Shubham Sharma: Senior Data Scientist and AI Engineer with 8+ years of experience in LLM fine-tuning, RAG, agent workflows and production data systems." />
+    <meta name="robots" content="index, follow" />
+    <style>
+        /* ATS-friendly rules: single column, real text, standard headings, system fonts, no icons/tables/graphics */
+        :root {
+            --ink: #111111;
+            --muted: #444444;
+            --rule: #bbbbbb;
+            --link: #0b4f8a;
+            --bg: #f2f2f2;
+            --paper: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: Calibri, Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.38;
+        }
+
+        .toolbar {
+            max-width: 8.5in;
+            margin: 1rem auto 0;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: .5rem;
+        }
+
+        .toolbar button,
+        .toolbar a {
+            font: inherit;
+            font-size: 10pt;
+            padding: .45rem .9rem;
+            border: 1px solid #888;
+            border-radius: 4px;
+            background: #fff;
+            color: var(--ink);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .page {
+            max-width: 8.5in;
+            margin: 1rem auto 2rem;
+            background: var(--paper);
+            padding: .6in .7in;
+            box-shadow: 0 1px 8px rgba(0, 0, 0, .15);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22pt;
+            letter-spacing: .01em;
+        }
+
+        .headline {
+            margin: .1rem 0 .3rem;
+            font-size: 12pt;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .contact {
+            margin: 0 0 .2rem;
+            font-size: 10.5pt;
+            color: var(--muted);
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+        }
+
+        h2 {
+            margin: 1.05rem 0 .4rem;
+            padding-bottom: .15rem;
+            border-bottom: 1.5px solid var(--ink);
+            font-size: 11.5pt;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            margin: .7rem 0 0;
+            font-size: 11pt;
+            font-weight: 700;
+        }
+
+        .meta {
+            margin: 0;
+            color: var(--muted);
+            font-size: 10.5pt;
+        }
+
+        .project {
+            margin: .1rem 0 .2rem;
+            font-style: italic;
+            color: var(--muted);
+            font-size: 10.5pt;
+        }
+
+        ul {
+            margin: .25rem 0 0;
+            padding-left: 1.15rem;
+        }
+
+        li {
+            margin: 0 0 .2rem;
+        }
+
+        p {
+            margin: .2rem 0;
+        }
+
+        .skills p {
+            margin: .15rem 0;
+        }
+
+        @media (max-width: 700px) {
+            .page {
+                padding: 1rem;
+                margin: .5rem 0;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 14mm 15mm;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                font-size: 10.5pt;
+            }
+
+            .toolbar {
+                display: none;
+            }
+
+            .page {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+
+            a {
+                color: var(--ink);
+            }
+
+            h2,
+            h3 {
+                break-after: avoid;
+            }
+
+            li {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <a href="index.html">Portfolio</a>
+        <button type="button" onclick="window.print()">Save as PDF</button>
+    </div>
+
+    <main class="page">
+        <header>
+            <h1>Shubham Sharma</h1>
+            <p class="headline">Senior Data Scientist and AI Engineer | LLM Fine-Tuning, Evaluation and Production Systems</p>
+            <p class="contact">
+                Bengaluru, Karnataka, India |
+                <a href="mailto:shubhamsharmavks@gmail.com">shubhamsharmavks@gmail.com</a> |
+                <a href="https://linkedin.com/in/sudoshubh">linkedin.com/in/sudoshubh</a> |
+                <a href="https://github.com/sudoshubh">github.com/sudoshubh</a> |
+                <a href="https://sudoshubh.github.io">sudoshubh.github.io</a>
+            </p>
+        </header>
+
+        <section>
+            <h2>Summary</h2>
+            <p>
+                AI engineer with 8+ years of experience shipping production LLM applications and the data systems behind
+                them. Hands-on with LLM fine-tuning (LoRA/PEFT, supervised fine-tuning), retrieval-augmented generation,
+                multi-agent workflows (LangChain, LangGraph), and LLM evaluation and monitoring, including hallucination
+                detection and drift alerts. M.Tech candidate in Artificial Intelligence at IIT Jodhpur, researching
+                chain-of-thought reasoning in small language models for Indian languages. Strong backend foundation in
+                Python, Java, Kafka, Snowflake and Kubernetes.
+            </p>
+        </section>
+
+        <section class="skills">
+            <h2>Technical Skills</h2>
+            <p><strong>LLM and AI:</strong> LLM fine-tuning, LoRA, PEFT, supervised fine-tuning (SFT), chain-of-thought
+                distillation, retrieval-augmented generation (RAG), prompt engineering, multi-agent systems, LLM
+                evaluation, hallucination detection, LLMOps, Hugging Face Transformers, LangChain, LangGraph</p>
+            <p><strong>Languages:</strong> Python, Java 8/17, SQL</p>
+            <p><strong>Data Engineering:</strong> PySpark, Pandas, Snowflake (ELT), Apache Kafka, MongoDB, AWS
+                Elasticsearch, ETL pipelines, Spring Batch</p>
+            <p><strong>Backend and Cloud:</strong> Spring Boot, microservices, REST APIs, event-driven architecture, AWS
+                (Lambda), Docker, Kubernetes, Jenkins, Grafana, system design (HLD/LLD)</p>
+            <p><strong>Engineering Practice:</strong> JUnit, Mockito, unit testing (85%+ coverage), Git, SOLID
+                principles</p>
+        </section>
+
+        <section>
+            <h2>Professional Experience</h2>
+
+            <h3>Data Scientist, AI and Data Engineering - Samsung Research Institute, Bengaluru</h3>
+            <p class="meta">June 2025 - Present</p>
+            <p class="project">Samsung My Galaxy App and CMS: big data, NLP analytics and LLM integration platform</p>
+            <ul>
+                <li>Designed LangChain-based ingestion pipelines for unstructured content from RSS feeds, web scraping
+                    and REST APIs into a central Snowflake raw data warehouse, handling 500GB+ per day with automated
+                    schema validation.</li>
+                <li>Built LangGraph multi-agent workflows for automated report categorization and insight extraction
+                    from raw policy and operational text.</li>
+                <li>Fine-tuned domain-specific LLMs with LoRA/PEFT on internal corpora for summarization and
+                    classification, cutting manual subject-matter-expert review effort by 45% while improving
+                    categorization accuracy.</li>
+                <li>Implemented LLMOps monitoring: hallucination detection, semantic drift alerts and iterative feedback
+                    loops driven by domain-expert curation.</li>
+                <li>Engineered Snowflake ELT pipelines and the "References" raw data layer, supporting migration to a
+                    24-hour automated cycle.</li>
+                <li>Optimized PySpark pipelines with AWS Lambda triggers to automate bulk AI report generation, reducing
+                    resource usage by 40%.</li>
+                <li>Reduced MongoDB query latency by 30%+ using multi-stage aggregation pipelines, index optimization
+                    and server-side joins, and cut network payload by 60%.</li>
+            </ul>
+
+            <h3>Senior Data Scientist and AI Engineer - Standard Chartered Research and Technology (via Solv), Noida</h3>
+            <p class="meta">November 2023 - June 2025</p>
+            <p class="project">Commerce Platform: AI-powered NLP search, data orchestration and LLM integration</p>
+            <ul>
+                <li>Led an NLP-driven search and product recommendation engine using LangChain and AWS Elasticsearch
+                    Query DSL, improving search relevance and response time by 45% for 100K+ daily active users.</li>
+                <li>Designed and deployed an LLM-assisted extraction and summarization service for an unstructured
+                    product catalogue, using prompt engineering, structured output parsing and Snowflake-backed
+                    analytics storage.</li>
+                <li>Built event-driven pipelines on Apache Kafka processing 500K+ events per day at sub-100ms latency,
+                    feeding real-time model inference endpoints and downstream Snowflake analytics.</li>
+                <li>Established LLMOps practices: version control for prompt templates, Grafana model performance
+                    dashboards and systematic A/B evaluation pipelines.</li>
+                <li>Authored HLD/LLD documentation for AI system design trade-offs and reached 85%+ test coverage with
+                    Python unit tests.</li>
+                <li>Managed end-to-end deployment of AI microservices through Jenkins, Docker and Kubernetes on AWS with
+                    automated model validation gates.</li>
+            </ul>
+
+            <h3>Senior Software Engineer - Wissda Consulting Pvt Ltd, Mumbai</h3>
+            <p class="meta">October 2022 - October 2023</p>
+            <p class="project">Master Data Management: enterprise data integration platform</p>
+            <ul>
+                <li>Developed RESTful microservices with an event-driven architecture on Apache Kafka, handling 200K+
+                    messages per day with exactly-once delivery semantics.</li>
+                <li>Used Python (PySpark, Pandas) and the Java 8 Stream API for ETL transformations and high-volume data
+                    processing.</li>
+                <li>Monitored service health and pipeline throughput with Grafana dashboards, identifying and resolving
+                    data bottlenecks.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Research</h2>
+            <h3>Multilingual LLM Reasoning for Indian Languages - IIT Jodhpur</h3>
+            <p class="meta">M.Tech thesis research, supervised by Dr. Deeksha Varshney |
+                <a href="https://github.com/sudoshubh/multi-reason">github.com/sudoshubh/multi-reason</a></p>
+            <ul>
+                <li>Investigating chain-of-thought fine-tuning of small LLMs on Hindi multiple-choice benchmarks (m_MMLU,
+                    m_ARC) using a 4-round Gemini distillation pipeline with "Wait token" reasoning.</li>
+                <li>Constructing SFT training instances in a think/answer format, focused on reasoning quality and
+                    multilingual generalization.</li>
+                <li>Models explored: Llama-3.1-8B, Llama-3.2-3B, Qwen-2.5-7B, DeepSeek-R1-Distill-Qwen-7B. Techniques:
+                    LoRA/PEFT, SFT, CoT distillation.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Education</h2>
+            <h3>Master of Technology, Artificial Intelligence - Indian Institute of Technology (IIT) Jodhpur</h3>
+            <p class="meta">January 2025 - Present</p>
+            <h3>Bachelor of Technology, Computer Science Engineering - Moradabad Institute of Technology (AKTU)</h3>
+            <p class="meta">July 2016 - June 2020 | CGPA 7.7/10</p>
+        </section>
+
+        <section>
+            <h2>Certifications and Achievements</h2>
+            <ul>
+                <li>Prompt Engineering and Generative AI (certification)</li>
+                <li>Oracle Java Learner Badge</li>
+                <li>HackerRank Python - Gold badge</li>
+                <li>HackerRank Java - Gold badge</li>
+                <li>Smart India Hackathon 2018</li>
+            </ul>
+        </section>
+    </main>
+</body>
+
+</html>
