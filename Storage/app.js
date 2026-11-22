@@ -7,25 +7,47 @@
   var menuBtn = document.getElementById("menuBtn");
   var search = document.getElementById("search");
 
+  /* Learning path: recommended order and difficulty for a newcomer */
+  var PATH = [
+    ["dfs", "b"], ["kv-lsm", "i"], ["object-store", "i"], ["log-storage", "i"], ["sync-dedup", "i"],
+    ["ec-selfheal", "a"], ["dedup-pipeline", "a"], ["qos-engine", "i"], ["block-store", "a"]
+  ];
+  var LVL = { b: "Beginner", i: "Intermediate", a: "Advanced" };
+  var byId = {}; P.forEach(function (p) { byId[p.id] = p; });
+  var ordered = PATH.map(function (x) { var p = byId[x[0]]; p.lvl = x[1]; return p; })
+    .concat(P.filter(function (p) { return !p.lvl; }));
+  ordered.forEach(function (p, i) { if (!p.lvl) p.lvl = "i"; p.step = i + 1; });
+
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function words(s) { return String(s).replace(/<[^>]*>/g, " ").split(/\s+/).filter(Boolean).length; }
+  function readMins(p) {
+    var w = words(p.tagline) + words(p.requirements.join(" ")) + p.deepDives.reduce(function (a, d) { return a + words(d.b); }, 0) +
+      Object.keys(p.flows).reduce(function (a, k) { return a + words(p.flows[k].join(" ")); }, 0);
+    return Math.max(3, Math.round(w / 200));
+  }
+
+  /* progress (localStorage, tolerant of being unavailable) */
+  var done = [];
+  try { done = JSON.parse(localStorage.getItem("ssd-done") || "[]"); } catch (e) { done = []; }
+  if (!Array.isArray(done)) done = [];
+  function saveDone() { try { localStorage.setItem("ssd-done", JSON.stringify(done)); } catch (e) {} }
+  function isDone(id) { return done.indexOf(id) >= 0; }
 
   /* ---------- navigation ---------- */
-  var extra = [
-    { id: "compare", name: "Compare all patterns", tag: "vs" },
-    { id: "concepts", name: "Shared building blocks", tag: "Core" }
-  ];
+  var extra = [["compare", "Compare all patterns", "vs"], ["concepts", "Shared building blocks", "+"]];
+  function currentId() { return (location.hash || "#home").slice(1) || "home"; }
   function renderNav(filter) {
-    var f = (filter || "").toLowerCase();
-    var html = '<li><a href="#home" data-id="home">Overview</a></li><li class="sep">Patterns</li>';
-    P.forEach(function (p) {
+    var f = (filter || "").toLowerCase(), n = done.length, pct = Math.round(n / P.length * 100);
+    var html = '<div class="progress"><div class="row"><span>Your progress</span><span>' + n + "/" + P.length + '</span></div><div class="bar"><i style="width:' + pct + '%"></i></div></div>' +
+      '<ul><li><a href="#home" data-id="home"><span class="num">&#9679;</span><span>Start here</span><span></span></a></li><li class="sep">Learning path</li>';
+    ordered.forEach(function (p) {
       if (f && (p.name + " " + p.tag + " " + p.tagline).toLowerCase().indexOf(f) < 0) return;
-      html += '<li><a href="#' + p.id + '" data-id="' + p.id + '"><span class="pill">' + esc(p.tag) + "</span>" + esc(p.name) + "</a></li>";
+      html += '<li><a href="#' + p.id + '" data-id="' + p.id + '"><span class="num' + (isDone(p.id) ? " done" : "") + '">' + (isDone(p.id) ? "&#10003;" : p.step) +
+        "</span><span>" + esc(p.name) + '</span><span class="lvl ' + p.lvl + '">' + LVL[p.lvl].slice(0, 3) + "</span></a></li>";
     });
     html += '<li class="sep">Reference</li>';
-    extra.forEach(function (e) {
-      html += '<li><a href="#' + e.id + '" data-id="' + e.id + '"><span class="pill">' + e.tag + "</span>" + e.name + "</a></li>";
-    });
-    navList.innerHTML = html;
+    extra.forEach(function (e) { html += '<li><a href="#' + e[0] + '" data-id="' + e[0] + '"><span class="num">' + e[2] + "</span><span>" + e[1] + "</span><span></span></a></li>"; });
+    navList.innerHTML = html + "</ul>";
     markActive();
   }
   function markActive() {
@@ -36,54 +58,55 @@
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
   }
-  function currentId() { return (location.hash || "#home").slice(1) || "home"; }
 
   /* ---------- views ---------- */
   function home() {
-    var h = "<h1>Storage System Design Patterns</h1>" +
-      '<p class="lead">' + P.length + " storage-domain architectures in one place: requirements, architecture, request flows, deep dives, failure handling and trade-offs. Pick one to start, or compare them side by side.</p>" +
-      '<div class="grid">';
-    P.forEach(function (p) {
-      h += '<a class="card" href="#' + p.id + '"><span class="pill">' + esc(p.tag) + "</span><h3>" + esc(p.name) + "</h3><p>" + esc(p.tagline) + "</p></a>";
-    });
-    h += '<a class="card" href="#compare"><span class="pill">vs</span><h3>Compare all patterns</h3><p>Data unit, consistency, redundancy, latency and best-fit use case in one table.</p></a>';
-    h += '<a class="card" href="#concepts"><span class="pill">Core</span><h3>Shared building blocks</h3><p>EC vs replication, quorums, fencing, GC, checksums, throttled repair.</p></a></div>';
+    var next = ordered.filter(function (p) { return !isDone(p.id); })[0];
+    var total = ordered.reduce(function (a, p) { return a + readMins(p); }, 0);
+    var h = '<div class="hero"><div class="eyebrow">A field guide for learners</div><h1>How storage systems are really built</h1>' +
+      '<p class="lead">' + P.length + " architectures, one reading order. Each chapter gives you the problem, the architecture, the request flows, the hard parts, and a self-test, so you can explain it, not just recognise it.</p>" +
+      '<div class="meta"><span>Light &amp; dark reading modes</span><span>Progress saved in your browser</span><span>~' + total + " min total</span></div>" +
+      (next ? '<div class="pager" style="justify-content:flex-start;margin-top:16px"><a href="#' + next.id + '">' + (done.length ? "Continue: " : "Begin with ") + esc(next.name) + " &rarr;</a></div>" : "") + "</div>";
+    h += '<div class="grid">' + ordered.map(function (p) {
+      return '<a class="card" href="#' + p.id + '"><div class="top"><span>CHAPTER ' + String(p.step).padStart(2, "0") + '</span><span class="lvl ' + p.lvl + '">' + LVL[p.lvl] + "</span></div><h3>" +
+        esc(p.name) + "</h3><p>" + esc(p.tagline) + '</p><div class="meta" style="border:0;padding:8px 0 0">' + readMins(p) + " min read</div>" + (isDone(p.id) ? '<span class="tick">&#10003; learned</span>' : "") + "</a>";
+    }).join("") + "</div>";
     return h;
   }
 
   function arch(layers) {
     return '<div class="arch">' + layers.map(function (l, i) {
-      var nodes = l.nodes.map(function (n) {
-        return '<div class="node"><b>' + esc(n.n) + "</b><span>" + esc(n.d) + "</span></div>";
-      }).join("");
-      return (i ? '<div class="arrow" aria-hidden="true">&#8595;</div>' : "") +
-        '<div class="layer"><div class="layer-title">' + esc(l.title) + '</div><div class="nodes">' + nodes + "</div></div>";
+      return (i ? '<div class="arrow" aria-hidden="true">&#8595;</div>' : "") + '<div class="layer"><div class="layer-title">' + esc(l.title) + '</div><div class="nodes">' +
+        l.nodes.map(function (n) { return '<div class="node"><b>' + esc(n.n) + "</b><span>" + esc(n.d) + "</span></div>"; }).join("") + "</div></div>";
     }).join("") + "</div>";
   }
-
   function table(head, rows) {
-    return '<div class="tbl-wrap"><table><thead><tr>' + head.map(function (h) { return "<th>" + esc(h) + "</th>"; }).join("") +
-      "</tr></thead><tbody>" + rows.map(function (r) {
-        return "<tr>" + r.map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>";
-      }).join("") + "</tbody></table></div>";
+    return '<div class="tbl-wrap"><table><thead><tr>' + head.map(function (h) { return "<th>" + esc(h) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
   }
+  function h2(n, id, t) { return '<h2 id="sec-' + id + '"><span class="n">' + n + "</span>" + t + "</h2>"; }
 
-  function pattern(p, idx) {
-    var h = '<h1>' + esc(p.name) + '</h1><p class="lead">' + esc(p.tagline) + "</p>";
-    h += '<div class="chips">' + p.scale.map(function (s) { return '<div class="chip"><b>' + esc(s[1]) + "</b><span>" + esc(s[0]) + "</span></div>"; }).join("") + "</div>";
-    h += "<h2>Requirements</h2><ul class=\"req\">" + p.requirements.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul>";
-    h += "<h2>Architecture</h2>" + arch(p.layers);
-    var keys = Object.keys(p.flows);
-    h += "<h2>Request flows</h2><div class=\"tabs\" role=\"tablist\">" + keys.map(function (k, i) {
-      return '<button class="tab" role="tab" aria-selected="' + (i === 0) + '" data-flow="' + i + '">' + esc(k) + "</button>";
-    }).join("") + '</div><div id="flowBody"></div>';
-    h += '<h2>Deep dives</h2><div class="toolbar"><button data-act="open">Expand all</button><button data-act="close">Collapse all</button></div>' +
-      p.deepDives.map(function (d, i) { return "<details" + (i === 0 ? " open" : "") + "><summary>" + esc(d.t) + "</summary><div>" + d.b + "</div></details>"; }).join("");
-    h += "<h2>Failure scenarios</h2>" + table(["Scenario", "Handling"], p.failures);
-    h += "<h2>Trade-offs and decisions</h2>" + table(["Decision", "Choice", "Why"], p.tradeoffs);
-    h += '<h2>Interview cheat sheet</h2><div class="cheat"><b>In 30 seconds:</b> ' + esc(p.cheat) + "</div>";
+  function pattern(p) {
+    var i = ordered.indexOf(p), prev = ordered[i - 1], next = ordered[i + 1], keys = Object.keys(p.flows);
+    var secs = [["req", "Requirements"], ["arch", "Architecture"], ["flow", "Flows"], ["deep", "Deep dives"], ["fail", "Failures"], ["trade", "Trade-offs"], ["quiz", "Self-test"], ["sum", "Summary"]];
+    var h = '<div class="eyebrow"><span>Chapter ' + String(p.step).padStart(2, "0") + '</span><span class="lvl ' + p.lvl + '">' + LVL[p.lvl] + "</span></div><h1>" + esc(p.name) + '</h1><p class="lead">' + esc(p.tagline) + "</p>" +
+      '<div class="meta"><span>' + readMins(p) + " min read</span><span>" + p.deepDives.length + " deep dives</span><span>" + p.tradeoffs.length + " decisions to defend</span></div>" +
+      '<div class="jump">' + secs.map(function (s) { return '<button data-jump="sec-' + s[0] + '">' + s[1] + "</button>"; }).join("") + "</div>" +
+      '<div class="chips">' + p.scale.map(function (s) { return '<div class="chip"><b>' + esc(s[1]) + "</b><span>" + esc(s[0]) + "</span></div>"; }).join("") + "</div>";
+    h += h2("01", "req", "What it must do") + '<ul class="req">' + p.requirements.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul>";
+    h += h2("02", "arch", "The architecture") + arch(p.layers);
+    h += h2("03", "flow", "How requests flow") + '<div class="tabs" role="tablist">' + keys.map(function (k, j) {
+      return '<button class="tab" role="tab" aria-selected="' + (j === 0) + '" data-flow="' + j + '">' + esc(k) + "</button>"; }).join("") + '</div><div id="flowBody"></div>';
+    h += h2("04", "deep", "The hard parts") + '<div class="toolbar"><button data-act="open">Expand all</button><button data-act="close">Collapse all</button></div>' +
+      p.deepDives.map(function (d, j) { return "<details" + (j === 0 ? " open" : "") + "><summary>" + esc(d.t) + "</summary><div>" + d.b + "</div></details>"; }).join("");
+    h += h2("05", "fail", "When things break") + table(["Scenario", "Handling"], p.failures);
+    h += h2("06", "trade", "Decisions and trade-offs") + table(["Decision", "Choice", "Why"], p.tradeoffs);
+    h += h2("07", "quiz", "Test yourself") + '<p style="color:var(--muted);margin-top:0">Answer out loud first, then reveal.</p><div class="flash">' + p.tradeoffs.map(function (t) {
+      return '<div class="fc"><div class="q">Decision: ' + esc(t[0]) + "</div><p>What would you choose here, and why?</p><button>Reveal answer</button>" +
+        '<div class="a"><b>' + esc(t[1]) + "</b><br>" + esc(t[2]) + "</div></div>"; }).join("") + "</div>";
+    h += h2("08", "sum", "The 30-second version") + '<div class="cheat"><b>Say it like this</b>' + esc(p.cheat) + "</div>";
     if (p.doc) h += '<a class="docs-link" href="' + esc(p.doc) + '">Read the full written design (' + esc(p.doc) + ") &rarr;</a>";
-    var prev = P[idx - 1], next = P[idx + 1];
+    h += '<div class="mark-done"><button id="doneBtn" aria-pressed="' + isDone(p.id) + '">' + (isDone(p.id) ? "&#10003; Marked as learned" : "Mark chapter as learned") + "</button><span>Tracks your progress in this browser.</span></div>";
     h += '<div class="pager"><span>' + (prev ? '<a href="#' + prev.id + '">&larr; ' + esc(prev.name) + "</a>" : "") + "</span><span>" +
       (next ? '<a href="#' + next.id + '">' + esc(next.name) + " &rarr;</a>" : '<a href="#compare">Compare all &rarr;</a>') + "</span></div>";
     return h;
@@ -91,9 +114,7 @@
 
   function bindPattern(p) {
     var keys = Object.keys(p.flows), body = document.getElementById("flowBody");
-    function show(i) {
-      body.innerHTML = '<ol class="steps">' + p.flows[keys[i]].map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>";
-    }
+    function show(i) { body.innerHTML = '<ol class="steps">' + p.flows[keys[i]].map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>"; }
     show(0);
     var tabs = main.querySelectorAll(".tab");
     Array.prototype.forEach.call(tabs, function (t) {
@@ -108,54 +129,65 @@
         Array.prototype.forEach.call(main.querySelectorAll("details"), function (d) { d.open = open; });
       });
     });
+    Array.prototype.forEach.call(main.querySelectorAll(".jump button"), function (b) {
+      b.addEventListener("click", function () { var el = document.getElementById(b.getAttribute("data-jump")); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    });
+    Array.prototype.forEach.call(main.querySelectorAll(".fc button"), function (b) {
+      b.addEventListener("click", function () { b.parentNode.classList.add("open"); });
+    });
+    var db = document.getElementById("doneBtn");
+    db.addEventListener("click", function () {
+      var k = done.indexOf(p.id);
+      if (k >= 0) done.splice(k, 1); else done.push(p.id);
+      saveDone();
+      db.setAttribute("aria-pressed", String(isDone(p.id)));
+      db.innerHTML = isDone(p.id) ? "&#10003; Marked as learned" : "Mark chapter as learned";
+      renderNav(search.value);
+    });
   }
 
   function compare() {
-    return "<h1>Compare all patterns</h1><p class=\"lead\">Same trade-offs, different points on the design space.</p>" +
-      table(CMP.cols, CMP.rows) +
-      "<h2>How to choose</h2><ul class=\"req\">" +
-      "<li><b>Unstructured blobs at huge scale, cheap, HTTP:</b> object store (+ dedup and EC subsystems underneath).</li>" +
-      "<li><b>Databases and VMs needing sub-ms latency:</b> block store.</li>" +
-      "<li><b>Big sequential analytics:</b> distributed file system.</li>" +
-      "<li><b>Online lookups by key at high QPS:</b> distributed KV.</li>" +
-      "<li><b>Cloud drive or backup with delta sync:</b> sync + dedup.</li>" +
-      "<li><b>Ordered event streams and replay:</b> commit log.</li>" +
-      "<li><b>Cross-cutting:</b> inline dedup, erasure coding with self-healing, and QoS apply to almost every system above.</li></ul>";
+    return '<div class="eyebrow">Reference</div><h1>Compare all patterns</h1><p class="lead">Same trade-offs, different points on the design space.</p>' + table(CMP.cols, CMP.rows) +
+      '<h2><span class="n">&mdash;</span>How to choose</h2><ul class="req">' +
+      "<li><b>Unstructured blobs at huge scale, cheap, HTTP:</b> object store (with dedup and EC subsystems underneath).</li>" +
+      "<li><b>Databases and VMs needing sub-ms latency:</b> block store.</li><li><b>Big sequential analytics:</b> distributed file system.</li>" +
+      "<li><b>Online lookups by key at high QPS:</b> distributed KV.</li><li><b>Cloud drive or backup with delta sync:</b> sync + dedup.</li>" +
+      "<li><b>Ordered event streams and replay:</b> commit log.</li><li><b>Cross-cutting:</b> inline dedup, erasure coding with self-healing, and QoS apply to almost every system above.</li></ul>";
   }
-
   function concepts() {
-    return "<h1>Shared building blocks</h1><p class=\"lead\">Ideas that recur across every storage system.</p>" +
+    return '<div class="eyebrow">Reference</div><h1>Shared building blocks</h1><p class="lead">Ideas that recur in every storage system. Learn these once.</p>' +
       CON.map(function (c) { return "<details open><summary>" + esc(c.t) + "</summary><div>" + c.b + "</div></details>"; }).join("");
   }
 
   /* ---------- router ---------- */
   function route() {
-    var id = currentId(), html, idx = -1, p = null;
-    if (id === "home") html = home();
-    else if (id === "compare") html = compare();
-    else if (id === "concepts") html = concepts();
-    else {
-      for (var i = 0; i < P.length; i++) if (P[i].id === id) { idx = i; p = P[i]; }
-      html = p ? pattern(p, idx) : home();
-    }
+    var id = currentId(), p = byId[id], html;
+    if (id === "compare") html = compare(); else if (id === "concepts") html = concepts(); else if (p) html = pattern(p); else html = home();
     main.innerHTML = html;
     if (p) bindPattern(p);
-    document.title = (p ? p.name : id === "compare" ? "Compare" : id === "concepts" ? "Building blocks" : "Storage System Design Patterns") + " | Storage Design";
+    document.title = (p ? p.name : id === "compare" ? "Compare" : id === "concepts" ? "Building blocks" : "Storage Field Guide") + " | Storage Design";
     markActive();
     sidebar.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false");
     window.scrollTo(0, 0);
     main.focus({ preventScroll: true });
   }
 
-  /* ---------- chrome ---------- */
-  menuBtn.addEventListener("click", function () {
-    var o = sidebar.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", String(o));
+  /* ---------- theme + chrome ---------- */
+  var themeBtns = document.querySelectorAll("[data-set-theme]");
+  function syncTheme() {
+    var t = document.documentElement.getAttribute("data-theme");
+    Array.prototype.forEach.call(themeBtns, function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-set-theme") === t)); });
+  }
+  Array.prototype.forEach.call(themeBtns, function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-set-theme");
+      document.documentElement.setAttribute("data-theme", t);
+      try { localStorage.setItem("ssd-theme", t); } catch (e) {}
+      syncTheme();
+    });
   });
-  document.getElementById("themeBtn").addEventListener("click", function () {
-    var r = document.documentElement, t = r.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    r.setAttribute("data-theme", t);
-    try { localStorage.setItem("ssd-theme", t); } catch (e) {}
-  });
+  syncTheme();
+  menuBtn.addEventListener("click", function () { var o = sidebar.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", String(o)); });
   search.addEventListener("input", function () { renderNav(search.value); });
   window.addEventListener("hashchange", route);
 

@@ -4,22 +4,51 @@
 
 ---
 
+## At a Glance
+
+| Aspect | Design |
+|---|---|
+| Unit of replication | 16 GiB **partition** = 3 replicas in 3 failure domains (declustered placement) |
+| Write path | Client → primary → WAL (PLP NVMe) → parallel backups; **ack when 2 of 3 are durable** |
+| Consistency | Linearizable per volume; epoch fencing + leases prevent split-brain |
+| On-node layout | WAL → in-memory index → copy-on-write B+tree over 4 MiB extents of 4 KiB blocks |
+| Snapshots | O(1) root pin; client-ordered epoch cut; incremental, content-addressed upload to object storage |
+| Self-healing | Coordinator bumps epoch, promotes highest-LSN ISR member, parallel repair from many peers |
+| Protecting foreground I/O | Priority classes + AIMD throttle on foreground p99 + token buckets |
+| Targets | p99 write < 1 ms · up to 256k IOPS / volume · 99.999% durability · 99.99% availability |
+
+
+---
+
 ## Table of Contents
+
+**Part I: Foundations**
 1. [Requirements](#1-requirements)
 2. [Capacity & Latency Budget](#2-capacity--latency-budget)
 3. [High-Level Architecture](#3-high-level-architecture)
 4. [Data Model & Placement](#4-data-model--placement)
+
+**Part II: Data Path**
 5. [Write Path & Replication](#5-write-path--replication)
 6. [Read Path](#6-read-path)
-7. [On-Node Storage Engine (WAL, Extent Map)](#7-on-node-storage-engine)
+7. [On-Node Storage Engine](#7-on-node-storage-engine)
+
+**Part III: Snapshots**
 8. [Copy-on-Write Snapshots](#8-copy-on-write-snapshots)
-9. [Failure Handling & Re-replication](#9-failure-handling--re-replication)
-10. [Control Plane](#10-control-plane)
+
+**Part IV: Control Plane & Reliability**
+9. [Control Plane](#9-control-plane)
+10. [Failure Handling & Re-replication](#10-failure-handling--re-replication)
 11. [Data Integrity](#11-data-integrity)
+
+**Part V: Operating the System**
 12. [QoS, Multi-tenancy, Security](#12-qos-multi-tenancy-security)
 13. [Observability & Testing](#13-observability--testing)
+
+**Part VI: Wrap-up**
 14. [Trade-offs & Alternatives](#14-trade-offs--alternatives)
 15. [Interview Cheat Sheet](#15-interview-cheat-sheet)
+
 
 ---
 
@@ -184,7 +213,7 @@ Client driver                Primary (epoch e)             Backup 1 / Backup 2
 ```
 Details:
 - **LSN** = (epoch, seq). Ordering inside a partition is the LSN order; commit is *in order* (prefix-commit) so the log never has holes in the committed prefix.
-- **Acknowledgement rule:** ack when ≥2 of 3 copies are durable in WAL. The third copy is still in flight; if it times out (e.g., 5–50 ms adaptive) the replica is dropped from the ISR via the coordinator (see §9). `min_isr=2` ensures an acked write always exists on ≥2 nodes → survives any single failure.
+- **Acknowledgement rule:** ack when ≥2 of 3 copies are durable in WAL. The third copy is still in flight; if it times out (e.g., 5–50 ms adaptive) the replica is dropped from the ISR via the coordinator (see §10). `min_isr=2` ensures an acked write always exists on ≥2 nodes → survives any single failure.
 - **Fencing:** every message carries `epoch`. Replicas reject lower epochs. A deposed primary can't commit because backups reject it; primary also holds a *lease* from the coordinator (renewed by heartbeat, shorter than the failover timer) so it stops serving reads before a new primary is elected.
 - **Group commit & batching:** WAL entries from many writes are combined into one NVMe write (up to 128 KiB / 20–50 µs window, adaptive: no wait at low QD). Network replication is batched the same way.
 - **Idempotency & retries:** client assigns `(client_id, volume_seq)`; primary dedups retransmits (window table) so a retry after timeout or failover never double-applies. Overwrites are idempotent anyway, but dedup matters for ordering with later writes.
@@ -291,7 +320,7 @@ snapshot S_n (frozen root)  vs  S_{n-1} (frozen root)
  references old chunks for unchanged ranges (no chain walk at restore time)
 ```
 - **Dirty tracking is derived from the CoW index** (`birth_epoch` compare) — no separate dirty bitmap or scan, no tracking overhead on the write path.
-- **Who uploads:** one replica per partition (the *least loaded*; typically a backup so the primary's tail is not affected) reads blocks from the immutable snapshot view; throttled by the same background-I/O scheduler (§9.4).
+- **Who uploads:** one replica per partition (the *least loaded*; typically a backup so the primary's tail is not affected) reads blocks from the immutable snapshot view; throttled by the same background-I/O scheduler (§10.4).
 - The snapshot is **durable-ready** once the manifest + all chunks are in object storage; it is then "completed". Until then, the local frozen root pins the data (the volume can still be used; space overhead grows with change rate — alarm & backpressure on snapshot lag).
 - **Restart/resume:** upload progress per partition is checkpointed in the coordinator; idempotent PUTs (content-addressed) make retries safe.
 
@@ -308,9 +337,28 @@ snapshot S_n (frozen root)  vs  S_{n-1} (frozen root)
 
 ---
 
-## 9. Failure Handling & Re-replication
+## 9. Control Plane
 
-### 9.1 Failure detection
+| Service | Responsibility | State |
+|---|---|---|
+| **API / Volume Manager** | create/delete/resize/attach; IOPS tiers; idempotent workflows | metadata DB (Raft-based or Dynamo-like) |
+| **Cluster Coordinator (per cell)** | Raft-replicated map: node membership, partition → replicas, epochs, ISR, leases; **serializes** ISR/epoch changes (CAS) | in-memory + Raft log (~GBs) |
+| **Placement Service** | picks nodes for new partitions & repair targets | derived from coordinator + telemetry |
+| **Repair Scheduler** | the priority queue & budgets from §10 | coordinator-adjacent, recoverable |
+| **Snapshot Manager** | snapshot state machine (`CREATING → PENDING(upload) → COMPLETED → DELETING`), catalog, manifests, GC | metadata DB + object store |
+| **Telemetry/QoS** | health, latencies, capacity → placement & throttle | time-series DB |
+
+Design points:
+- **Coordinator off the hot path.** Client caches `partition → (primary, epoch)`; only on `STALE_EPOCH`/timeout does it ask. Storage nodes cache their role & epoch plus a lease.
+- **Small cells** keep Raft group size and recovery bounded; a cell failure affects only its volumes.
+- **Volume attach** gives the client driver a signed volume token (volume_id, partition map version, keys wrapped by KMS).
+- **Resize:** add partitions at the end (online), update map version; shrink not supported.
+
+---
+
+## 10. Failure Handling & Re-replication
+
+### 10.1 Failure detection
 | Mechanism | Detects | Timer |
 |---|---|---|
 | Node → coordinator heartbeat (+ lease renewal) | node death / network cut | 1 s heartbeat, ~5–10 s suspicion (phi-accrual adaptive) |
@@ -318,12 +366,12 @@ snapshot S_n (frozen root)  vs  S_{n-1} (frozen root)
 | Client driver timeouts | primary unreachable | retries with hedging, asks coordinator for new map |
 | Per-device health (SMART, I/O latency outliers) | **gray failure** (slow disk/NIC) | continuous; eject on p99 > threshold for N windows |
 
-### 9.2 Cases
+### 10.2 Cases
 **A. Backup fails/slow (writes keep flowing):**
 1. Primary can't get a 2nd ack?  With 3 replicas, ack on primary + the other backup still satisfies the rule → no client-visible hiccup.
 2. Primary asks the coordinator to shrink ISR (`epoch++`, `isr = {primary, healthy backup}`) — conditional update guarded by epoch. Writes continue with `min_isr=2`. State = **DEGRADED**.
 3. If the failed replica returns quickly (**< T_delay**, default ~10 min; transient reboot/network blip): **log-based catch-up** — primary ships WAL (or changed-extent delta since the replica's `last_lsn`), replica re-enters ISR. Cheap; avoids a mass copy.
-4. If it doesn't return in T_delay → declare **permanently lost** → full re-replication (§9.3). T_delay prevents repair storms on rolling reboots / short network events.
+4. If it doesn't return in T_delay → declare **permanently lost** → full re-replication (§10.3). T_delay prevents repair storms on rolling reboots / short network events.
 
 **B. Primary fails:**
 1. Coordinator observes missed heartbeat / lease expiry (the old primary self-fences when its lease lapses, so lease < failover timer).
@@ -336,11 +384,11 @@ snapshot S_n (frozen root)  vs  S_{n-1} (frozen root)
 
 **D. Network partition:** only the side that can reach the coordinator & hold a lease can serve; epoch fencing + lease guarantee no split-brain (two primaries) — `lease_duration < coordinator failover timeout` with bounded clock drift.
 
-**E. Coordinator failure:** Raft; data plane keeps serving with cached maps and existing leases (leases are extended via... ). If majority lost > lease TTL, primaries stop serving (CP) — mitigated by cell design & 5-node Raft across fault domains.
+**E. Coordinator failure:** Raft; data plane keeps serving with cached maps and existing leases (leases are renewed through coordinator heartbeats, so they lapse after the TTL once the coordinator is unreachable). If majority lost > lease TTL, primaries stop serving (CP) — mitigated by cell design & 5-node Raft across fault domains.
 
 **F. Whole-rack/AZ failure:** declustered placement & rack-aware placement mean at most 1 replica of any partition is in a rack; AZ loss → restore from snapshots in another AZ (EBS is AZ-scoped).
 
-### 9.3 Re-replication (repair) with the coordinator
+### 10.3 Re-replication (repair) with the coordinator
 ```
 Coordinator Repair Scheduler
   1. Failure → enumerate affected partitions (from node→partitions index)
@@ -360,7 +408,7 @@ Coordinator Repair Scheduler
 ```
 **Why it's fast:** with declustered placement, a failed 61 TB node's ~3.8 k partitions have sources and targets spread across ~hundreds of peers. Each peer copies ~ tens of GiB at a throttled ~100–500 MB/s → full recovery in minutes instead of hours. (Rebuild time ≈ data_lost / (N_peers × per-peer repair_rate).)
 
-### 9.4 Not starving foreground I/O (the key trade-off)
+### 10.4 Not starving foreground I/O (the key trade-off)
 Layered defenses:
 
 1. **Per-node I/O scheduler with priority classes** (SPDK/blk-mq QoS):
@@ -390,29 +438,10 @@ Layered defenses:
 8. **Backpressure the other way too:** if repair falls behind a durability-risk threshold (many partitions with 1 copy), the coordinator **escalates** budget (explicit durability vs. performance policy) and pages operators.
 9. **Surge control:** stagger — when many nodes fail (rack), prioritize by redundancy level; stop *planned* maintenance/rebalancing.
 
-### 9.5 Gray failure & slow replicas
+### 10.5 Gray failure & slow replicas
 - Quorum-style 2/3 ack automatically hides one slow replica → tail latency protection.
 - Outlier detection (peer-relative latency, EWMA, ≥ N× median) → proactively move the slow node out of primary roles → eject → repair.
 - Client hedged reads/writes retry on alternate replica after a p99-ish timer (with dedup).
-
----
-
-## 10. Control Plane
-
-| Service | Responsibility | State |
-|---|---|---|
-| **API / Volume Manager** | create/delete/resize/attach; IOPS tiers; idempotent workflows | metadata DB (Raft-based or Dynamo-like) |
-| **Cluster Coordinator (per cell)** | Raft-replicated map: node membership, partition → replicas, epochs, ISR, leases; **serializes** ISR/epoch changes (CAS) | in-memory + Raft log (~GBs) |
-| **Placement Service** | picks nodes for new partitions & repair targets | derived from coordinator + telemetry |
-| **Repair Scheduler** | the priority queue & budgets from §9 | coordinator-adjacent, recoverable |
-| **Snapshot Manager** | snapshot state machine (`CREATING → PENDING(upload) → COMPLETED → DELETING`), catalog, manifests, GC | metadata DB + object store |
-| **Telemetry/QoS** | health, latencies, capacity → placement & throttle | time-series DB |
-
-Design points:
-- **Coordinator off the hot path.** Client caches `partition → (primary, epoch)`; only on `STALE_EPOCH`/timeout does it ask. Storage nodes cache their role & epoch plus a lease.
-- **Small cells** keep Raft group size and recovery bounded; a cell failure affects only its volumes.
-- **Volume attach** gives the client driver a signed volume token (volume_id, partition map version, keys wrapped by KMS).
-- **Resize:** add partitions at the end (online), update map version; shrink not supported.
 
 ---
 
